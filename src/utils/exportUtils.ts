@@ -165,11 +165,38 @@ const generateQRCodeDataUrl = async (text: string): Promise<string | null> => {
   }
 };
 
-const loadImageWithDimensions = (url: string, timeoutMs = 3000): Promise<{ data: string; width: number; height: number } | null> => {
+const imageToCanvasData = (img: HTMLImageElement): { data: string; width: number; height: number } | null => {
+  const canvas = document.createElement('canvas');
+  const maxDim = 300;
+  let w = img.naturalWidth || img.width;
+  let h = img.naturalHeight || img.height;
+  if (w === 0 || h === 0) return null;
+  if (w > maxDim || h > maxDim) {
+    const scale = maxDim / Math.max(w, h);
+    w = Math.round(w * scale);
+    h = Math.round(h * scale);
+  }
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, w, h);
+  try {
+    ctx.drawImage(img, 0, 0, w, h);
+    return { data: canvas.toDataURL('image/jpeg', 0.6), width: w, height: h };
+  } catch {
+    // Canvas tainted by CORS — cannot extract data
+    return null;
+  }
+};
+
+const loadImageWithDimensions = (url: string, timeoutMs = 5000): Promise<{ data: string; width: number; height: number } | null> => {
   return new Promise((resolve) => {
     const timeout = setTimeout(() => resolve(null), timeoutMs);
-    
-    fetch(url)
+
+    // Try fetch first (works for same-origin & CORS-enabled URLs)
+    fetch(url, { mode: 'cors' })
       .then(res => {
         if (!res.ok) throw new Error('fetch failed');
         return res.blob();
@@ -178,37 +205,36 @@ const loadImageWithDimensions = (url: string, timeoutMs = 3000): Promise<{ data:
         const objectUrl = URL.createObjectURL(blob);
         const img = new Image();
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          // Downsample large images for PDF performance
-          const maxDim = 300;
-          let w = img.width;
-          let h = img.height;
-          if (w > maxDim || h > maxDim) {
-            const scale = maxDim / Math.max(w, h);
-            w = Math.round(w * scale);
-            h = Math.round(h * scale);
-          }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            // Fill with white to prevent transparent PNGs from having black backgrounds
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, w, h);
-            ctx.drawImage(img, 0, 0, w, h);
-            clearTimeout(timeout);
-            URL.revokeObjectURL(objectUrl);
-            resolve({ data: canvas.toDataURL('image/jpeg', 0.6), width: w, height: h });
-          } else {
-            clearTimeout(timeout);
-            URL.revokeObjectURL(objectUrl);
-            resolve(null);
-          }
+          clearTimeout(timeout);
+          const result = imageToCanvasData(img);
+          URL.revokeObjectURL(objectUrl);
+          resolve(result);
         };
         img.onerror = () => { clearTimeout(timeout); URL.revokeObjectURL(objectUrl); resolve(null); };
         img.src = objectUrl;
       })
-      .catch(() => { clearTimeout(timeout); resolve(null); });
+      .catch(() => {
+        // Fetch failed (CORS blocked) — try loading via <img> with crossOrigin
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          clearTimeout(timeout);
+          resolve(imageToCanvasData(img));
+        };
+        img.onerror = () => {
+          // Last resort: load without crossOrigin (can display but canvas will be tainted)
+          const img2 = new Image();
+          img2.onload = () => {
+            clearTimeout(timeout);
+            // We can still get dimensions even if canvas is tainted
+            const result = imageToCanvasData(img2);
+            resolve(result);
+          };
+          img2.onerror = () => { clearTimeout(timeout); resolve(null); };
+          img2.src = url;
+        };
+        img.src = url;
+      });
   });
 };
 
