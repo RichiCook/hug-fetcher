@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ExportProduct {
   url: string;
