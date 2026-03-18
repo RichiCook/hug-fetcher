@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ExportProduct {
   url: string;
@@ -165,6 +166,11 @@ const generateQRCodeDataUrl = async (text: string): Promise<string | null> => {
   }
 };
 
+const getImageProxyUrl = (url: string): string => {
+  const encoded = encodeURIComponent(url);
+  return `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/export-image-proxy?url=${encoded}`;
+};
+
 const imageToCanvasData = (img: HTMLImageElement): { data: string; width: number; height: number } | null => {
   const canvas = document.createElement('canvas');
   const maxDim = 300;
@@ -184,58 +190,59 @@ const imageToCanvasData = (img: HTMLImageElement): { data: string; width: number
   ctx.fillRect(0, 0, w, h);
   try {
     ctx.drawImage(img, 0, 0, w, h);
-    return { data: canvas.toDataURL('image/jpeg', 0.6), width: w, height: h };
+    return { data: canvas.toDataURL('image/jpeg', 0.72), width: w, height: h };
   } catch {
-    // Canvas tainted by CORS — cannot extract data
     return null;
   }
 };
 
-const loadImageWithDimensions = (url: string, timeoutMs = 5000): Promise<{ data: string; width: number; height: number } | null> => {
-  return new Promise((resolve) => {
-    const timeout = setTimeout(() => resolve(null), timeoutMs);
+const fetchImageAsBase64 = async (url: string, timeoutMs = 8000): Promise<{ data: string; width: number; height: number } | null> => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-    // Try fetch first (works for same-origin & CORS-enabled URLs)
-    fetch(url, { mode: 'cors' })
-      .then(res => {
-        if (!res.ok) throw new Error('fetch failed');
-        return res.blob();
-      })
-      .then(blob => {
-        const objectUrl = URL.createObjectURL(blob);
-        const img = new Image();
-        img.onload = () => {
-          clearTimeout(timeout);
-          const result = imageToCanvasData(img);
-          URL.revokeObjectURL(objectUrl);
-          resolve(result);
-        };
-        img.onerror = () => { clearTimeout(timeout); URL.revokeObjectURL(objectUrl); resolve(null); };
-        img.src = objectUrl;
-      })
-      .catch(() => {
-        // Fetch failed (CORS blocked) — try loading via <img> with crossOrigin
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          clearTimeout(timeout);
-          resolve(imageToCanvasData(img));
-        };
-        img.onerror = () => {
-          // Last resort: load without crossOrigin (can display but canvas will be tainted)
-          const img2 = new Image();
-          img2.onload = () => {
-            clearTimeout(timeout);
-            // We can still get dimensions even if canvas is tainted
-            const result = imageToCanvasData(img2);
-            resolve(result);
-          };
-          img2.onerror = () => { clearTimeout(timeout); resolve(null); };
-          img2.src = url;
-        };
-        img.src = url;
-      });
-  });
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      },
+    });
+
+    if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+
+    const result = await new Promise<{ data: string; width: number; height: number } | null>((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(imageToCanvasData(img));
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(null);
+      };
+      img.src = objectUrl;
+    });
+
+    return result;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+const loadImageWithDimensions = async (url: string, timeoutMs = 8000): Promise<{ data: string; width: number; height: number } | null> => {
+  const directResult = await fetchImageAsBase64(url, Math.min(timeoutMs, 4000));
+  if (directResult) return directResult;
+
+  const proxiedResult = await fetchImageAsBase64(getImageProxyUrl(url), timeoutMs);
+  if (proxiedResult) return proxiedResult;
+
+  console.warn('[PDF Export] Failed to load image', url);
+  return null;
 };
 
 // Load images in parallel batches
