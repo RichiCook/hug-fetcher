@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX products_product_code_key ON public.products (product_code) WHERE product_code IS NOT NULL;

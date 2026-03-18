@@ -1,0 +1,1 @@
+ALTER TABLE public.activations ADD COLUMN hide_title boolean NOT NULL DEFAULT false;
