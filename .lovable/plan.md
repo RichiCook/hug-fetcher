@@ -1,25 +1,42 @@
 
+
+# Fix: Excel Import Failing with Duplicate Slug Errors
+
 ## Problem
+All 2,336 products failed to import because slugs collide with the `products_slug_key` unique constraint. Two causes:
+1. Products with the same name and product code generate identical slugs
+2. Without a product code, `Date.now()` produces the same value for products processed in the same millisecond
 
-The remixed project has the trigger **functions** (`handle_new_user`, `auto_assign_admin_role`) but the actual **triggers** on `auth.users` were not carried over. So when you signed up:
-- No profile row was created
-- No admin role was assigned
+## Solution
 
-Your account exists (id: `2cb187b1-...`) but you can't access the dashboard because you have no admin role.
+### 1. Make slugs unique per row (ExcelImportModal.tsx)
+- Add a per-row index to the slug suffix so no two rows in the same import can collide
+- Change `generateSlug` to accept a unique index: `generateSlug(name, productCode, index)`
+- Append the index (or a random string) to every slug to guarantee uniqueness
 
-## Plan
+### 2. Handle existing products via upsert logic
+- Before inserting a batch, check if products with matching `product_code` already exist
+- If a product_code match is found, update the existing row instead of inserting
+- For products without a product_code, always insert with a unique slug
 
-### Step 1: Fix missing data for your account
-Insert the missing profile row and admin role for your existing user via the database insert tool.
+### Technical Details
 
-### Step 2: Re-attach the database triggers
-Create a migration to attach both triggers to `auth.users` so future signups work correctly:
-- `on_auth_user_created` → calls `handle_new_user()` (creates profile)
-- `on_auth_user_created_assign_role` → calls `auto_assign_admin_role()` (assigns admin for whitelisted emails)
+**File: `src/components/ExcelImportModal.tsx`**
 
-### Step 3: Sign in
-Once the admin role is in place, you can sign in on the auth page with the email and password you used during signup. I cannot enter your password for you since I don't know it.
+- Update `generateSlug` to include a unique counter or random suffix:
+  ```
+  const generateSlug = (name, productCode, index) => {
+    const base = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const suffix = productCode
+      ? `-${productCode}-${index}`
+      : `-${Date.now().toString(36)}${index.toString(36)}`;
+    return `${base}${suffix}`;
+  };
+  ```
 
----
+- Update the batch insert logic (lines 198-206) to use Supabase `.upsert()` with `onConflict: 'slug'` or handle conflicts on `product_code`:
+  - If products have a `product_code`, upsert on `product_code` (skip slug conflict)
+  - If no `product_code`, the unique slug from step 1 prevents collisions
 
-**Note:** If you don't remember the password you used during signup, I can add a password reset flow after completing these steps.
+- Pass a global row counter into `generateSlug` so each product across all batches gets a unique index
+
