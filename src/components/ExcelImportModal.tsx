@@ -208,14 +208,41 @@ export const ExcelImportModal = ({ onImportComplete }: { onImportComplete?: () =
         globalRowIndex++;
       }
 
-      // Upsert products that have a product_code (update if existing)
+      // Handle products with product_code: check existing, update or insert
       if (withCode.length > 0) {
-        const { error } = await supabase.from('products').upsert(withCode as any, { onConflict: 'product_code' });
-        if (error) {
-          importResults.failed += withCode.length;
-          importResults.errors.push(`Batch ${Math.floor(i / batchSize) + 1} (upsert): ${error.message}`);
-        } else {
-          importResults.created += withCode.length;
+        const codes = withCode.map((p: any) => p.product_code).filter(Boolean);
+        const { data: existing } = await supabase
+          .from('products')
+          .select('id, product_code')
+          .in('product_code', codes);
+        
+        const existingMap = new Map((existing || []).map((e: any) => [e.product_code, e.id]));
+        
+        const toUpdate = withCode.filter((p: any) => existingMap.has(p.product_code));
+        const toInsert = withCode.filter((p: any) => !existingMap.has(p.product_code));
+
+        // Update existing products one by one
+        for (const product of toUpdate) {
+          const id = existingMap.get((product as any).product_code);
+          const { slug, ...updateData } = product as any;
+          const { error } = await supabase.from('products').update(updateData).eq('id', id);
+          if (error) {
+            importResults.failed++;
+            importResults.errors.push(`Update "${(product as any).name}": ${error.message}`);
+          } else {
+            importResults.created++;
+          }
+        }
+
+        // Insert new products
+        if (toInsert.length > 0) {
+          const { error } = await supabase.from('products').insert(toInsert as any);
+          if (error) {
+            importResults.failed += toInsert.length;
+            importResults.errors.push(`Batch ${Math.floor(i / batchSize) + 1} (insert with code): ${error.message}`);
+          } else {
+            importResults.created += toInsert.length;
+          }
         }
       }
 
