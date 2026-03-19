@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Bookmark, Layers, Sparkles, Users, Settings2, LogOut, Palette, Upload, BarChart3, Menu } from 'lucide-react';
+import { Bookmark, Layers, Sparkles, Users, Settings2, LogOut, Palette, Upload, BarChart3, Menu, Star } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
