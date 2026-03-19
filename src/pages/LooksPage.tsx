@@ -27,6 +27,28 @@ const LooksPage = () => {
   const [generatedLooks, setGeneratedLooks] = useState<Look[]>([]);
   const [activeTab, setActiveTab] = useState('generate');
   const [mainView, setMainView] = useState<MainView>('generator');
+  const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
+  const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
+  const [savingToggle, setSavingToggle] = useState(false);
+
+  useEffect(() => {
+    supabase.from('app_settings').select('value').eq('id', 'looks_layout_version').single()
+      .then(({ data }) => { if ((data?.value as any)?.version === 'v1') setLooksVersion('v1'); });
+    supabase.from('app_settings').select('value').eq('id', 'similar_products_enabled').single()
+      .then(({ data }) => { if ((data?.value as any)?.enabled === false) setSimilarProductsEnabled(false); });
+  }, []);
+
+  const saveSetting = async (id: string, value: any, label: string) => {
+    setSavingToggle(true);
+    try {
+      await supabase.from('app_settings').upsert({ id, value, updated_at: new Date().toISOString() });
+      toast({ title: 'Saved', description: label });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to save', variant: 'destructive' });
+    } finally {
+      setSavingToggle(false);
+    }
+  };
 
   const handleGenerate = async (options: LookGeneratorOptions) => {
     try {
