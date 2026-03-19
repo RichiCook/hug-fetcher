@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Upload, Trash2, Search, Star, ExternalLink, AlertTriangle, Copy } from 'lucide-react';
+import { Upload, Trash2, Search, Star, ExternalLink, AlertTriangle, Copy, Tags } from 'lucide-react';
 import { useCelebrityContent, extractProductCode, extractCategoryFromUrl } from '@/hooks/useCelebrityContent';
 import { useProductCategories } from '@/hooks/useProductCategories';
 import * as XLSX from 'xlsx';
