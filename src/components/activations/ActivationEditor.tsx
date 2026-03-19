@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ActivationType, ActivationContent, TextImageContent, VideoContent, BannerContent, CustomHtmlContent, LeadCaptureContent } from '@/hooks/useActivations';
 import { LeadCaptureEditor } from './LeadCaptureEditor';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Eye, EyeOff } from 'lucide-react';
 import { GroupedCategoryPicker } from './GroupedCategoryPicker';
 import { CollectionPicker } from './CollectionPicker';
 import { PriceRangeSelector } from './PriceRangeSelector';
@@ -332,6 +332,21 @@ export const ActivationEditor = ({
     );
   };
 
+  const [showHtmlPreview, setShowHtmlPreview] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  const htmlContentForPreview = content as CustomHtmlContent;
+  useEffect(() => {
+    if (showHtmlPreview && iframeRef.current) {
+      const doc = iframeRef.current.contentDocument;
+      if (doc) {
+        doc.open();
+        doc.write(`<!DOCTYPE html><html><head><style>${htmlContentForPreview.css || ''}</style></head><body>${htmlContentForPreview.html || ''}</body></html>`);
+        doc.close();
+      }
+    }
+  }, [showHtmlPreview, htmlContentForPreview.html, htmlContentForPreview.css]);
+
   const renderCustomHtmlEditor = () => {
     const htmlContent = content as CustomHtmlContent;
     return (
@@ -357,6 +372,29 @@ export const ActivationEditor = ({
             rows={4}
             className="font-mono text-sm"
           />
+        </div>
+
+        <div className="border rounded-lg overflow-hidden">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full rounded-none border-0 border-b"
+            onClick={() => setShowHtmlPreview(!showHtmlPreview)}
+          >
+            {showHtmlPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+            {showHtmlPreview ? 'Hide Preview' : 'Show Live Preview'}
+          </Button>
+          {showHtmlPreview && (
+            <div className="bg-white">
+              <iframe
+                ref={iframeRef}
+                title="HTML Preview"
+                className="w-full min-h-[300px] border-0"
+                sandbox="allow-same-origin"
+              />
+            </div>
+          )}
         </div>
       </div>
     );
