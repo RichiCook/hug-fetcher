@@ -58,6 +58,7 @@ export const ActivationEditor = ({
   initialStartDate = null,
   initialEndDate = null,
   initialHideTitle = false,
+  initialFullWidth = false,
   productCategories = [],
   productCollections = [],
   onSave,
