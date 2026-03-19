@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ActivationType, ActivationContent, TextImageContent, VideoContent, BannerContent, CustomHtmlContent, LeadCaptureContent } from '@/hooks/useActivations';
 import { LeadCaptureEditor } from './LeadCaptureEditor';
-import { Plus, X, Eye, EyeOff } from 'lucide-react';
+import { Plus, X, Eye, EyeOff, Pencil } from 'lucide-react';
 import { GroupedCategoryPicker } from './GroupedCategoryPicker';
 import { CollectionPicker } from './CollectionPicker';
 import { PriceRangeSelector } from './PriceRangeSelector';
