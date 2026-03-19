@@ -16,6 +16,7 @@ import LeadsPage from "./pages/LeadsPage";
 import ApiSettingsPage from "./pages/ApiSettingsPage";
 import SettingsPage from "./pages/SettingsPage";
 import ScanAnalyticsPage from "./pages/ScanAnalyticsPage";
+import CelebrityContentPage from "./pages/CelebrityContentPage";
 import AuthPage from "./pages/AuthPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PlatformSettingsProvider } from "./contexts/PlatformSettingsContext";
