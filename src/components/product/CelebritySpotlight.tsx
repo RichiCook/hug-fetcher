@@ -1,4 +1,11 @@
+import { useState } from 'react';
 import { useCelebrityContentForProduct } from '@/hooks/useCelebrityContent';
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+function proxyUrl(url: string) {
+  return `${SUPABASE_URL}/functions/v1/export-image-proxy?url=${encodeURIComponent(url)}`;
+}
 
 interface CelebritySpotlightProps {
   productCode: string | null | undefined;
@@ -6,8 +13,12 @@ interface CelebritySpotlightProps {
 
 const CelebritySpotlight = ({ productCode }: CelebritySpotlightProps) => {
   const { data: celebrities = [], isLoading } = useCelebrityContentForProduct(productCode);
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
 
   if (isLoading || celebrities.length === 0) return null;
+
+  const visible = celebrities.filter(c => !hidden.has(c.id));
+  if (visible.length === 0) return null;
 
   return (
     <section className="max-w-6xl mx-auto px-4 py-6 sm:py-10" style={{ borderTop: '1px solid hsl(var(--border))' }}>
@@ -27,15 +38,16 @@ const CelebritySpotlight = ({ productCode }: CelebritySpotlightProps) => {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-        {celebrities.map((celeb) => (
+        {visible.map((celeb) => (
           <div key={celeb.id} className="group">
             <div className="aspect-[3/4] rounded-lg overflow-hidden bg-secondary mb-2">
               <img
-                src={celeb.image_url}
+                src={proxyUrl(celeb.image_url)}
                 alt={celeb.celebrity_name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
                 loading="lazy"
+                onError={() => setHidden(prev => new Set(prev).add(celeb.id))}
               />
             </div>
             <p
