@@ -21,6 +21,7 @@ export type Database = {
           content: Json
           created_at: string
           end_date: string | null
+          full_width: boolean
           hide_title: boolean
           id: string
           name: string
@@ -36,6 +37,7 @@ export type Database = {
           content?: Json
           created_at?: string
           end_date?: string | null
+          full_width?: boolean
           hide_title?: boolean
           id?: string
           name: string
@@ -51,6 +53,7 @@ export type Database = {
           content?: Json
           created_at?: string
           end_date?: string | null
+          full_width?: boolean
           hide_title?: boolean
           id?: string
           name?: string
