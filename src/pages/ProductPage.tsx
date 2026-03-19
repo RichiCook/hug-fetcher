@@ -441,15 +441,19 @@ const ProductPage = () => {
 
       {/* Activations Section */}
       {(productActivations.length > 0 || autoMatchedActivations.length > 0) && (
-        <section className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+        <section className="py-6 sm:py-8">
           <div className="space-y-6">
             {productActivations.map((pa) =>
               pa.activation ? (
-                <ActivationRenderer key={pa.id} activation={pa.activation} />
+                <div key={pa.id} className={pa.activation.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
+                  <ActivationRenderer activation={pa.activation} />
+                </div>
               ) : null
             )}
             {autoMatchedActivations.map((activation) => (
-              <ActivationRenderer key={activation.id} activation={activation} />
+              <div key={activation.id} className={activation.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
+                <ActivationRenderer activation={activation} />
+              </div>
             ))}
           </div>
         </section>

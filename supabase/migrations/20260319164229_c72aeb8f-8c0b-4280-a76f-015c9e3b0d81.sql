@@ -1,0 +1,1 @@
+ALTER TABLE public.activations ADD COLUMN full_width boolean NOT NULL DEFAULT false;

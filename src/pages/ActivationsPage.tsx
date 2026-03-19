@@ -60,11 +60,12 @@ const ActivationsPage = () => {
     priceMax?: number | null,
     startDate?: Date | null,
     endDate?: Date | null,
-    hideTitle?: boolean
+    hideTitle?: boolean,
+    fullWidth?: boolean
   ) => {
     const result = await createActivation(name, type, content, categories, collections, priceMin, priceMax, startDate, endDate);
-    if (result.success && result.activation && hideTitle) {
-      await updateActivation(result.activation.id, { hide_title: hideTitle });
+    if (result.success && result.activation && (hideTitle || fullWidth)) {
+      await updateActivation(result.activation.id, { hide_title: hideTitle, full_width: fullWidth });
     }
     if (result.success) {
       toast({ title: 'Created', description: 'Activation created successfully' });
@@ -84,7 +85,8 @@ const ActivationsPage = () => {
     priceMax?: number | null,
     startDate?: Date | null,
     endDate?: Date | null,
-    hideTitle?: boolean
+    hideTitle?: boolean,
+    fullWidth?: boolean
   ) => {
     if (!editingActivation) return;
     const result = await updateActivation(editingActivation.id, { 
@@ -97,7 +99,8 @@ const ActivationsPage = () => {
       price_max: priceMax,
       start_date: startDate?.toISOString() || null,
       end_date: endDate?.toISOString() || null,
-      hide_title: hideTitle
+      hide_title: hideTitle,
+      full_width: fullWidth
     });
     if (result.success) {
       toast({ title: 'Updated', description: 'Activation updated successfully' });
@@ -168,6 +171,7 @@ const ActivationsPage = () => {
               initialStartDate={editingActivation.start_date ? new Date(editingActivation.start_date) : null}
               initialEndDate={editingActivation.end_date ? new Date(editingActivation.end_date) : null}
               initialHideTitle={editingActivation.hide_title || false}
+              initialFullWidth={editingActivation.full_width || false}
               productCategories={productCategories}
               productCollections={productCollections}
               onSave={handleUpdate}

@@ -27,6 +27,7 @@ interface ActivationEditorProps {
   initialStartDate?: Date | null;
   initialEndDate?: Date | null;
   initialHideTitle?: boolean;
+  initialFullWidth?: boolean;
   productCategories?: CategoryData[];
   productCollections?: CollectionData[];
   onSave: (
@@ -39,7 +40,8 @@ interface ActivationEditorProps {
     priceMax?: number | null,
     startDate?: Date | null,
     endDate?: Date | null,
-    hideTitle?: boolean
+    hideTitle?: boolean,
+    fullWidth?: boolean
   ) => void;
   onCancel: () => void;
   isEditing?: boolean;
@@ -56,6 +58,7 @@ export const ActivationEditor = ({
   initialStartDate = null,
   initialEndDate = null,
   initialHideTitle = false,
+  initialFullWidth = false,
   productCategories = [],
   productCollections = [],
   onSave,
@@ -72,6 +75,7 @@ export const ActivationEditor = ({
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
   const [hideTitle, setHideTitle] = useState(initialHideTitle);
+  const [fullWidth, setFullWidth] = useState(initialFullWidth);
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories(prev =>
@@ -129,7 +133,8 @@ export const ActivationEditor = ({
       priceMax,
       startDate,
       endDate,
-      hideTitle
+      hideTitle,
+      fullWidth
     );
   };
 
@@ -399,6 +404,17 @@ export const ActivationEditor = ({
             />
             <Label htmlFor="hideTitle" className="text-sm">
               Hide activation name on scan landing page
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Switch
+              id="fullWidth"
+              checked={fullWidth}
+              onCheckedChange={setFullWidth}
+            />
+            <Label htmlFor="fullWidth" className="text-sm">
+              Full width (edge-to-edge display)
             </Label>
           </div>
           </div>
