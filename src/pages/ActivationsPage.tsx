@@ -171,6 +171,7 @@ const ActivationsPage = () => {
               initialStartDate={editingActivation.start_date ? new Date(editingActivation.start_date) : null}
               initialEndDate={editingActivation.end_date ? new Date(editingActivation.end_date) : null}
               initialHideTitle={editingActivation.hide_title || false}
+              initialFullWidth={editingActivation.full_width || false}
               productCategories={productCategories}
               productCollections={productCollections}
               onSave={handleUpdate}
