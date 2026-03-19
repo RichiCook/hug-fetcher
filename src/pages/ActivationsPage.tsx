@@ -60,11 +60,12 @@ const ActivationsPage = () => {
     priceMax?: number | null,
     startDate?: Date | null,
     endDate?: Date | null,
-    hideTitle?: boolean
+    hideTitle?: boolean,
+    fullWidth?: boolean
   ) => {
     const result = await createActivation(name, type, content, categories, collections, priceMin, priceMax, startDate, endDate);
-    if (result.success && result.activation && hideTitle) {
-      await updateActivation(result.activation.id, { hide_title: hideTitle });
+    if (result.success && result.activation && (hideTitle || fullWidth)) {
+      await updateActivation(result.activation.id, { hide_title: hideTitle, full_width: fullWidth });
     }
     if (result.success) {
       toast({ title: 'Created', description: 'Activation created successfully' });
