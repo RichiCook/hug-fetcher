@@ -85,7 +85,8 @@ const ActivationsPage = () => {
     priceMax?: number | null,
     startDate?: Date | null,
     endDate?: Date | null,
-    hideTitle?: boolean
+    hideTitle?: boolean,
+    fullWidth?: boolean
   ) => {
     if (!editingActivation) return;
     const result = await updateActivation(editingActivation.id, { 
@@ -98,7 +99,8 @@ const ActivationsPage = () => {
       price_max: priceMax,
       start_date: startDate?.toISOString() || null,
       end_date: endDate?.toISOString() || null,
-      hide_title: hideTitle
+      hide_title: hideTitle,
+      full_width: fullWidth
     });
     if (result.success) {
       toast({ title: 'Updated', description: 'Activation updated successfully' });
