@@ -40,7 +40,9 @@ const CelebrityContentPage = () => {
         const image_url = String(r[2] || '').trim();
         const shop_url = String(r[3] || '').trim();
         const product_code = extractProductCode(shop_url);
-        return { celebrity_name, image_url, product_code, shop_url: shop_url || null, is_active: true, category: null };
+        // Auto-extract category from URL for unmatched entries
+        const category = product_code ? null : extractCategoryFromUrl(shop_url);
+        return { celebrity_name, image_url, product_code, shop_url: shop_url || null, is_active: true, category };
       }).filter(r => r.celebrity_name && r.image_url);
 
       if (parsed.length === 0) {
