@@ -29,18 +29,28 @@ export function extractCategoryFromUrl(url: string): string | null {
   if (!url) return null;
   try {
     const pathname = new URL(url).pathname;
-    // Split path, ignore lang segments (en, it, fr, etc.) and the product slug (last segment)
     const segments = pathname.split('/').filter(Boolean);
-    // Remove language prefix if present (2-letter codes)
-    const filtered = segments.filter(s => !/^[a-z]{2}$/i.test(s));
-    // Remove last segment (product slug) and file extensions
-    if (filtered.length > 1) {
-      filtered.pop();
+    // Remove language-like prefixes (e.g. "en", "it", "en-it")
+    const filtered = segments.filter(s => !/^[a-z]{2}(-[a-z]{2})?$/i.test(s));
+    // Remove generic path segments like "shoes", "bags"
+    const generic = new Set(['shoes', 'bags', 'accessories', 'clothing', 'search']);
+    const meaningful = filtered.filter(s => !generic.has(s.toLowerCase()));
+    // If URL ends with "/" it's a category page — take last meaningful segment
+    // If URL ends with ".html" — it's a product page, take second-to-last
+    const isProductPage = pathname.match(/\.(html?|htm)$/i);
+    let cat: string | undefined;
+    if (isProductPage && meaningful.length > 1) {
+      cat = meaningful[meaningful.length - 2];
+    } else {
+      cat = meaningful[meaningful.length - 1];
     }
-    // Return the deepest remaining segment as the category, capitalised
-    const cat = filtered[filtered.length - 1];
     if (cat && cat.length > 1) {
-      return cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase().replace(/\.html?$/, '');
+      // Clean up: replace hyphens with spaces, capitalize each word
+      return cat
+        .replace(/\.html?$/i, '')
+        .split('-')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
     }
   } catch {
     // not a valid URL
