@@ -136,7 +136,26 @@ export function useCelebrityContent() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['celebrity-content'] }),
   });
 
-  return { items, isLoading, upsertMany, toggleActive, updateCategory, deleteItem, removeDuplicates };
+  const backfillCategories = useMutation({
+    mutationFn: async () => {
+      const unmatched = items.filter(i => !i.product_code && !i.category && i.shop_url);
+      let updated = 0;
+      for (const item of unmatched) {
+        const category = extractCategoryFromUrl(item.shop_url!);
+        if (category) {
+          const { error } = await (supabase as any)
+            .from('celebrity_content')
+            .update({ category })
+            .eq('id', item.id);
+          if (!error) updated++;
+        }
+      }
+      return updated;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['celebrity-content'] }),
+  });
+
+  return { items, isLoading, upsertMany, toggleActive, updateCategory, deleteItem, removeDuplicates, backfillCategories };
 }
 
 /** Hook for product pages — fetch active celebrity content for a specific product code OR matching category */
