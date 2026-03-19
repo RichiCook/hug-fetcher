@@ -13,7 +13,7 @@ import { useProductCategories } from '@/hooks/useProductCategories';
 import * as XLSX from 'xlsx';
 
 const CelebrityContentPage = () => {
-  const { items, isLoading, upsertMany, toggleActive, updateCategory, deleteItem, removeDuplicates } = useCelebrityContent();
+  const { items, isLoading, upsertMany, toggleActive, updateCategory, deleteItem, removeDuplicates, backfillCategories } = useCelebrityContent();
   const { categories } = useProductCategories();
   const [search, setSearch] = useState('');
   const [importing, setImporting] = useState(false);
