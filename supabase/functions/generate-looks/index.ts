@@ -738,19 +738,27 @@ Only return the JSON array, no other text.`;
       throw new Error('Failed to parse AI response as JSON');
     }
 
-    // === Post-processing: deduplicate unique-slot categories (scarpe, accessori) ===
-    const UNIQUE_SLOT_CATEGORIES = ['scarpe', 'accessori'];
-    const startingProductId = startingProduct?.id || null;
+    // === Post-processing: deduplicate products ===
+    const heroProductId = startingProduct?.id || null;
 
     for (const look of looks) {
       if (!look.product_ids || !Array.isArray(look.product_ids)) continue;
 
+      // Step 1: Remove exact duplicate product IDs
+      const seen = new Set<string>();
+      look.product_ids = look.product_ids.filter((id: string) => {
+        if (seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+
+      // Step 2: Remove duplicate categories — keep only one product per category
       const categoryMap: Record<string, string[]> = {};
       for (const pid of look.product_ids) {
         const prod = products.find(p => p.id === pid);
         if (!prod) continue;
         const cat = detectCategory(prod.category, prod.name);
-        if (cat && UNIQUE_SLOT_CATEGORIES.includes(cat)) {
+        if (cat) {
           if (!categoryMap[cat]) categoryMap[cat] = [];
           categoryMap[cat].push(pid);
         }
@@ -760,7 +768,7 @@ Only return the JSON array, no other text.`;
       for (const [cat, pids] of Object.entries(categoryMap)) {
         if (pids.length <= 1) continue;
         // Keep the hero if it's in this category, otherwise keep the first
-        const keepId = pids.includes(startingProductId!) ? startingProductId! : pids[0];
+        const keepId = pids.includes(heroProductId!) ? heroProductId! : pids[0];
         for (const pid of pids) {
           if (pid !== keepId) idsToRemove.add(pid);
         }
