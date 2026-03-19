@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import GenuineProductBanner from '@/components/product/GenuineProductBanner';
 import ProductInfoBlock from '@/components/product/ProductInfoBlock';
 import DigitalPassportPopup from '@/components/product/DigitalPassportPopup';
+import CelebritySpotlight from '@/components/product/CelebritySpotlight';
 
 const ProductPage = () => {
   const { slug } = useParams<{ slug: string }>();
