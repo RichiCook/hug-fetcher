@@ -62,59 +62,7 @@ const ProductEditPage = () => {
     loadProduct();
   }, [slug]);
 
-  // Load looks layout version + similar products toggle
-  useEffect(() => {
-    supabase
-      .from('app_settings')
-      .select('value')
-      .eq('id', 'looks_layout_version')
-      .single()
-      .then(({ data }) => {
-        const val = data?.value as any;
-        if (val?.version === 'v1') setLooksVersion('v1');
-      });
-    supabase
-      .from('app_settings')
-      .select('value')
-      .eq('id', 'similar_products_enabled')
-      .single()
-      .then(({ data }) => {
-        const val = data?.value as any;
-        if (val?.enabled === false) setSimilarProductsEnabled(false);
-      });
-  }, []);
 
-  const handleToggleLooksVersion = async (version: 'v1' | 'v2') => {
-    setSavingVersion(true);
-    setLooksVersion(version);
-    try {
-      const { error } = await supabase
-        .from('app_settings')
-        .upsert({ id: 'looks_layout_version', value: { version } as any, updated_at: new Date().toISOString() });
-      if (error) throw error;
-      toast({ title: 'Saved', description: `AI-Curated Looks layout set to ${version === 'v2' ? 'Refined' : 'Classic'}` });
-    } catch {
-      toast({ title: 'Error', description: 'Failed to save layout preference', variant: 'destructive' });
-    } finally {
-      setSavingVersion(false);
-    }
-  };
-
-  const handleToggleSimilarProducts = async (enabled: boolean) => {
-    setSavingSimilar(true);
-    setSimilarProductsEnabled(enabled);
-    try {
-      const { error } = await supabase
-        .from('app_settings')
-        .upsert({ id: 'similar_products_enabled', value: { enabled } as any, updated_at: new Date().toISOString() });
-      if (error) throw error;
-      toast({ title: 'Saved', description: `Similar Products section ${enabled ? 'enabled' : 'disabled'}` });
-    } catch {
-      toast({ title: 'Error', description: 'Failed to save preference', variant: 'destructive' });
-    } finally {
-      setSavingSimilar(false);
-    }
-  };
 
   const handleCreateActivation = async (
     name: string,
