@@ -64,6 +64,35 @@ const ProductEditPage = () => {
     loadProduct();
   }, [slug]);
 
+  // Load looks layout version
+  useEffect(() => {
+    supabase
+      .from('app_settings')
+      .select('value')
+      .eq('id', 'looks_layout_version')
+      .single()
+      .then(({ data }) => {
+        const val = data?.value as any;
+        if (val?.version === 'v1') setLooksVersion('v1');
+      });
+  }, []);
+
+  const handleToggleLooksVersion = async (version: 'v1' | 'v2') => {
+    setSavingVersion(true);
+    setLooksVersion(version);
+    try {
+      const { error } = await supabase
+        .from('app_settings')
+        .upsert({ id: 'looks_layout_version', value: { version } as any, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      toast({ title: 'Saved', description: `AI-Curated Looks layout set to ${version === 'v2' ? 'Refined' : 'Classic'}` });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to save layout preference', variant: 'destructive' });
+    } finally {
+      setSavingVersion(false);
+    }
+  };
+
   const handleCreateActivation = async (
     name: string,
     type: ActivationType,
