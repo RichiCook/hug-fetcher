@@ -24,6 +24,30 @@ export function extractProductCode(url: string): string | null {
   return codeMatch ? codeMatch[1] : null;
 }
 
+/** Extract a category keyword from a shop URL path (e.g. "pumps", "boots", "sandals") */
+export function extractCategoryFromUrl(url: string): string | null {
+  if (!url) return null;
+  try {
+    const pathname = new URL(url).pathname;
+    // Split path, ignore lang segments (en, it, fr, etc.) and the product slug (last segment)
+    const segments = pathname.split('/').filter(Boolean);
+    // Remove language prefix if present (2-letter codes)
+    const filtered = segments.filter(s => !/^[a-z]{2}$/i.test(s));
+    // Remove last segment (product slug) and file extensions
+    if (filtered.length > 1) {
+      filtered.pop();
+    }
+    // Return the deepest remaining segment as the category, capitalised
+    const cat = filtered[filtered.length - 1];
+    if (cat && cat.length > 1) {
+      return cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase().replace(/\.html?$/, '');
+    }
+  } catch {
+    // not a valid URL
+  }
+  return null;
+}
+
 export function useCelebrityContent() {
   const queryClient = useQueryClient();
 
