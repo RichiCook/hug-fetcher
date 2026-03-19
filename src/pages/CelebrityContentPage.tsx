@@ -106,6 +106,22 @@ const CelebrityContentPage = () => {
                 <Copy className="w-4 h-4 mr-2" />
                 {removeDuplicates.isPending ? 'Removing...' : 'Remove Duplicates'}
               </Button>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    const count = await backfillCategories.mutateAsync();
+                    if (count === 0) toast.info('All unmatched entries already have categories or no URL to extract from');
+                    else toast.success(`Auto-assigned categories to ${count} entries from their URLs`);
+                  } catch (err: any) {
+                    toast.error('Failed: ' + (err.message || 'Unknown error'));
+                  }
+                }}
+                disabled={backfillCategories.isPending}
+              >
+                <Tags className="w-4 h-4 mr-2" />
+                {backfillCategories.isPending ? 'Extracting...' : 'Auto-Categorize'}
+              </Button>
               <input
                 type="file"
                 accept=".xlsx,.xls"
