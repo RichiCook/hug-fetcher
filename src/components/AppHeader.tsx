@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Bookmark, Layers, Sparkles, Users, Settings2, LogOut, Palette, Upload, BarChart3, Menu } from 'lucide-react';
+import { Bookmark, Layers, Sparkles, Users, Settings2, LogOut, Palette, Upload, BarChart3, Menu, Star } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -58,6 +58,12 @@ export const AppHeader = ({ onImportComplete, children }: AppHeaderProps) => {
                 <Button variant="ghost" className="w-full justify-start">
                   <Sparkles className="w-4 h-4 mr-2" />
                   Total Looks
+                </Button>
+              </Link>
+              <Link to="/celebrity-content">
+                <Button variant="ghost" className="w-full justify-start">
+                  <Star className="w-4 h-4 mr-2" />
+                  Celebrity Content
                 </Button>
               </Link>
               <Link to="/activations">

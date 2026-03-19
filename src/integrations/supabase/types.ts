@@ -163,6 +163,39 @@ export type Database = {
         }
         Relationships: []
       }
+      celebrity_content: {
+        Row: {
+          celebrity_name: string
+          created_at: string
+          id: string
+          image_url: string
+          is_active: boolean
+          product_code: string | null
+          shop_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          celebrity_name: string
+          created_at?: string
+          id?: string
+          image_url: string
+          is_active?: boolean
+          product_code?: string | null
+          shop_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          celebrity_name?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          product_code?: string | null
+          shop_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           activation_id: string | null
