@@ -59,6 +59,7 @@ export interface Activation {
   start_date?: string | null;
   end_date?: string | null;
   hide_title?: boolean;
+  full_width?: boolean;
   created_at: string;
   updated_at: string;
 }
