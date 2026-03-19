@@ -443,6 +443,27 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
     return `${currency}${total.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  // V2 layout
+  if (layoutVersion === 'v2') {
+    return (
+      <LookCardV2
+        looks={looks}
+        productCode={productCode}
+        loading={loading}
+        loadingMore={loadingMore}
+        onTrackEvent={onTrackEvent}
+        onScroll={(idx) => {
+          setCurrentLookIndex(idx);
+          if (idx >= looks.length - 2 && !generatingRef.current) {
+            loadMoreLooks();
+          }
+        }}
+        calculateTotal={calculateTotal}
+      />
+    );
+  }
+
+  // V1 layout below
   if (loading) {
     return (
       <section className="container max-w-6xl mx-auto px-3 sm:px-4 py-8 sm:py-12 border-t border-border">
