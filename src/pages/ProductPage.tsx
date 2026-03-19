@@ -456,6 +456,16 @@ const ProductPage = () => {
         />
       )}
 
+      {/* Similar Products */}
+      {product.product_code && (
+        <SimilarProducts
+          productId={product.id}
+          productCode={product.product_code}
+          category={product.category}
+          collection={(product as any).collection}
+        />
+      )}
+
       {/* Related Products: Wear With */}
       {product.wear_with && product.wear_with.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 py-6 sm:py-10" style={resolvedPalette.length > 0 ? { borderTop: `1px solid ${resolvedPalette[0]}25` } : { borderTop: '1px solid hsl(var(--border))' }}>
