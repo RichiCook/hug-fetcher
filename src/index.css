@@ -131,3 +131,8 @@
     display: none;
   }
 }
+
+@keyframes pulse-halo {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(2.5); opacity: 0; }
+}
