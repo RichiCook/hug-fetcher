@@ -1,42 +1,30 @@
 
 
-# Fix: Excel Import Failing with Duplicate Slug Errors
+## Fix: Celebrity Content Images Not Loading
 
-## Problem
-All 2,336 products failed to import because slugs collide with the `products_slug_key` unique constraint. Two causes:
-1. Products with the same name and product code generate identical slugs
-2. Without a product code, `Date.now()` produces the same value for products processed in the same millisecond
+### Root Causes
 
-## Solution
+1. **Truncated asset IDs** — Many image URLs imported from the Excel have `xxx` replacing part of the Contentful asset path (e.g., `.../4iloGhRVxxx/...`). These are invalid and will 404.
+2. **Potential CORS/hotlink blocking** — Contentful CDN may reject requests from the app's origin, causing even valid URLs to fail silently.
 
-### 1. Make slugs unique per row (ExcelImportModal.tsx)
-- Add a per-row index to the slug suffix so no two rows in the same import can collide
-- Change `generateSlug` to accept a unique index: `generateSlug(name, productCode, index)`
-- Append the index (or a random string) to every slug to guarantee uniqueness
+### Plan
 
-### 2. Handle existing products via upsert logic
-- Before inserting a batch, check if products with matching `product_code` already exist
-- If a product_code match is found, update the existing row instead of inserting
-- For products without a product_code, always insert with a unique slug
+#### 1. Proxy celebrity images through the existing edge function
+The project already has an `export-image-proxy` edge function. Route celebrity images through it to bypass CORS/hotlink issues.
 
-### Technical Details
-
-**File: `src/components/ExcelImportModal.tsx`**
-
-- Update `generateSlug` to include a unique counter or random suffix:
+- In `CelebritySpotlight.tsx`, build the image `src` as:
   ```
-  const generateSlug = (name, productCode, index) => {
-    const base = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    const suffix = productCode
-      ? `-${productCode}-${index}`
-      : `-${Date.now().toString(36)}${index.toString(36)}`;
-    return `${base}${suffix}`;
-  };
+  ${SUPABASE_URL}/functions/v1/export-image-proxy?url=${encodeURIComponent(celeb.image_url)}
   ```
+- Do the same in `CelebrityContentPage.tsx` for the admin preview thumbnails.
 
-- Update the batch insert logic (lines 198-206) to use Supabase `.upsert()` with `onConflict: 'slug'` or handle conflicts on `product_code`:
-  - If products have a `product_code`, upsert on `product_code` (skip slug conflict)
-  - If no `product_code`, the unique slug from step 1 prevents collisions
+#### 2. Add fallback error handling on `<img>` tags
+- Add an `onError` handler that hides the broken image or shows a placeholder, so broken URLs (the `xxx` ones) don't render as broken icons.
 
-- Pass a global row counter into `generateSlug` so each product across all batches gets a unique index
+#### 3. Surface broken images in the admin panel
+- In the Celebrity Content admin page, add a visual indicator (e.g., a warning badge or red border) when an image fails to load, so the user knows which entries have bad URLs and can fix or remove them.
+
+### Files to modify
+- `src/components/product/CelebritySpotlight.tsx` — proxy URLs + error fallback
+- `src/pages/CelebrityContentPage.tsx` — proxy URLs + broken-image indicator
 
