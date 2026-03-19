@@ -7,13 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Upload, Trash2, Search, Star, ExternalLink, AlertTriangle, Copy } from 'lucide-react';
+import { Upload, Trash2, Search, Star, ExternalLink, AlertTriangle, Copy, Tags } from 'lucide-react';
 import { useCelebrityContent, extractProductCode, extractCategoryFromUrl } from '@/hooks/useCelebrityContent';
 import { useProductCategories } from '@/hooks/useProductCategories';
 import * as XLSX from 'xlsx';
 
 const CelebrityContentPage = () => {
-  const { items, isLoading, upsertMany, toggleActive, updateCategory, deleteItem, removeDuplicates } = useCelebrityContent();
+  const { items, isLoading, upsertMany, toggleActive, updateCategory, deleteItem, removeDuplicates, backfillCategories } = useCelebrityContent();
   const { categories } = useProductCategories();
   const [search, setSearch] = useState('');
   const [importing, setImporting] = useState(false);
@@ -105,6 +105,22 @@ const CelebrityContentPage = () => {
               <Button variant="outline" onClick={handleRemoveDuplicates} disabled={removeDuplicates.isPending}>
                 <Copy className="w-4 h-4 mr-2" />
                 {removeDuplicates.isPending ? 'Removing...' : 'Remove Duplicates'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    const count = await backfillCategories.mutateAsync();
+                    if (count === 0) toast.info('All unmatched entries already have categories or no URL to extract from');
+                    else toast.success(`Auto-assigned categories to ${count} entries from their URLs`);
+                  } catch (err: any) {
+                    toast.error('Failed: ' + (err.message || 'Unknown error'));
+                  }
+                }}
+                disabled={backfillCategories.isPending}
+              >
+                <Tags className="w-4 h-4 mr-2" />
+                {backfillCategories.isPending ? 'Extracting...' : 'Auto-Categorize'}
               </Button>
               <input
                 type="file"
