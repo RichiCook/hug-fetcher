@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Palette, User, Settings, Eye } from 'lucide-react';
 import { AppHeader } from '@/components/AppHeader';
@@ -15,6 +15,8 @@ import { AnimationControls } from '@/components/ai-settings/AnimationControls';
 import { useLooks } from '@/hooks/useLooks';
 import type { Look, LookGeneratorOptions } from '@/hooks/useLooks';
 import { usePlatformSettingsContext } from '@/contexts/PlatformSettingsContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type MainView = 'generator' | 'groups' | 'colors' | 'models' | 'styles' | 'display';
 
@@ -25,6 +27,28 @@ const LooksPage = () => {
   const [generatedLooks, setGeneratedLooks] = useState<Look[]>([]);
   const [activeTab, setActiveTab] = useState('generate');
   const [mainView, setMainView] = useState<MainView>('generator');
+  const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
+  const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
+  const [savingToggle, setSavingToggle] = useState(false);
+
+  useEffect(() => {
+    supabase.from('app_settings').select('value').eq('id', 'looks_layout_version').single()
+      .then(({ data }) => { if ((data?.value as any)?.version === 'v1') setLooksVersion('v1'); });
+    supabase.from('app_settings').select('value').eq('id', 'similar_products_enabled').single()
+      .then(({ data }) => { if ((data?.value as any)?.enabled === false) setSimilarProductsEnabled(false); });
+  }, []);
+
+  const saveSetting = async (id: string, value: any, label: string) => {
+    setSavingToggle(true);
+    try {
+      await supabase.from('app_settings').upsert({ id, value, updated_at: new Date().toISOString() });
+      toast({ title: 'Saved', description: label });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to save', variant: 'destructive' });
+    } finally {
+      setSavingToggle(false);
+    }
+  };
 
   const handleGenerate = async (options: LookGeneratorOptions) => {
     try {
@@ -187,6 +211,70 @@ const LooksPage = () => {
               </p>
             </div>
             <div className="max-w-2xl space-y-6">
+              {/* Layout Version Toggle */}
+              <Card>
+                <CardHeader className="py-4">
+                  <CardTitle className="text-lg">AI-Curated Looks Layout</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={looksVersion === 'v1' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setLooksVersion('v1'); saveSetting('looks_layout_version', { version: 'v1' }, 'Layout set to Classic'); }}
+                      disabled={savingToggle}
+                    >
+                      v1.0 — Classic
+                    </Button>
+                    <Button
+                      variant={looksVersion === 'v2' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setLooksVersion('v2'); saveSetting('looks_layout_version', { version: 'v2' }, 'Layout set to Refined'); }}
+                      disabled={savingToggle}
+                    >
+                      v2.0 — Refined
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {looksVersion === 'v1'
+                      ? 'Classic layout: side-by-side product cards, colour palette dots, full styling note.'
+                      : 'Refined layout: editorial card carousel, stacked products, collapsible notes.'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Similar Products Toggle */}
+              <Card>
+                <CardHeader className="py-4">
+                  <CardTitle className="text-lg">Similar Products Section</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={similarProductsEnabled ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setSimilarProductsEnabled(true); saveSetting('similar_products_enabled', { enabled: true }, 'Similar Products enabled'); }}
+                      disabled={savingToggle}
+                    >
+                      Enabled
+                    </Button>
+                    <Button
+                      variant={!similarProductsEnabled ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setSimilarProductsEnabled(false); saveSetting('similar_products_enabled', { enabled: false }, 'Similar Products disabled'); }}
+                      disabled={savingToggle}
+                    >
+                      Disabled
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {similarProductsEnabled
+                      ? 'Shows a horizontal carousel of similar products below AI-Curated Looks on product pages.'
+                      : 'Similar Products section is hidden on product pages.'}
+                  </p>
+                </CardContent>
+              </Card>
+
               <AnimationControls />
             </div>
           </div>
