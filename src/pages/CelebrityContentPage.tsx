@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Upload, Trash2, Search, Star, ExternalLink } from 'lucide-react';
+import { Upload, Trash2, Search, Star, ExternalLink, AlertTriangle } from 'lucide-react';
 import { useCelebrityContent, extractProductCode } from '@/hooks/useCelebrityContent';
 import * as XLSX from 'xlsx';
 
