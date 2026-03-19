@@ -133,7 +133,8 @@ export const ActivationEditor = ({
       priceMax,
       startDate,
       endDate,
-      hideTitle
+      hideTitle,
+      fullWidth
     );
   };
 
