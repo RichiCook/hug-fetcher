@@ -489,6 +489,11 @@ ${styleDominant && hasStyleReferences ? `- FRAMING, CROP, and POSE must match th
 - ALL garments including shoes MUST be WORN by the model on their body. Never place shoes or any product on the ground beside the model. Shoes go on the model's feet.
 ${backgroundSection}
 
+TEXT/WATERMARK RULES (CRITICAL):
+- The generated image MUST contain ABSOLUTELY NO TEXT of any kind — no brand names, no product names, no labels, no captions, no watermarks, no signatures, no logos overlaid on the image, no letters, no words, no numbers.
+- Do NOT render any text, title, or description anywhere on or near the image.
+- The image must be a pure photograph with zero typographic elements.
+
 Collection: ${lookName || 'Champion Sportswear'}`;
 }
 
