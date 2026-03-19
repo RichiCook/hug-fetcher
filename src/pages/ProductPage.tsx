@@ -388,60 +388,38 @@ const ProductPage = () => {
             )}
           </div>
 
-          {/* Product Info — padded on mobile */}
-          <div className="px-4 sm:px-0 py-4 sm:py-0 space-y-3 sm:space-y-5">
-            {product.product_code && (
-              <p className="text-xs text-muted-foreground tracking-widest uppercase">
-                {product.product_code}
-              </p>
-            )}
-            <h1 className="text-xl sm:text-3xl font-light text-foreground leading-tight">{product.name}</h1>
-            {product.price && (
-              <p className="text-lg sm:text-2xl text-foreground font-medium">{product.price}</p>
-            )}
-            {product.description && (
-              <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
-            )}
-
-            <div className="space-y-3 pt-3" style={resolvedPalette.length > 0 ? { borderTop: `1px solid ${resolvedPalette[0]}30` } : { borderTop: '1px solid hsl(var(--border))' }}>
-              {product.composition && (
-                <div>
-                  <h3 className="text-xs font-medium text-foreground mb-0.5">Composition</h3>
-                  <p className="text-xs text-muted-foreground">{product.composition}</p>
-                </div>
-              )}
-              {product.care_instructions && (
-                <div>
-                  <h3 className="text-xs font-medium text-foreground mb-0.5">Care Instructions</h3>
-                  <p className="text-xs text-muted-foreground">{product.care_instructions}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-2 mt-4">
-              {resaleSharingEnabled && (
-                <Button variant="default" className="w-full sm:w-auto" onClick={() => setShareModalOpen(true)}>
-                  <Tag className="w-4 h-4 mr-2" />
-                  Sell This Item
-                </Button>
-              )}
-              {product.source_url && (
-                <Button asChild variant="outline" className="w-full sm:w-auto">
-                  <a href={product.source_url} target="_blank" rel="noopener noreferrer">
-                    View Original Product
-                  </a>
-                </Button>
-              )}
-            </div>
-
-            <ShareToResaleModal
-              open={shareModalOpen}
-              onOpenChange={setShareModalOpen}
-              product={product}
-            />
-          </div>
+          {/* New Genuine Product Banner + Info Block (replaces old product info) */}
         </div>
       </section>
+
+      <GenuineProductBanner
+        productName={product.name}
+        collection={(product as any).collection}
+        onViewPassport={() => setPassportOpen(true)}
+      />
+
+      <ProductInfoBlock
+        price={product.price}
+        productCode={product.product_code}
+        description={product.description}
+        composition={product.composition}
+        sourceUrl={product.source_url}
+      />
+
+      <DigitalPassportPopup
+        open={passportOpen}
+        onClose={() => setPassportOpen(false)}
+        productName={product.name}
+        productCode={product.product_code}
+        collection={(product as any).collection}
+        composition={product.composition}
+      />
+
+      <ShareToResaleModal
+        open={shareModalOpen}
+        onOpenChange={setShareModalOpen}
+        product={product}
+      />
 
       {/* Activations Section */}
       {(productActivations.length > 0 || autoMatchedActivations.length > 0) && (
