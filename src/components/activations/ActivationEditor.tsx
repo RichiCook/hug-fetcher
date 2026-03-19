@@ -75,6 +75,7 @@ export const ActivationEditor = ({
   const [startDate, setStartDate] = useState<Date | null>(initialStartDate);
   const [endDate, setEndDate] = useState<Date | null>(initialEndDate);
   const [hideTitle, setHideTitle] = useState(initialHideTitle);
+  const [fullWidth, setFullWidth] = useState(initialFullWidth);
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories(prev =>
