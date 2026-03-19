@@ -114,17 +114,27 @@ Deno.serve(async (req) => {
 
     console.log(`Matched ${updates.length} products to ${Object.keys(results).length} lines`);
 
-    // Batch update products
-    let errorCount = 0;
+    // Group updates by collection for batch processing
+    const byCollection: Record<string, string[]> = {};
     for (const update of updates) {
-      const { error: updateError } = await supabase
-        .from('products')
-        .update({ collection: update.collection })
-        .eq('id', update.id);
+      if (!byCollection[update.collection]) byCollection[update.collection] = [];
+      byCollection[update.collection].push(update.id);
+    }
 
-      if (updateError) {
-        console.error(`Error updating product ${update.id}:`, updateError);
-        errorCount++;
+    let errorCount = 0;
+    for (const [collection, ids] of Object.entries(byCollection)) {
+      // Process in chunks of 100 IDs
+      for (let i = 0; i < ids.length; i += 100) {
+        const chunk = ids.slice(i, i + 100);
+        const { error: updateError } = await supabase
+          .from('products')
+          .update({ collection })
+          .in('id', chunk);
+
+        if (updateError) {
+          console.error(`Error updating collection ${collection}:`, updateError);
+          errorCount++;
+        }
       }
     }
 
