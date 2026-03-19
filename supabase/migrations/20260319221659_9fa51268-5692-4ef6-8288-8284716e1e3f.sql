@@ -1,0 +1,1 @@
+ALTER TABLE public.celebrity_content ADD COLUMN IF NOT EXISTS category text;
