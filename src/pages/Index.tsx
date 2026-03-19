@@ -8,6 +8,7 @@ import { useSavedProducts } from '@/hooks/useSavedProducts';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { AppHeader } from '@/components/AppHeader';
+import CelebritySlideshow from '@/components/CelebritySlideshow';
 
 const Index = () => {
   const [isApiKeySet, setIsApiKeySet] = useState(true);
@@ -95,6 +96,9 @@ const Index = () => {
             </section>
           )}
         </main>
+
+        {/* Celebrity Slideshow */}
+        <CelebritySlideshow />
 
         {/* Footer */}
         <footer className="mt-20 pt-8 border-t border-border">
