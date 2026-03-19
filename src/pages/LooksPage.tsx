@@ -15,6 +15,8 @@ import { AnimationControls } from '@/components/ai-settings/AnimationControls';
 import { useLooks } from '@/hooks/useLooks';
 import type { Look, LookGeneratorOptions } from '@/hooks/useLooks';
 import { usePlatformSettingsContext } from '@/contexts/PlatformSettingsContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type MainView = 'generator' | 'groups' | 'colors' | 'models' | 'styles' | 'display';
 
