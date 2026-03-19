@@ -165,6 +165,7 @@ export type Database = {
       }
       celebrity_content: {
         Row: {
+          category: string | null
           celebrity_name: string
           created_at: string
           id: string
@@ -175,6 +176,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           celebrity_name: string
           created_at?: string
           id?: string
@@ -185,6 +187,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           celebrity_name?: string
           created_at?: string
           id?: string
