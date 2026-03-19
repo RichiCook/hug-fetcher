@@ -442,6 +442,9 @@ const ProductPage = () => {
         </section>
       )}
 
+      {/* Celebrity Spotlight */}
+      <CelebritySpotlight productCode={product.product_code} />
+
       {/* AI-Curated Total Look */}
       {product.product_code && (
         <ProductGeneratedLook 
