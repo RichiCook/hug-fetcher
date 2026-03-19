@@ -160,6 +160,12 @@ const CelebrityContentPage = () => {
   );
 };
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+function proxyUrl(url: string) {
+  return `${SUPABASE_URL}/functions/v1/export-image-proxy?url=${encodeURIComponent(url)}`;
+}
+
 function CelebCard({
   item,
   onToggle,
@@ -169,16 +175,26 @@ function CelebCard({
   onToggle: (args: { id: string; is_active: boolean }) => void;
   onDelete: (id: string) => void;
 }) {
+  const [broken, setBroken] = useState(false);
+
   return (
-    <Card className={`overflow-hidden transition-opacity ${!item.is_active ? 'opacity-50' : ''}`}>
+    <Card className={`overflow-hidden transition-opacity ${!item.is_active ? 'opacity-50' : ''} ${broken ? 'ring-2 ring-destructive' : ''}`}>
       <div className="aspect-[3/4] relative bg-secondary">
-        <img
-          src={item.image_url}
-          alt={item.celebrity_name}
-          className="w-full h-full object-cover"
-          referrerPolicy="no-referrer"
-          loading="lazy"
-        />
+        {broken ? (
+          <div className="w-full h-full flex flex-col items-center justify-center text-destructive gap-1">
+            <AlertTriangle className="w-6 h-6" />
+            <span className="text-xs font-medium">Broken image</span>
+          </div>
+        ) : (
+          <img
+            src={proxyUrl(item.image_url)}
+            alt={item.celebrity_name}
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            onError={() => setBroken(true)}
+          />
+        )}
         <div className="absolute top-2 right-2 flex gap-1">
           <Switch
             checked={item.is_active}
