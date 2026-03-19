@@ -60,6 +60,12 @@ export const AppHeader = ({ onImportComplete, children }: AppHeaderProps) => {
                   Total Looks
                 </Button>
               </Link>
+              <Link to="/celebrity-content">
+                <Button variant="ghost" className="w-full justify-start">
+                  <Star className="w-4 h-4 mr-2" />
+                  Celebrity Content
+                </Button>
+              </Link>
               <Link to="/activations">
                 <Button variant="ghost" className="w-full justify-start">
                   <Layers className="w-4 h-4 mr-2" />
