@@ -333,19 +333,76 @@ export const ActivationEditor = ({
   };
 
   const [showHtmlPreview, setShowHtmlPreview] = useState(false);
+  const [editablePreview, setEditablePreview] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const htmlContentForPreview = content as CustomHtmlContent;
-  useEffect(() => {
-    if (showHtmlPreview && iframeRef.current) {
-      const doc = iframeRef.current.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write(`<!DOCTYPE html><html><head><style>${htmlContentForPreview.css || ''}</style></head><body>${htmlContentForPreview.html || ''}</body></html>`);
-        doc.close();
-      }
+
+  const setupIframeContent = () => {
+    if (!iframeRef.current) return;
+    const doc = iframeRef.current.contentDocument;
+    if (!doc) return;
+
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head>
+      <style>
+        ${htmlContentForPreview.css || ''}
+        ${editablePreview ? `
+          body { cursor: text; }
+          [contenteditable="true"]:focus { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 2px; }
+          img { cursor: pointer; transition: outline 0.15s; }
+          img:hover { outline: 3px dashed #3b82f6; outline-offset: 2px; }
+          .img-replace-tooltip { position: absolute; background: #3b82f6; color: white; font-size: 11px; padding: 2px 8px; border-radius: 4px; pointer-events: none; font-family: sans-serif; z-index: 999; }
+        ` : ''}
+      </style>
+    </head><body ${editablePreview ? 'contenteditable="true"' : ''}>${htmlContentForPreview.html || ''}</body></html>`);
+    doc.close();
+
+    if (editablePreview && doc.body) {
+      doc.querySelectorAll('img').forEach((img) => {
+        img.setAttribute('contenteditable', 'false');
+        img.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const currentSrc = img.getAttribute('src') || '';
+          const newSrc = prompt('Enter new image URL:', currentSrc);
+          if (newSrc !== null && newSrc !== currentSrc) {
+            img.setAttribute('src', newSrc);
+            syncFromPreview();
+          }
+        });
+        img.addEventListener('mouseenter', () => {
+          const tooltip = doc.createElement('div');
+          tooltip.className = 'img-replace-tooltip';
+          tooltip.textContent = 'Click to replace image';
+          tooltip.style.left = `${img.offsetLeft}px`;
+          tooltip.style.top = `${img.offsetTop - 24}px`;
+          img.parentElement?.appendChild(tooltip);
+          img.addEventListener('mouseleave', () => tooltip.remove(), { once: true });
+        });
+      });
+
+      doc.body.addEventListener('input', () => {
+        syncFromPreview();
+      });
     }
-  }, [showHtmlPreview, htmlContentForPreview.html, htmlContentForPreview.css]);
+  };
+
+  const syncFromPreview = () => {
+    if (!iframeRef.current) return;
+    const doc = iframeRef.current.contentDocument;
+    if (!doc?.body) return;
+    doc.querySelectorAll('.img-replace-tooltip').forEach(t => t.remove());
+    const newHtml = doc.body.innerHTML;
+    updateContent({ html: newHtml });
+  };
+
+  useEffect(() => {
+    if (showHtmlPreview) {
+      const timer = setTimeout(setupIframeContent, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [showHtmlPreview, htmlContentForPreview.html, htmlContentForPreview.css, editablePreview]);
 
   const renderCustomHtmlEditor = () => {
     const htmlContent = content as CustomHtmlContent;
@@ -375,25 +432,47 @@ export const ActivationEditor = ({
         </div>
 
         <div className="border rounded-lg overflow-hidden">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="w-full rounded-none border-0 border-b"
-            onClick={() => setShowHtmlPreview(!showHtmlPreview)}
-          >
-            {showHtmlPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-            {showHtmlPreview ? 'Hide Preview' : 'Show Live Preview'}
-          </Button>
+          <div className="flex items-center border-b">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="flex-1 rounded-none border-0"
+              onClick={() => setShowHtmlPreview(!showHtmlPreview)}
+            >
+              {showHtmlPreview ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+              {showHtmlPreview ? 'Hide Preview' : 'Show Live Preview'}
+            </Button>
+            {showHtmlPreview && (
+              <Button
+                type="button"
+                variant={editablePreview ? 'default' : 'ghost'}
+                size="sm"
+                className="rounded-none border-l"
+                onClick={() => setEditablePreview(!editablePreview)}
+              >
+                <Pencil className="w-4 h-4 mr-2" />
+                {editablePreview ? 'Editing On' : 'Edit in Preview'}
+              </Button>
+            )}
+          </div>
           {showHtmlPreview && (
-            <div className="bg-white">
-              <iframe
-                ref={iframeRef}
-                title="HTML Preview"
-                className="w-full min-h-[300px] border-0"
-                sandbox="allow-same-origin"
-              />
-            </div>
+            <>
+              {editablePreview && (
+                <div className="bg-blue-50 text-blue-700 text-xs px-3 py-1.5 flex items-center gap-2">
+                  <Pencil className="w-3 h-3" />
+                  Click text to edit directly · Click images to replace URL · Changes sync to code automatically
+                </div>
+              )}
+              <div className="bg-white">
+                <iframe
+                  ref={iframeRef}
+                  title="HTML Preview"
+                  className="w-full min-h-[300px] border-0"
+                  sandbox="allow-same-origin"
+                />
+              </div>
+            </>
           )}
         </div>
       </div>
