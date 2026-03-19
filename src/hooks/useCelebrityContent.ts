@@ -7,6 +7,7 @@ export interface CelebrityContent {
   image_url: string;
   product_code: string | null;
   shop_url: string | null;
+  category: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -15,13 +16,10 @@ export interface CelebrityContent {
 /** Extract product code (SKU) from a Casadei shop URL */
 export function extractProductCode(url: string): string | null {
   if (!url) return null;
-  // Match pattern like "1G676B100MC13139000.html" at end of URL
   const match = url.match(/([A-Z0-9]{10,})\.(html|htm)/i);
   if (match) return match[1];
-  // Also try the last path segment before .html
   const segments = url.replace(/\.html?$/, '').split('/').filter(Boolean);
   const last = segments[segments.length - 1] || '';
-  // Extract code from slug like "superblade-sharp-pump-samurai-1G676B100MC13139000"
   const codeMatch = last.match(/([A-Z0-9]{10,})$/i);
   return codeMatch ? codeMatch[1] : null;
 }
@@ -45,7 +43,7 @@ export function useCelebrityContent() {
     mutationFn: async (rows: Omit<CelebrityContent, 'id' | 'created_at' | 'updated_at'>[]) => {
       const { error } = await (supabase as any)
         .from('celebrity_content')
-        .insert(rows);
+        .upsert(rows, { onConflict: 'celebrity_name,image_url', ignoreDuplicates: false });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['celebrity-content'] }),
@@ -56,6 +54,17 @@ export function useCelebrityContent() {
       const { error } = await (supabase as any)
         .from('celebrity_content')
         .update({ is_active })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['celebrity-content'] }),
+  });
+
+  const updateCategory = useMutation({
+    mutationFn: async ({ id, category }: { id: string; category: string | null }) => {
+      const { error } = await (supabase as any)
+        .from('celebrity_content')
+        .update({ category })
         .eq('id', id);
       if (error) throw error;
     },
@@ -73,20 +82,65 @@ export function useCelebrityContent() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['celebrity-content'] }),
   });
 
-  return { items, isLoading, upsertMany, toggleActive, deleteItem };
+  const removeDuplicates = useMutation({
+    mutationFn: async () => {
+      // Find duplicates (same celebrity_name + image_url), keep newest
+      const grouped = new Map<string, CelebrityContent[]>();
+      for (const item of items) {
+        const key = `${item.celebrity_name}|||${item.image_url}`;
+        const arr = grouped.get(key) || [];
+        arr.push(item);
+        grouped.set(key, arr);
+      }
+      const idsToDelete: string[] = [];
+      for (const group of grouped.values()) {
+        if (group.length > 1) {
+          group.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          for (let i = 1; i < group.length; i++) {
+            idsToDelete.push(group[i].id);
+          }
+        }
+      }
+      if (idsToDelete.length === 0) return 0;
+      const { error } = await (supabase as any)
+        .from('celebrity_content')
+        .delete()
+        .in('id', idsToDelete);
+      if (error) throw error;
+      return idsToDelete.length;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['celebrity-content'] }),
+  });
+
+  return { items, isLoading, upsertMany, toggleActive, updateCategory, deleteItem, removeDuplicates };
 }
 
-/** Hook for product pages — fetch active celebrity content for a specific product code */
-export function useCelebrityContentForProduct(productCode: string | null | undefined) {
+/** Hook for product pages — fetch active celebrity content for a specific product code OR matching category */
+export function useCelebrityContentForProduct(productCode: string | null | undefined, productCategory?: string | null) {
+  // Extract top-level category segment for matching
+  const topCategory = productCategory
+    ? productCategory.split(' > ').map(s => s.trim()).filter(s => s).pop() || null
+    : null;
+
   return useQuery({
-    queryKey: ['celebrity-content-product', productCode],
-    enabled: !!productCode,
+    queryKey: ['celebrity-content-product', productCode, topCategory],
+    enabled: !!(productCode || topCategory),
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      // Fetch entries matching product_code OR matching category (when product_code is null)
+      let query = (supabase as any)
         .from('celebrity_content')
         .select('*')
-        .eq('product_code', productCode)
         .eq('is_active', true);
+
+      if (productCode && topCategory) {
+        query = query.or(`product_code.eq.${productCode},and(product_code.is.null,category.eq.${topCategory})`);
+      } else if (productCode) {
+        query = query.eq('product_code', productCode);
+      } else if (topCategory) {
+        query = query.is('product_code', null).eq('category', topCategory);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data as CelebrityContent[];
     },

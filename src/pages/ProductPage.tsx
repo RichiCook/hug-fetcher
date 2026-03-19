@@ -443,7 +443,7 @@ const ProductPage = () => {
       )}
 
       {/* Celebrity Spotlight */}
-      <CelebritySpotlight productCode={product.product_code} />
+      <CelebritySpotlight productCode={product.product_code} productCategory={product.category} />
 
       {/* AI-Curated Total Look */}
       {product.product_code && (

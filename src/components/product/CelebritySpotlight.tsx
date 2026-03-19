@@ -9,10 +9,11 @@ function proxyUrl(url: string) {
 
 interface CelebritySpotlightProps {
   productCode: string | null | undefined;
+  productCategory?: string | null;
 }
 
-const CelebritySpotlight = ({ productCode }: CelebritySpotlightProps) => {
-  const { data: celebrities = [], isLoading } = useCelebrityContentForProduct(productCode);
+const CelebritySpotlight = ({ productCode, productCategory }: CelebritySpotlightProps) => {
+  const { data: celebrities = [], isLoading } = useCelebrityContentForProduct(productCode, productCategory);
   const [hidden, setHidden] = useState<Set<string>>(new Set());
 
   if (isLoading || celebrities.length === 0) return null;
