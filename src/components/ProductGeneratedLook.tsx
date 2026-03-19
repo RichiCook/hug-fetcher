@@ -6,6 +6,7 @@ import { Sparkles, RefreshCw, Loader2, ImageIcon, ChevronLeft, ChevronRight } fr
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { getFlatLayImage, filterImagesBySku } from '@/utils/imageUtils';
+import LookCardV2 from '@/components/product/LookCardV2';
 
 interface LookConfig {
   modelReference?: string | null;
@@ -106,8 +107,22 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
   const sectionRef = useRef<HTMLElement>(null);
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const generatingRef = useRef(false);
-  // Track all product codes already used across looks (excluding hero product)
   const usedProductCodesRef = useRef<Set<string>>(new Set());
+  const [layoutVersion, setLayoutVersion] = useState<'v1' | 'v2'>('v2');
+
+  // Fetch layout version preference
+  useEffect(() => {
+    supabase
+      .from('app_settings')
+      .select('value')
+      .eq('id', 'looks_layout_version')
+      .single()
+      .then(({ data }) => {
+        const val = data?.value as any;
+        if (val?.version === 'v1') setLayoutVersion('v1');
+        else setLayoutVersion('v2');
+      });
+  }, []);
 
   useEffect(() => {
     const fetchDisplaySettings = async () => {
@@ -428,6 +443,27 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
     return `${currency}${total.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  // V2 layout
+  if (layoutVersion === 'v2') {
+    return (
+      <LookCardV2
+        looks={looks}
+        productCode={productCode}
+        loading={loading}
+        loadingMore={loadingMore}
+        onTrackEvent={onTrackEvent}
+        onScroll={(idx) => {
+          setCurrentLookIndex(idx);
+          if (idx >= looks.length - 2 && !generatingRef.current) {
+            loadMoreLooks();
+          }
+        }}
+        calculateTotal={calculateTotal}
+      />
+    );
+  }
+
+  // V1 layout below
   if (loading) {
     return (
       <section className="container max-w-6xl mx-auto px-3 sm:px-4 py-8 sm:py-12 border-t border-border">

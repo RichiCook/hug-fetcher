@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Plus, Trash2, GripVertical, Eye, Image, Video, Layout, Code, Save, Gift } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logo from '@/assets/logo.png';
+import { supabase } from '@/integrations/supabase/client';
 
 const typeIcons: Record<ActivationType, React.ElementType> = {
   text_image: Image,
@@ -40,6 +41,8 @@ const ProductEditPage = () => {
   const [previewActivation, setPreviewActivation] = useState<Activation | null>(null);
   const [productCategory, setProductCategory] = useState('');
   const [savingCategory, setSavingCategory] = useState(false);
+  const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
+  const [savingVersion, setSavingVersion] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -60,6 +63,35 @@ const ProductEditPage = () => {
     };
     loadProduct();
   }, [slug]);
+
+  // Load looks layout version
+  useEffect(() => {
+    supabase
+      .from('app_settings')
+      .select('value')
+      .eq('id', 'looks_layout_version')
+      .single()
+      .then(({ data }) => {
+        const val = data?.value as any;
+        if (val?.version === 'v1') setLooksVersion('v1');
+      });
+  }, []);
+
+  const handleToggleLooksVersion = async (version: 'v1' | 'v2') => {
+    setSavingVersion(true);
+    setLooksVersion(version);
+    try {
+      const { error } = await supabase
+        .from('app_settings')
+        .upsert({ id: 'looks_layout_version', value: { version } as any, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      toast({ title: 'Saved', description: `AI-Curated Looks layout set to ${version === 'v2' ? 'Refined' : 'Classic'}` });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to save layout preference', variant: 'destructive' });
+    } finally {
+      setSavingVersion(false);
+    }
+  };
 
   const handleCreateActivation = async (
     name: string,
@@ -191,6 +223,38 @@ const ProductEditPage = () => {
             )}
             <p className="text-xs text-muted-foreground">
               Set a category to auto-display matching activations on the product page.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* AI-Curated Looks Layout Toggle */}
+        <Card className="mb-8">
+          <CardHeader className="py-4">
+            <CardTitle className="text-lg">AI-Curated Looks Layout</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex gap-2">
+              <Button
+                variant={looksVersion === 'v1' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleToggleLooksVersion('v1')}
+                disabled={savingVersion}
+              >
+                v1.0 — Classic
+              </Button>
+              <Button
+                variant={looksVersion === 'v2' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleToggleLooksVersion('v2')}
+                disabled={savingVersion}
+              >
+                v2.0 — Refined
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {looksVersion === 'v1'
+                ? 'Classic layout: side-by-side product cards, colour palette dots, full styling note.'
+                : 'Refined layout: editorial card carousel, stacked products, collapsible notes.'}
             </p>
           </CardContent>
         </Card>
