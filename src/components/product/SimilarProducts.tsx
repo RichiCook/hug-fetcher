@@ -72,7 +72,7 @@ const SimilarProducts = ({ productId, productCode, category, collection }: Simil
     fetch();
   }, [productId, category, collection]);
 
-  if (products.length === 0) return null;
+  if (!enabled || products.length === 0) return null;
 
   // Generate tag for each product
   const getTag = (p: SimilarProduct): string | null => {
