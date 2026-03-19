@@ -97,6 +97,9 @@ const Index = () => {
           )}
         </main>
 
+        {/* Celebrity Slideshow */}
+        <CelebritySlideshow />
+
         {/* Footer */}
         <footer className="mt-20 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground font-light">
