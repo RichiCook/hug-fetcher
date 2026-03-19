@@ -43,6 +43,8 @@ const ProductEditPage = () => {
   const [savingCategory, setSavingCategory] = useState(false);
   const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
   const [savingVersion, setSavingVersion] = useState(false);
+  const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
+  const [savingSimilar, setSavingSimilar] = useState(false);
   const { toast } = useToast();
 
   const {
