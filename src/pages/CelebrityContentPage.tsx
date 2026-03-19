@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Upload, Trash2, Search, Star, ExternalLink, AlertTriangle, Copy } from 'lucide-react';
-import { useCelebrityContent, extractProductCode } from '@/hooks/useCelebrityContent';
+import { useCelebrityContent, extractProductCode, extractCategoryFromUrl } from '@/hooks/useCelebrityContent';
 import { useProductCategories } from '@/hooks/useProductCategories';
 import * as XLSX from 'xlsx';
 
@@ -40,7 +40,9 @@ const CelebrityContentPage = () => {
         const image_url = String(r[2] || '').trim();
         const shop_url = String(r[3] || '').trim();
         const product_code = extractProductCode(shop_url);
-        return { celebrity_name, image_url, product_code, shop_url: shop_url || null, is_active: true, category: null };
+        // Auto-extract category from URL for unmatched entries
+        const category = product_code ? null : extractCategoryFromUrl(shop_url);
+        return { celebrity_name, image_url, product_code, shop_url: shop_url || null, is_active: true, category };
       }).filter(r => r.celebrity_name && r.image_url);
 
       if (parsed.length === 0) {
