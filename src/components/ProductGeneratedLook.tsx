@@ -6,6 +6,7 @@ import { Sparkles, RefreshCw, Loader2, ImageIcon, ChevronLeft, ChevronRight } fr
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { getFlatLayImage, filterImagesBySku } from '@/utils/imageUtils';
+import LookCardV2 from '@/components/product/LookCardV2';
 
 interface LookConfig {
   modelReference?: string | null;
