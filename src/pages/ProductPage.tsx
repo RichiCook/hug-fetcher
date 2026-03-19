@@ -27,6 +27,7 @@ const ProductPage = () => {
   const [lookPalette, setLookPalette] = useState<string[]>([]);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [resaleSharingEnabled, setResaleSharingEnabled] = useState(false);
+  const [passportOpen, setPassportOpen] = useState(false);
   const { trackEvent } = useScanTracking();
   const { settings } = usePlatformSettingsContext();
   const logo = settings.logo_url || defaultLogo;
