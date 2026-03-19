@@ -12,6 +12,13 @@ import defaultLogo from '@/assets/logo.png';
 import { useScanTracking } from '@/hooks/useScanTracking';
 import { usePlatformSettingsContext } from '@/contexts/PlatformSettingsContext';
 import { supabase } from '@/integrations/supabase/client';
+import GenuineProductBanner from '@/components/product/GenuineProductBanner';
+import ProductInfoBlock from '@/components/product/ProductInfoBlock';
+import DigitalPassportPopup from '@/components/product/DigitalPassportPopup';
+import defaultLogo from '@/assets/logo.png';
+import { useScanTracking } from '@/hooks/useScanTracking';
+import { usePlatformSettingsContext } from '@/contexts/PlatformSettingsContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const ProductPage = () => {
   const { slug } = useParams<{ slug: string }>();
