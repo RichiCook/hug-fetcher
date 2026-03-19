@@ -198,69 +198,6 @@ const ProductEditPage = () => {
           </CardContent>
         </Card>
 
-        {/* AI-Curated Looks Layout Toggle */}
-        <Card className="mb-8">
-          <CardHeader className="py-4">
-            <CardTitle className="text-lg">AI-Curated Looks Layout</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex gap-2">
-              <Button
-                variant={looksVersion === 'v1' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleToggleLooksVersion('v1')}
-                disabled={savingVersion}
-              >
-                v1.0 — Classic
-              </Button>
-              <Button
-                variant={looksVersion === 'v2' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleToggleLooksVersion('v2')}
-                disabled={savingVersion}
-              >
-                v2.0 — Refined
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {looksVersion === 'v1'
-                ? 'Classic layout: side-by-side product cards, colour palette dots, full styling note.'
-                : 'Refined layout: editorial card carousel, stacked products, collapsible notes.'}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Similar Products Toggle */}
-        <Card className="mb-8">
-          <CardHeader className="py-4">
-            <CardTitle className="text-lg">Similar Products Section</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex gap-2">
-              <Button
-                variant={similarProductsEnabled ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleToggleSimilarProducts(true)}
-                disabled={savingSimilar}
-              >
-                Enabled
-              </Button>
-              <Button
-                variant={!similarProductsEnabled ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleToggleSimilarProducts(false)}
-                disabled={savingSimilar}
-              >
-                Disabled
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {similarProductsEnabled
-                ? 'Shows a horizontal carousel of similar products below AI-Curated Looks.'
-                : 'Similar Products section is hidden on product pages.'}
-            </p>
-          </CardContent>
-        </Card>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left: Current Activations */}
