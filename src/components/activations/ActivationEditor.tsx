@@ -27,6 +27,7 @@ interface ActivationEditorProps {
   initialStartDate?: Date | null;
   initialEndDate?: Date | null;
   initialHideTitle?: boolean;
+  initialFullWidth?: boolean;
   productCategories?: CategoryData[];
   productCollections?: CollectionData[];
   onSave: (
@@ -39,7 +40,8 @@ interface ActivationEditorProps {
     priceMax?: number | null,
     startDate?: Date | null,
     endDate?: Date | null,
-    hideTitle?: boolean
+    hideTitle?: boolean,
+    fullWidth?: boolean
   ) => void;
   onCancel: () => void;
   isEditing?: boolean;
