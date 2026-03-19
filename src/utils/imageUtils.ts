@@ -6,13 +6,14 @@
 export const filterImagesBySku = (images: string[], productCode: string | null | undefined): string[] => {
   if (!productCode || images.length === 0) return images;
   
-  // Extract the numeric part before the underscore for more flexible matching
-  // e.g., "117567_KK001" → match URLs containing "117567_KK001"
-  const codeForMatch = productCode.replace(/[^a-zA-Z0-9_]/g, '');
+  // Normalize: strip all non-alphanumeric characters for flexible matching
+  // DB may store "2Y263B0101BEACH6301" while URLs contain "2Y263B0101BEACH_6301"
+  const codeNormalized = productCode.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
   
   const matched = images.filter(url => {
-    // Check if the URL contains the product code (case-insensitive)
-    return url.toLowerCase().includes(codeForMatch.toLowerCase());
+    // Normalize the URL path the same way for comparison
+    const urlNormalized = url.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    return urlNormalized.includes(codeNormalized);
   });
   
   // If we found matches, return them; otherwise return all images (don't hide everything)
