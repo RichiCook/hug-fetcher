@@ -41,6 +41,8 @@ const ProductEditPage = () => {
   const [previewActivation, setPreviewActivation] = useState<Activation | null>(null);
   const [productCategory, setProductCategory] = useState('');
   const [savingCategory, setSavingCategory] = useState(false);
+  const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
+  const [savingVersion, setSavingVersion] = useState(false);
   const { toast } = useToast();
 
   const {
