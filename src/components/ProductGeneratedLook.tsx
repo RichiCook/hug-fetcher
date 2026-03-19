@@ -107,8 +107,22 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
   const sectionRef = useRef<HTMLElement>(null);
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const generatingRef = useRef(false);
-  // Track all product codes already used across looks (excluding hero product)
   const usedProductCodesRef = useRef<Set<string>>(new Set());
+  const [layoutVersion, setLayoutVersion] = useState<'v1' | 'v2'>('v2');
+
+  // Fetch layout version preference
+  useEffect(() => {
+    supabase
+      .from('app_settings')
+      .select('value')
+      .eq('id', 'looks_layout_version')
+      .single()
+      .then(({ data }) => {
+        const val = data?.value as any;
+        if (val?.version === 'v1') setLayoutVersion('v1');
+        else setLayoutVersion('v2');
+      });
+  }, []);
 
   useEffect(() => {
     const fetchDisplaySettings = async () => {
