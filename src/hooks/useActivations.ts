@@ -132,7 +132,7 @@ export const useActivations = () => {
 
   const updateActivation = async (
     id: string,
-    updates: Partial<Pick<Activation, 'name' | 'type' | 'content' | 'categories' | 'collections' | 'price_min' | 'price_max' | 'start_date' | 'end_date' | 'hide_title'>>
+    updates: Partial<Pick<Activation, 'name' | 'type' | 'content' | 'categories' | 'collections' | 'price_min' | 'price_max' | 'start_date' | 'end_date' | 'hide_title' | 'full_width'>>
   ): Promise<{ success: boolean; error?: string }> => {
     // Ensure content is plain JSON-serializable
     const cleanUpdates = { ...updates };

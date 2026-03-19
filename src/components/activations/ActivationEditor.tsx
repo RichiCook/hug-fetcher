@@ -406,6 +406,17 @@ export const ActivationEditor = ({
               Hide activation name on scan landing page
             </Label>
           </div>
+
+          <div className="flex items-center gap-3">
+            <Switch
+              id="fullWidth"
+              checked={fullWidth}
+              onCheckedChange={setFullWidth}
+            />
+            <Label htmlFor="fullWidth" className="text-sm">
+              Full width (edge-to-edge display)
+            </Label>
+          </div>
           </div>
 
           {/* Collection Targeting */}
