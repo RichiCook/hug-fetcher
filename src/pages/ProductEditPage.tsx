@@ -43,6 +43,8 @@ const ProductEditPage = () => {
   const [savingCategory, setSavingCategory] = useState(false);
   const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
   const [savingVersion, setSavingVersion] = useState(false);
+  const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
+  const [savingSimilar, setSavingSimilar] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -64,7 +66,7 @@ const ProductEditPage = () => {
     loadProduct();
   }, [slug]);
 
-  // Load looks layout version
+  // Load looks layout version + similar products toggle
   useEffect(() => {
     supabase
       .from('app_settings')
@@ -74,6 +76,15 @@ const ProductEditPage = () => {
       .then(({ data }) => {
         const val = data?.value as any;
         if (val?.version === 'v1') setLooksVersion('v1');
+      });
+    supabase
+      .from('app_settings')
+      .select('value')
+      .eq('id', 'similar_products_enabled')
+      .single()
+      .then(({ data }) => {
+        const val = data?.value as any;
+        if (val?.enabled === false) setSimilarProductsEnabled(false);
       });
   }, []);
 
@@ -90,6 +101,22 @@ const ProductEditPage = () => {
       toast({ title: 'Error', description: 'Failed to save layout preference', variant: 'destructive' });
     } finally {
       setSavingVersion(false);
+    }
+  };
+
+  const handleToggleSimilarProducts = async (enabled: boolean) => {
+    setSavingSimilar(true);
+    setSimilarProductsEnabled(enabled);
+    try {
+      const { error } = await supabase
+        .from('app_settings')
+        .upsert({ id: 'similar_products_enabled', value: { enabled } as any, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      toast({ title: 'Saved', description: `Similar Products section ${enabled ? 'enabled' : 'disabled'}` });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to save preference', variant: 'destructive' });
+    } finally {
+      setSavingSimilar(false);
     }
   };
 
@@ -255,6 +282,38 @@ const ProductEditPage = () => {
               {looksVersion === 'v1'
                 ? 'Classic layout: side-by-side product cards, colour palette dots, full styling note.'
                 : 'Refined layout: editorial card carousel, stacked products, collapsible notes.'}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Similar Products Toggle */}
+        <Card className="mb-8">
+          <CardHeader className="py-4">
+            <CardTitle className="text-lg">Similar Products Section</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex gap-2">
+              <Button
+                variant={similarProductsEnabled ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleToggleSimilarProducts(true)}
+                disabled={savingSimilar}
+              >
+                Enabled
+              </Button>
+              <Button
+                variant={!similarProductsEnabled ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleToggleSimilarProducts(false)}
+                disabled={savingSimilar}
+              >
+                Disabled
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {similarProductsEnabled
+                ? 'Shows a horizontal carousel of similar products below AI-Curated Looks.'
+                : 'Similar Products section is hidden on product pages.'}
             </p>
           </CardContent>
         </Card>

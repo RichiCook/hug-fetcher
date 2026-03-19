@@ -24,7 +24,20 @@ interface SimilarProductsProps {
 
 const SimilarProducts = ({ productId, productCode, category, collection }: SimilarProductsProps) => {
   const [products, setProducts] = useState<SimilarProduct[]>([]);
+  const [enabled, setEnabled] = useState(true);
 
+  // Check if similar products is enabled
+  useEffect(() => {
+    supabase
+      .from('app_settings')
+      .select('value')
+      .eq('id', 'similar_products_enabled')
+      .single()
+      .then(({ data }) => {
+        const val = data?.value as any;
+        if (val?.enabled === false) setEnabled(false);
+      });
+  }, []);
   useEffect(() => {
     const fetch = async () => {
       if (!category && !collection) return;
@@ -59,7 +72,7 @@ const SimilarProducts = ({ productId, productCode, category, collection }: Simil
     fetch();
   }, [productId, category, collection]);
 
-  if (products.length === 0) return null;
+  if (!enabled || products.length === 0) return null;
 
   // Generate tag for each product
   const getTag = (p: SimilarProduct): string | null => {
