@@ -27,14 +27,14 @@ const LooksPage = () => {
   const [generatedLooks, setGeneratedLooks] = useState<Look[]>([]);
   const [activeTab, setActiveTab] = useState('generate');
   const [mainView, setMainView] = useState<MainView>('generator');
-  const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
+  const [looksVersion, setLooksVersion] = useState<'v1' | 'v2' | 'v2.1'>('v2');
   const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
   const [quickPreviewSimilar, setQuickPreviewSimilar] = useState(true);
   const [savingToggle, setSavingToggle] = useState(false);
 
   useEffect(() => {
     supabase.from('app_settings').select('value').eq('id', 'looks_layout_version').single()
-      .then(({ data }) => { if ((data?.value as any)?.version === 'v1') setLooksVersion('v1'); });
+      .then(({ data }) => { const v = (data?.value as any)?.version; if (v === 'v1') setLooksVersion('v1'); else if (v === 'v2.1') setLooksVersion('v2.1'); });
     supabase.from('app_settings').select('value').eq('id', 'similar_products_enabled').single()
       .then(({ data }) => { if ((data?.value as any)?.enabled === false) setSimilarProductsEnabled(false); });
     supabase.from('app_settings').select('value').eq('id', 'quick_preview_similar_enabled').single()
@@ -237,11 +237,21 @@ const LooksPage = () => {
                     >
                       v2.0 — Refined
                     </Button>
+                    <Button
+                      variant={looksVersion === 'v2.1' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setLooksVersion('v2.1'); saveSetting('looks_layout_version', { version: 'v2.1' }, 'Layout set to Editorial'); }}
+                      disabled={savingToggle}
+                    >
+                      v2.1 — Editorial
+                    </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {looksVersion === 'v1'
                       ? 'Classic layout: side-by-side product cards, colour palette dots, full styling note.'
-                      : 'Refined layout: editorial card carousel, stacked products, collapsible notes.'}
+                      : looksVersion === 'v2'
+                      ? 'Refined layout: editorial card carousel, stacked products, collapsible notes.'
+                      : 'Editorial layout: 50/50 product thumbnails with titles, above the total look.'}
                   </p>
                 </CardContent>
               </Card>

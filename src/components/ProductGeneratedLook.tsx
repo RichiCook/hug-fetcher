@@ -108,7 +108,7 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const generatingRef = useRef(false);
   const usedProductCodesRef = useRef<Set<string>>(new Set());
-  const [layoutVersion, setLayoutVersion] = useState<'v1' | 'v2'>('v2');
+  const [layoutVersion, setLayoutVersion] = useState<'v1' | 'v2' | 'v2.1'>('v2');
 
   // Fetch layout version preference
   useEffect(() => {
@@ -120,6 +120,7 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
       .then(({ data }) => {
         const val = data?.value as any;
         if (val?.version === 'v1') setLayoutVersion('v1');
+        else if (val?.version === 'v2.1') setLayoutVersion('v2.1');
         else setLayoutVersion('v2');
       });
   }, []);
@@ -443,8 +444,8 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
     return `${currency}${total.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  // V2 layout
-  if (layoutVersion === 'v2') {
+  // V2 / V2.1 layout
+  if (layoutVersion === 'v2' || layoutVersion === 'v2.1') {
     return (
       <LookCardV2
         looks={looks}
@@ -459,6 +460,7 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
           }
         }}
         calculateTotal={calculateTotal}
+        variant={layoutVersion === 'v2.1' ? 'editorial' : 'refined'}
       />
     );
   }
