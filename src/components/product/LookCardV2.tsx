@@ -263,35 +263,37 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                     })}
                   </div>
                 )}
-                {/* C. Total + CTA */}
-                <div style={{ padding: '14px 14px 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: '#b5ada5' }}>Complete this look</span>
-                    {totalPrice && (
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 700, color: '#1a1a1a' }}>{totalPrice}</span>
+                {/* C. Total + CTA (hidden in editorial) */}
+                {variant !== 'editorial' && (
+                  <div style={{ padding: '14px 14px 0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: '#b5ada5' }}>Complete this look</span>
+                      {totalPrice && (
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 700, color: '#1a1a1a' }}>{totalPrice}</span>
+                      )}
+                    </div>
+                    {heroProduct?.source_url && (
+                      <a
+                        href={heroProduct.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                          width: '100%', padding: 13, borderRadius: 6,
+                          background: '#1a1a1a', color: '#fff',
+                          fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+                          textDecoration: 'none', border: 'none', cursor: 'pointer'
+                        }}
+                      >
+                        Check on our Store
+                        <ExternalLink style={{ width: 13, height: 13, opacity: 0.5 }} />
+                      </a>
                     )}
                   </div>
-                  {heroProduct?.source_url && (
-                    <a
-                      href={heroProduct.source_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                        width: '100%', padding: 13, borderRadius: 6,
-                        background: '#1a1a1a', color: '#fff',
-                        fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
-                        textDecoration: 'none', border: 'none', cursor: 'pointer'
-                      }}
-                    >
-                      Check on our Store
-                      <ExternalLink style={{ width: 13, height: 13, opacity: 0.5 }} />
-                    </a>
-                  )}
-                </div>
+                )}
 
-                {/* D. Styling Note */}
-                {look.reasoning && (
+                {/* D. Styling Note (hidden in editorial) */}
+                {variant !== 'editorial' && look.reasoning && (
                   <div style={{ padding: '10px 14px 14px' }}>
                     <button
                       onClick={() => setExpandedNotes(prev => {
