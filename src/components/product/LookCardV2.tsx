@@ -144,7 +144,7 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
 
                 {/* v2.1 Editorial: Products ABOVE the look image */}
                 {variant === 'editorial' && (
-                  <div style={{ padding: '14px 14px 0', display: 'flex', gap: 10 }}>
+                  <div style={{ padding: '0', display: 'flex', gap: 0 }}>
                     {[heroProduct, ...pairedProducts].filter(Boolean).map((p) => {
                       if (!p) return null;
                       const thumb = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
@@ -166,8 +166,8 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                             flex: 1,
                             minWidth: 0,
                             background: '#fff',
-                            border: isHero ? '2px solid #8b7355' : '1px solid #e8e4df',
-                            borderRadius: 10,
+                            border: isHero ? '2px solid #8b7355' : '1px solid #f0ece7',
+                            borderRadius: 0,
                             overflow: 'hidden',
                             cursor: 'pointer',
                             textDecoration: 'none',
@@ -180,17 +180,12 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                               <img src={thumb} alt={p.name} style={{ width: '85%', height: '85%', objectFit: 'contain' }} referrerPolicy="no-referrer" />
                             )}
                           </div>
-                          <div style={{ padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                          <div style={{ padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 6 }}>
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, flex: 1, minWidth: 0 }}>
                               {p.name}
                             </p>
                             {isHero && (
                               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 600, color: '#fff', background: '#8b7355', padding: '2px 8px', borderRadius: 4, letterSpacing: '0.02em', textTransform: 'uppercase' as const, flexShrink: 0 }}>Featured</span>
-                            )}
-                            {p.price && (
-                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: '#999', margin: 0, width: '100%' }}>
-                                {p.price}
-                              </p>
                             )}
                           </div>
                         </Wrapper>
