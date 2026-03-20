@@ -29,6 +29,7 @@ const LooksPage = () => {
   const [mainView, setMainView] = useState<MainView>('generator');
   const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
   const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
+  const [quickPreviewSimilar, setQuickPreviewSimilar] = useState(true);
   const [savingToggle, setSavingToggle] = useState(false);
 
   useEffect(() => {
