@@ -42,9 +42,10 @@ interface LookCardV2Props {
   onTrackEvent?: (eventType: string, productCode: string, options?: any) => void;
   onScroll?: (index: number) => void;
   calculateTotal: (products: LookProduct[]) => string | null;
+  variant?: 'refined' | 'editorial';
 }
 
-const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, onScroll, calculateTotal }: LookCardV2Props) => {
+const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, onScroll, calculateTotal, variant = 'refined' }: LookCardV2Props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   const [previewProduct, setPreviewProduct] = useState<LookProduct | null>(null);

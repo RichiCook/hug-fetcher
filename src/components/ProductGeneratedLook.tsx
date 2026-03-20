@@ -444,8 +444,8 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
     return `${currency}${total.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  // V2 layout
-  if (layoutVersion === 'v2') {
+  // V2 / V2.1 layout
+  if (layoutVersion === 'v2' || layoutVersion === 'v2.1') {
     return (
       <LookCardV2
         looks={looks}
@@ -460,6 +460,7 @@ export const ProductGeneratedLook = ({ productCode, cachedLook, onTrackEvent, on
           }
         }}
         calculateTotal={calculateTotal}
+        variant={layoutVersion === 'v2.1' ? 'editorial' : 'refined'}
       />
     );
   }
