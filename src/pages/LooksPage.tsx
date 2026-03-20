@@ -323,6 +323,38 @@ const LooksPage = () => {
                 </CardContent>
               </Card>
 
+              {/* Lead Capture Style Toggle */}
+              <Card>
+                <CardHeader className="py-4">
+                  <CardTitle className="text-lg">Lead Capture Style</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={leadCaptureStyle === 'classic' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setLeadCaptureStyle('classic'); saveSetting('lead_capture_style', { style: 'classic' }, 'Lead capture set to Classic'); }}
+                      disabled={savingToggle}
+                    >
+                      Classic
+                    </Button>
+                    <Button
+                      variant={leadCaptureStyle === 'refined' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setLeadCaptureStyle('refined'); saveSetting('lead_capture_style', { style: 'refined' }, 'Lead capture set to Refined'); }}
+                      disabled={savingToggle}
+                    >
+                      Refined
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {leadCaptureStyle === 'classic'
+                      ? 'Standard form style with default UI components.'
+                      : 'Luxury aesthetic with Cormorant Garamond headings, warm earthy tones, and refined inputs.'}
+                  </p>
+                </CardContent>
+              </Card>
+
               <AnimationControls />
             </div>
           </div>
