@@ -119,7 +119,7 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
       <div
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none', padding: '0 20px', gap: 12 }}
+        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none', padding: variant === 'editorial' ? '0' : '0 20px', gap: 12 }}
         onScroll={handleScroll}
       >
         {looks.map((lookItem, lookIdx) => {
@@ -134,64 +134,16 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
             <div
               key={lookIdx}
               className="shrink-0 snap-center"
-              style={{ minWidth: 'calc(100% - 40px)', maxWidth: 'calc(100% - 40px)', marginRight: lookIdx < looks.length - 1 ? 12 : 0 }}
+              style={{
+                minWidth: variant === 'editorial' ? '100%' : 'calc(100% - 40px)',
+                maxWidth: variant === 'editorial' ? '100%' : 'calc(100% - 40px)',
+                marginRight: lookIdx < looks.length - 1 ? 12 : 0
+              }}
             >
-              <div style={{ borderRadius: 8, border: '1px solid #e4e0db', background: '#fff', boxShadow: '0 1px 10px rgba(0,0,0,0.025)', overflow: 'hidden' }}>
-                {/* A. Editorial AI Image */}
-                <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', background: '#f0ece7' }}>
-                  {lookItem.generatingImage ? (
-                    <>
-                      <div className="animate-shimmer" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(110deg, #f0ece7 30%, #f8f4f0 50%, #f0ece7 70%)', backgroundSize: '200% 100%', zIndex: 1 }} />
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 1 }}>
-                        <span style={{ fontSize: 16, opacity: 0.25 }}>✦</span>
-                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, color: '#c5c0ba', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>GENERATING LOOK</span>
-                        <div style={{ width: 100, height: 1.5, borderRadius: 1, background: 'rgba(0,0,0,0.04)', overflow: 'hidden' }}>
-                          <ProgressBar />
-                        </div>
-                      </div>
-                    </>
-                  ) : lookItem.lookImage ? (
-                    <>
-                      <img
-                        src={lookItem.lookImage}
-                        alt={look.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', zIndex: 2, position: 'relative' }}
-                      />
-                      {/* AI Generated badge */}
-                      <div style={{
-                        position: 'absolute', top: 10, right: 10, zIndex: 3,
-                        background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)',
-                        borderRadius: 5, padding: '4px 9px',
-                        fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 500, color: '#fff'
-                      }}>
-                        ✦ AI Generated
-                      </div>
-                    </>
-                  ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 16, opacity: 0.25 }}>✦</span>
-                    </div>
-                  )}
-                  {/* Gradient overlay */}
-                  <div style={{
-                    position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 4,
-                    background: 'linear-gradient(transparent, rgba(0,0,0,0.6))',
-                    padding: '40px 16px 14px'
-                  }}>
-                    <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 600, color: '#fff', margin: 0 }}>
-                      {look.name}
-                    </h3>
-                    {look.description && (
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'rgba(255,255,255,0.65)', margin: '2px 0 0' }}>
-                        {look.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
+              <div style={{ borderRadius: variant === 'editorial' ? 0 : 8, border: variant === 'editorial' ? 'none' : '1px solid #e4e0db', background: '#fff', boxShadow: variant === 'editorial' ? 'none' : '0 1px 10px rgba(0,0,0,0.025)', overflow: 'hidden' }}>
 
-                {/* B. Product Items */}
-                {variant === 'editorial' ? (
-                  /* v2.1 Editorial: 50/50 side-by-side thumbnails with titles below */
+                {/* v2.1 Editorial: Products ABOVE the look image */}
+                {variant === 'editorial' && (
                   <div style={{ padding: '14px 14px 0', display: 'flex', gap: 10 }}>
                     {[heroProduct, ...pairedProducts].filter(Boolean).map((p) => {
                       if (!p) return null;
@@ -225,41 +177,59 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                         >
                           <div style={{ aspectRatio: '1/1', background: '#f7f7f5', overflow: 'hidden' }}>
                             {thumb && (
-                              <img
-                                src={thumb}
-                                alt={p.name}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                referrerPolicy="no-referrer"
-                              />
+                              <img src={thumb} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
                             )}
                           </div>
                           <div style={{ padding: '8px 10px' }}>
-                            <p style={{
-                              fontFamily: "'DM Sans', sans-serif",
-                              fontSize: 11,
-                              fontWeight: 500,
-                              color: '#1a1a1a',
-                              margin: 0,
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap' as const,
-                            }}>
+                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
                               {p.name}
                             </p>
                             {isHero && (
-                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: '#b5ada5', letterSpacing: '0.04em', margin: '2px 0 0', textTransform: 'uppercase' as const }}>
-                                FEATURED
-                              </p>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: '#b5ada5', letterSpacing: '0.04em', margin: '2px 0 0', textTransform: 'uppercase' as const }}>FEATURED</p>
                             )}
                           </div>
                         </Wrapper>
                       );
                     })}
                   </div>
-                ) : (
-                  /* v2.0 Refined: stacked rows */
+                )}
+
+                {/* AI Image */}
+                <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', background: '#f0ece7' }}>
+                  {lookItem.generatingImage ? (
+                    <>
+                      <div className="animate-shimmer" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(110deg, #f0ece7 30%, #f8f4f0 50%, #f0ece7 70%)', backgroundSize: '200% 100%', zIndex: 1 }} />
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 1 }}>
+                        <span style={{ fontSize: 16, opacity: 0.25 }}>✦</span>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, color: '#c5c0ba', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>GENERATING LOOK</span>
+                        <div style={{ width: 100, height: 1.5, borderRadius: 1, background: 'rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+                          <ProgressBar />
+                        </div>
+                      </div>
+                    </>
+                  ) : lookItem.lookImage ? (
+                    <>
+                      <img src={lookItem.lookImage} alt={look.name} style={{ width: '100%', height: '100%', objectFit: 'cover', zIndex: 2, position: 'relative' }} />
+                      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 3, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', borderRadius: 5, padding: '4px 9px', fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 500, color: '#fff' }}>
+                        ✦ AI Generated
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: 16, opacity: 0.25 }}>✦</span>
+                    </div>
+                  )}
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 4, background: 'linear-gradient(transparent, rgba(0,0,0,0.6))', padding: '40px 16px 14px' }}>
+                    <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 600, color: '#fff', margin: 0 }}>{look.name}</h3>
+                    {look.description && (
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: 'rgba(255,255,255,0.65)', margin: '2px 0 0' }}>{look.description}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* v2.0 Refined: stacked product rows BELOW the image */}
+                {variant !== 'editorial' && (
                   <div style={{ padding: '14px 14px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {/* Featured product */}
                     {heroProduct && (
                       <a
                         href={heroProduct.source_url || '#'}
@@ -268,12 +238,7 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                         style={{ background: '#1a1a1a', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', cursor: heroProduct.source_url ? 'pointer' : 'default' }}
                       >
                         <div style={{ width: 44, height: 44, borderRadius: 6, background: '#2a2a2a', overflow: 'hidden', flexShrink: 0 }}>
-                          <img
-                            src={getFlatLayImage(filterImagesBySku(heroProduct.images, heroProduct.product_code), heroProduct.category) || heroProduct.images[0]}
-                            alt={heroProduct.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            referrerPolicy="no-referrer"
-                          />
+                          <img src={getFlatLayImage(filterImagesBySku(heroProduct.images, heroProduct.product_code), heroProduct.category) || heroProduct.images[0]} alt={heroProduct.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{heroProduct.name}</p>
@@ -282,8 +247,6 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                         {heroProduct.source_url && <ExternalLink style={{ width: 14, height: 14, stroke: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />}
                       </a>
                     )}
-
-                    {/* Paired products */}
                     {pairedProducts.map(p => {
                       const thumb = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
                       return (
@@ -298,16 +261,15 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                           <div style={{ width: 44, height: 44, borderRadius: 6, background: '#f7f7f5', overflow: 'hidden', flexShrink: 0 }}>
                             {thumb && <img src={thumb} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />}
                           </div>
-                           <div style={{ flex: 1, minWidth: 0 }}>
-                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{p.name}</p>
-                           </div>
-                           <ChevronRight style={{ width: 16, height: 16, stroke: '#ccc', strokeWidth: 1.5, flexShrink: 0 }} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{p.name}</p>
+                          </div>
+                          <ChevronRight style={{ width: 16, height: 16, stroke: '#ccc', strokeWidth: 1.5, flexShrink: 0 }} />
                         </button>
                       );
                     })}
                   </div>
                 )}
-
                 {/* C. Total + CTA */}
                 <div style={{ padding: '14px 14px 0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
