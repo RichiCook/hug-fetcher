@@ -144,24 +144,17 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
 
                 {/* v2.1 Editorial: Products ABOVE the look image */}
                 {variant === 'editorial' && (
-                  <div style={{ padding: '0', display: 'flex', gap: 0 }}>
+                  <div style={{ padding: '0', display: 'flex', gap: 0, paddingBottom: 8 }}>
                     {[heroProduct, ...pairedProducts].filter(Boolean).map((p) => {
                       if (!p) return null;
                       const thumb = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
                       const isHero = p.product_code === productCode || p.product_code === look.hero_product_code;
-                      const Wrapper = isHero ? 'a' : 'button';
-                      const wrapperProps = isHero
-                        ? { href: p.source_url || '#', target: p.source_url ? '_blank' : undefined, rel: p.source_url ? 'noopener noreferrer' : undefined }
-                        : {
-                            onClick: () => {
-                              setPreviewProduct(p);
-                              onTrackEvent?.('look_product_click', productCode, { targetProductCode: p.product_code, lookProductCodes: look.product_codes });
-                            }
-                          };
                       return (
-                        <Wrapper
+                        <a
                           key={p.id}
-                          {...wrapperProps as any}
+                          href={p.source_url || '#'}
+                          target={p.source_url ? '_blank' : undefined}
+                          rel={p.source_url ? 'noopener noreferrer' : undefined}
                           style={{
                             flex: 1,
                             minWidth: 0,
@@ -188,7 +181,7 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 600, color: '#fff', background: '#8b7355', padding: '2px 8px', borderRadius: 4, letterSpacing: '0.02em', textTransform: 'uppercase' as const, flexShrink: 0 }}>Featured</span>
                             )}
                           </div>
-                        </Wrapper>
+                        </a>
                       );
                     })}
                   </div>
@@ -270,35 +263,37 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                     })}
                   </div>
                 )}
-                {/* C. Total + CTA */}
-                <div style={{ padding: '14px 14px 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: '#b5ada5' }}>Complete this look</span>
-                    {totalPrice && (
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 700, color: '#1a1a1a' }}>{totalPrice}</span>
+                {/* C. Total + CTA (hidden in editorial) */}
+                {variant !== 'editorial' && (
+                  <div style={{ padding: '14px 14px 0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: '#b5ada5' }}>Complete this look</span>
+                      {totalPrice && (
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 700, color: '#1a1a1a' }}>{totalPrice}</span>
+                      )}
+                    </div>
+                    {heroProduct?.source_url && (
+                      <a
+                        href={heroProduct.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                          width: '100%', padding: 13, borderRadius: 6,
+                          background: '#1a1a1a', color: '#fff',
+                          fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+                          textDecoration: 'none', border: 'none', cursor: 'pointer'
+                        }}
+                      >
+                        Check on our Store
+                        <ExternalLink style={{ width: 13, height: 13, opacity: 0.5 }} />
+                      </a>
                     )}
                   </div>
-                  {heroProduct?.source_url && (
-                    <a
-                      href={heroProduct.source_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                        width: '100%', padding: 13, borderRadius: 6,
-                        background: '#1a1a1a', color: '#fff',
-                        fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
-                        textDecoration: 'none', border: 'none', cursor: 'pointer'
-                      }}
-                    >
-                      Check on our Store
-                      <ExternalLink style={{ width: 13, height: 13, opacity: 0.5 }} />
-                    </a>
-                  )}
-                </div>
+                )}
 
-                {/* D. Styling Note */}
-                {look.reasoning && (
+                {/* D. Styling Note (hidden in editorial) */}
+                {variant !== 'editorial' && look.reasoning && (
                   <div style={{ padding: '10px 14px 14px' }}>
                     <button
                       onClick={() => setExpandedNotes(prev => {
