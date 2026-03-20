@@ -190,54 +190,123 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                 </div>
 
                 {/* B. Product Items */}
-                <div style={{ padding: '14px 14px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {/* Featured product */}
-                  {heroProduct && (
-                    <a
-                      href={heroProduct.source_url || '#'}
-                      target={heroProduct.source_url ? '_blank' : undefined}
-                      rel={heroProduct.source_url ? 'noopener noreferrer' : undefined}
-                      style={{ background: '#1a1a1a', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', cursor: heroProduct.source_url ? 'pointer' : 'default' }}
-                    >
-                      <div style={{ width: 44, height: 44, borderRadius: 6, background: '#2a2a2a', overflow: 'hidden', flexShrink: 0 }}>
-                        <img
-                          src={getFlatLayImage(filterImagesBySku(heroProduct.images, heroProduct.product_code), heroProduct.category) || heroProduct.images[0]}
-                          alt={heroProduct.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{heroProduct.name}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.04em', margin: '2px 0 0' }}>FEATURED</p>
-                      </div>
-                      {heroProduct.source_url && <ExternalLink style={{ width: 14, height: 14, stroke: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />}
-                    </a>
-                  )}
-
-                  {/* Paired products */}
-                  {pairedProducts.map(p => {
-                    const thumb = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
-                    return (
-                      <button
-                        key={p.id}
-                        onClick={() => {
-                          setPreviewProduct(p);
-                          onTrackEvent?.('look_product_click', productCode, { targetProductCode: p.product_code, lookProductCodes: look.product_codes });
-                        }}
-                        style={{ background: '#fff', border: '1px solid #e8e4df', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', width: '100%', textAlign: 'left' as const }}
+                {variant === 'editorial' ? (
+                  /* v2.1 Editorial: 50/50 side-by-side thumbnails with titles below */
+                  <div style={{ padding: '14px 14px 0', display: 'flex', gap: 10 }}>
+                    {[heroProduct, ...pairedProducts].filter(Boolean).map((p) => {
+                      if (!p) return null;
+                      const thumb = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
+                      const isHero = p.product_code === productCode || p.product_code === look.hero_product_code;
+                      const Wrapper = isHero ? 'a' : 'button';
+                      const wrapperProps = isHero
+                        ? { href: p.source_url || '#', target: p.source_url ? '_blank' : undefined, rel: p.source_url ? 'noopener noreferrer' : undefined }
+                        : {
+                            onClick: () => {
+                              setPreviewProduct(p);
+                              onTrackEvent?.('look_product_click', productCode, { targetProductCode: p.product_code, lookProductCodes: look.product_codes });
+                            }
+                          };
+                      return (
+                        <Wrapper
+                          key={p.id}
+                          {...wrapperProps as any}
+                          style={{
+                            flex: 1,
+                            minWidth: 0,
+                            background: '#fff',
+                            border: '1px solid #e8e4df',
+                            borderRadius: 8,
+                            overflow: 'hidden',
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                            textAlign: 'left' as const,
+                            padding: 0,
+                          }}
+                        >
+                          <div style={{ aspectRatio: '1/1', background: '#f7f7f5', overflow: 'hidden' }}>
+                            {thumb && (
+                              <img
+                                src={thumb}
+                                alt={p.name}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                referrerPolicy="no-referrer"
+                              />
+                            )}
+                          </div>
+                          <div style={{ padding: '8px 10px' }}>
+                            <p style={{
+                              fontFamily: "'DM Sans', sans-serif",
+                              fontSize: 11,
+                              fontWeight: 500,
+                              color: '#1a1a1a',
+                              margin: 0,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap' as const,
+                            }}>
+                              {p.name}
+                            </p>
+                            {isHero && (
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: '#b5ada5', letterSpacing: '0.04em', margin: '2px 0 0', textTransform: 'uppercase' as const }}>
+                                FEATURED
+                              </p>
+                            )}
+                          </div>
+                        </Wrapper>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  /* v2.0 Refined: stacked rows */
+                  <div style={{ padding: '14px 14px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {/* Featured product */}
+                    {heroProduct && (
+                      <a
+                        href={heroProduct.source_url || '#'}
+                        target={heroProduct.source_url ? '_blank' : undefined}
+                        rel={heroProduct.source_url ? 'noopener noreferrer' : undefined}
+                        style={{ background: '#1a1a1a', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', cursor: heroProduct.source_url ? 'pointer' : 'default' }}
                       >
-                        <div style={{ width: 44, height: 44, borderRadius: 6, background: '#f7f7f5', overflow: 'hidden', flexShrink: 0 }}>
-                          {thumb && <img src={thumb} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />}
+                        <div style={{ width: 44, height: 44, borderRadius: 6, background: '#2a2a2a', overflow: 'hidden', flexShrink: 0 }}>
+                          <img
+                            src={getFlatLayImage(filterImagesBySku(heroProduct.images, heroProduct.product_code), heroProduct.category) || heroProduct.images[0]}
+                            alt={heroProduct.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            referrerPolicy="no-referrer"
+                          />
                         </div>
-                         <div style={{ flex: 1, minWidth: 0 }}>
-                           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{p.name}</p>
-                         </div>
-                         <ChevronRight style={{ width: 16, height: 16, stroke: '#ccc', strokeWidth: 1.5, flexShrink: 0 }} />
-                      </button>
-                    );
-                  })}
-                </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{heroProduct.name}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.04em', margin: '2px 0 0' }}>FEATURED</p>
+                        </div>
+                        {heroProduct.source_url && <ExternalLink style={{ width: 14, height: 14, stroke: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />}
+                      </a>
+                    )}
+
+                    {/* Paired products */}
+                    {pairedProducts.map(p => {
+                      const thumb = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => {
+                            setPreviewProduct(p);
+                            onTrackEvent?.('look_product_click', productCode, { targetProductCode: p.product_code, lookProductCodes: look.product_codes });
+                          }}
+                          style={{ background: '#fff', border: '1px solid #e8e4df', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', width: '100%', textAlign: 'left' as const }}
+                        >
+                          <div style={{ width: 44, height: 44, borderRadius: 6, background: '#f7f7f5', overflow: 'hidden', flexShrink: 0 }}>
+                            {thumb && <img src={thumb} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />}
+                          </div>
+                           <div style={{ flex: 1, minWidth: 0 }}>
+                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{p.name}</p>
+                           </div>
+                           <ChevronRight style={{ width: 16, height: 16, stroke: '#ccc', strokeWidth: 1.5, flexShrink: 0 }} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* C. Total + CTA */}
                 <div style={{ padding: '14px 14px 0' }}>
