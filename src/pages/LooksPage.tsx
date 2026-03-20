@@ -278,6 +278,38 @@ const LooksPage = () => {
                 </CardContent>
               </Card>
 
+              {/* Quick Preview Similar Products Toggle */}
+              <Card>
+                <CardHeader className="py-4">
+                  <CardTitle className="text-lg">Quick Preview — Similar Products</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={quickPreviewSimilar ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setQuickPreviewSimilar(true); saveSetting('quick_preview_similar_enabled', { enabled: true }, 'Quick Preview similar products enabled'); }}
+                      disabled={savingToggle}
+                    >
+                      On
+                    </Button>
+                    <Button
+                      variant={!quickPreviewSimilar ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setQuickPreviewSimilar(false); saveSetting('quick_preview_similar_enabled', { enabled: false }, 'Quick Preview similar products disabled'); }}
+                      disabled={savingToggle}
+                    >
+                      Off
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {quickPreviewSimilar
+                      ? 'Shows a "You may also like" section with related products when scrolling in the Quick Preview popup.'
+                      : 'Quick Preview shows only product info and CTA — no similar products.'}
+                  </p>
+                </CardContent>
+              </Card>
+
               <AnimationControls />
             </div>
           </div>
