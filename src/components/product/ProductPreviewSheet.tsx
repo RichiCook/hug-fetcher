@@ -26,6 +26,7 @@ interface SimilarItem {
   category: string | null;
   collection: string | null;
   product_code: string | null;
+  source_url: string | null;
 }
 
 interface ProductPreviewSheetProps {
