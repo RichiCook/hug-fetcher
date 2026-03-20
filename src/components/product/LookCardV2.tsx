@@ -144,24 +144,17 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
 
                 {/* v2.1 Editorial: Products ABOVE the look image */}
                 {variant === 'editorial' && (
-                  <div style={{ padding: '0', display: 'flex', gap: 0 }}>
+                  <div style={{ padding: '0', display: 'flex', gap: 0, paddingBottom: 8 }}>
                     {[heroProduct, ...pairedProducts].filter(Boolean).map((p) => {
                       if (!p) return null;
                       const thumb = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
                       const isHero = p.product_code === productCode || p.product_code === look.hero_product_code;
-                      const Wrapper = isHero ? 'a' : 'button';
-                      const wrapperProps = isHero
-                        ? { href: p.source_url || '#', target: p.source_url ? '_blank' : undefined, rel: p.source_url ? 'noopener noreferrer' : undefined }
-                        : {
-                            onClick: () => {
-                              setPreviewProduct(p);
-                              onTrackEvent?.('look_product_click', productCode, { targetProductCode: p.product_code, lookProductCodes: look.product_codes });
-                            }
-                          };
                       return (
-                        <Wrapper
+                        <a
                           key={p.id}
-                          {...wrapperProps as any}
+                          href={p.source_url || '#'}
+                          target={p.source_url ? '_blank' : undefined}
+                          rel={p.source_url ? 'noopener noreferrer' : undefined}
                           style={{
                             flex: 1,
                             minWidth: 0,
@@ -188,7 +181,7 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 600, color: '#fff', background: '#8b7355', padding: '2px 8px', borderRadius: 4, letterSpacing: '0.02em', textTransform: 'uppercase' as const, flexShrink: 0 }}>Featured</span>
                             )}
                           </div>
-                        </Wrapper>
+                        </a>
                       );
                     })}
                   </div>
