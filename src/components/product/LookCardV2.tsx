@@ -203,12 +203,9 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{heroProduct.name}</p>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.04em', margin: '2px 0 0' }}>FEATURED</p>
-                      </div>
-                      {heroProduct.price && (
-                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: '#fff', flexShrink: 0 }}>{heroProduct.price}</span>
-                      )}
-                    </div>
+                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.04em', margin: '2px 0 0' }}>FEATURED</p>
+                       </div>
+                     </div>
                   )}
 
                   {/* Paired products */}
