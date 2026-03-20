@@ -237,11 +237,21 @@ const LooksPage = () => {
                     >
                       v2.0 — Refined
                     </Button>
+                    <Button
+                      variant={looksVersion === 'v2.1' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setLooksVersion('v2.1'); saveSetting('looks_layout_version', { version: 'v2.1' }, 'Layout set to Editorial'); }}
+                      disabled={savingToggle}
+                    >
+                      v2.1 — Editorial
+                    </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {looksVersion === 'v1'
                       ? 'Classic layout: side-by-side product cards, colour palette dots, full styling note.'
-                      : 'Refined layout: editorial card carousel, stacked products, collapsible notes.'}
+                      : looksVersion === 'v2'
+                      ? 'Refined layout: editorial card carousel, stacked products, collapsible notes.'
+                      : 'Editorial layout: 50/50 product thumbnails with titles, above the total look.'}
                   </p>
                 </CardContent>
               </Card>
