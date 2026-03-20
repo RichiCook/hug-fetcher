@@ -166,8 +166,8 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                             flex: 1,
                             minWidth: 0,
                             background: '#fff',
-                            border: '1px solid #e8e4df',
-                            borderRadius: 8,
+                            border: isHero ? '2px solid #8b7355' : '1px solid #e8e4df',
+                            borderRadius: 10,
                             overflow: 'hidden',
                             cursor: 'pointer',
                             textDecoration: 'none',
@@ -175,17 +175,22 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                             padding: 0,
                           }}
                         >
-                          <div style={{ aspectRatio: '1/1', background: '#f7f7f5', overflow: 'hidden' }}>
+                          <div style={{ aspectRatio: '1/1', background: '#f7f7f5', overflow: 'hidden', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             {thumb && (
-                              <img src={thumb} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />
+                              <img src={thumb} alt={p.name} style={{ width: '85%', height: '85%', objectFit: 'contain' }} referrerPolicy="no-referrer" />
                             )}
                           </div>
-                          <div style={{ padding: '8px 10px' }}>
-                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
+                          <div style={{ padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const, flex: 1, minWidth: 0 }}>
                               {p.name}
                             </p>
                             {isHero && (
-                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: '#b5ada5', letterSpacing: '0.04em', margin: '2px 0 0', textTransform: 'uppercase' as const }}>FEATURED</p>
+                              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 600, color: '#fff', background: '#8b7355', padding: '2px 8px', borderRadius: 4, letterSpacing: '0.02em', textTransform: 'uppercase' as const, flexShrink: 0 }}>Featured</span>
+                            )}
+                            {p.price && (
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: '#999', margin: 0, width: '100%' }}>
+                                {p.price}
+                              </p>
                             )}
                           </div>
                         </Wrapper>
