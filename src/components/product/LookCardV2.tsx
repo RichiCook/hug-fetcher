@@ -192,7 +192,12 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                 <div style={{ padding: '14px 14px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {/* Featured product */}
                   {heroProduct && (
-                    <div style={{ background: '#1a1a1a', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <a
+                      href={heroProduct.source_url || '#'}
+                      target={heroProduct.source_url ? '_blank' : undefined}
+                      rel={heroProduct.source_url ? 'noopener noreferrer' : undefined}
+                      style={{ background: '#1a1a1a', borderRadius: 8, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', cursor: heroProduct.source_url ? 'pointer' : 'default' }}
+                    >
                       <div style={{ width: 44, height: 44, borderRadius: 6, background: '#2a2a2a', overflow: 'hidden', flexShrink: 0 }}>
                         <img
                           src={getFlatLayImage(filterImagesBySku(heroProduct.images, heroProduct.product_code), heroProduct.category) || heroProduct.images[0]}
@@ -203,9 +208,10 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{heroProduct.name}</p>
-                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.04em', margin: '2px 0 0' }}>FEATURED</p>
-                       </div>
-                     </div>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.04em', margin: '2px 0 0' }}>FEATURED</p>
+                      </div>
+                      {heroProduct.source_url && <ExternalLink style={{ width: 14, height: 14, stroke: 'rgba(255,255,255,0.4)', flexShrink: 0 }} />}
+                    </a>
                   )}
 
                   {/* Paired products */}
