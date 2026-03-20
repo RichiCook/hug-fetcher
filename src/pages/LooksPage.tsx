@@ -30,6 +30,7 @@ const LooksPage = () => {
   const [looksVersion, setLooksVersion] = useState<'v1' | 'v2' | 'v2.1'>('v2');
   const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
   const [quickPreviewSimilar, setQuickPreviewSimilar] = useState(true);
+  const [leadCaptureStyle, setLeadCaptureStyle] = useState<'classic' | 'refined'>('refined');
   const [savingToggle, setSavingToggle] = useState(false);
 
   useEffect(() => {
@@ -39,6 +40,8 @@ const LooksPage = () => {
       .then(({ data }) => { if ((data?.value as any)?.enabled === false) setSimilarProductsEnabled(false); });
     supabase.from('app_settings').select('value').eq('id', 'quick_preview_similar_enabled').single()
       .then(({ data }) => { if ((data?.value as any)?.enabled === false) setQuickPreviewSimilar(false); });
+    supabase.from('app_settings').select('value').eq('id', 'lead_capture_style').single()
+      .then(({ data }) => { const v = (data?.value as any)?.style; if (v === 'classic') setLeadCaptureStyle('classic'); });
   }, []);
 
   const saveSetting = async (id: string, value: any, label: string) => {
@@ -316,6 +319,38 @@ const LooksPage = () => {
                     {quickPreviewSimilar
                       ? 'Shows a "You may also like" section with related products when scrolling in the Quick Preview popup.'
                       : 'Quick Preview shows only product info and CTA — no similar products.'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Lead Capture Style Toggle */}
+              <Card>
+                <CardHeader className="py-4">
+                  <CardTitle className="text-lg">Lead Capture Style</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={leadCaptureStyle === 'classic' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setLeadCaptureStyle('classic'); saveSetting('lead_capture_style', { style: 'classic' }, 'Lead capture set to Classic'); }}
+                      disabled={savingToggle}
+                    >
+                      Classic
+                    </Button>
+                    <Button
+                      variant={leadCaptureStyle === 'refined' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setLeadCaptureStyle('refined'); saveSetting('lead_capture_style', { style: 'refined' }, 'Lead capture set to Refined'); }}
+                      disabled={savingToggle}
+                    >
+                      Refined
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {leadCaptureStyle === 'classic'
+                      ? 'Standard form style with default UI components.'
+                      : 'Luxury aesthetic with Cormorant Garamond headings, warm earthy tones, and refined inputs.'}
                   </p>
                 </CardContent>
               </Card>
