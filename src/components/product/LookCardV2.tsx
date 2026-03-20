@@ -119,7 +119,7 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
       <div
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none', padding: '0 20px', gap: 12 }}
+        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none', padding: variant === 'editorial' ? '0' : '0 20px', gap: 12 }}
         onScroll={handleScroll}
       >
         {looks.map((lookItem, lookIdx) => {
