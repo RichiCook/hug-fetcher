@@ -322,7 +322,9 @@ const ProductPreviewSheet = ({ product, onClose }: ProductPreviewSheetProps) => 
                 return (
                   <a
                     key={sp.id}
-                    href={`/product/${sp.slug}`}
+                    href={sp.source_url || `/product/${sp.slug}`}
+                    target={sp.source_url ? '_blank' : undefined}
+                    rel={sp.source_url ? 'noopener noreferrer' : undefined}
                     className="shrink-0 snap-start"
                     style={{ minWidth: 140, maxWidth: 140, textDecoration: 'none' }}
                   >
