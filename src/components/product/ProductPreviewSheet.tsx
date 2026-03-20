@@ -80,7 +80,7 @@ const ProductPreviewSheet = ({ product, onClose }: ProductPreviewSheetProps) => 
     if (!product || !showSimilar) { setSimilarProducts([]); return; }
     const load = async () => {
       const { data } = await supabase.from('products')
-        .select('id, name, price, images, slug, category, collection, product_code')
+        .select('id, name, price, images, slug, category, collection, product_code, source_url')
         .neq('id', product.id)
         .eq('category', product.category || '')
         .limit(8);
