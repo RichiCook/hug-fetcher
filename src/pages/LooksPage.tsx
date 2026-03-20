@@ -34,7 +34,7 @@ const LooksPage = () => {
 
   useEffect(() => {
     supabase.from('app_settings').select('value').eq('id', 'looks_layout_version').single()
-      .then(({ data }) => { if ((data?.value as any)?.version === 'v1') setLooksVersion('v1'); });
+      .then(({ data }) => { const v = (data?.value as any)?.version; if (v === 'v1') setLooksVersion('v1'); else if (v === 'v2.1') setLooksVersion('v2.1'); });
     supabase.from('app_settings').select('value').eq('id', 'similar_products_enabled').single()
       .then(({ data }) => { if ((data?.value as any)?.enabled === false) setSimilarProductsEnabled(false); });
     supabase.from('app_settings').select('value').eq('id', 'quick_preview_similar_enabled').single()
