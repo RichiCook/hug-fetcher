@@ -134,9 +134,13 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
             <div
               key={lookIdx}
               className="shrink-0 snap-center"
-              style={{ minWidth: 'calc(100% - 40px)', maxWidth: 'calc(100% - 40px)', marginRight: lookIdx < looks.length - 1 ? 12 : 0 }}
+              style={{
+                minWidth: variant === 'editorial' ? '100%' : 'calc(100% - 40px)',
+                maxWidth: variant === 'editorial' ? '100%' : 'calc(100% - 40px)',
+                marginRight: lookIdx < looks.length - 1 ? 12 : 0
+              }}
             >
-              <div style={{ borderRadius: 8, border: '1px solid #e4e0db', background: '#fff', boxShadow: '0 1px 10px rgba(0,0,0,0.025)', overflow: 'hidden' }}>
+              <div style={{ borderRadius: 8, border: '1px solid #e4e0db', background: '#fff', boxShadow: '0 1px 10px rgba(0,0,0,0.025)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 {/* A. Editorial AI Image */}
                 <div style={{ aspectRatio: '3/4', position: 'relative', overflow: 'hidden', background: '#f0ece7' }}>
                   {lookItem.generatingImage ? (
