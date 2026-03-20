@@ -30,6 +30,7 @@ const LooksPage = () => {
   const [looksVersion, setLooksVersion] = useState<'v1' | 'v2' | 'v2.1'>('v2');
   const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
   const [quickPreviewSimilar, setQuickPreviewSimilar] = useState(true);
+  const [leadCaptureStyle, setLeadCaptureStyle] = useState<'classic' | 'refined'>('refined');
   const [savingToggle, setSavingToggle] = useState(false);
 
   useEffect(() => {
@@ -39,6 +40,8 @@ const LooksPage = () => {
       .then(({ data }) => { if ((data?.value as any)?.enabled === false) setSimilarProductsEnabled(false); });
     supabase.from('app_settings').select('value').eq('id', 'quick_preview_similar_enabled').single()
       .then(({ data }) => { if ((data?.value as any)?.enabled === false) setQuickPreviewSimilar(false); });
+    supabase.from('app_settings').select('value').eq('id', 'lead_capture_style').single()
+      .then(({ data }) => { const v = (data?.value as any)?.style; if (v === 'classic') setLeadCaptureStyle('classic'); });
   }, []);
 
   const saveSetting = async (id: string, value: any, label: string) => {
