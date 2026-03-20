@@ -423,6 +423,19 @@ const ProductPage = () => {
         product={product}
       />
 
+      {/* Celebrity Spotlight */}
+      <CelebritySpotlight productCode={product.product_code} productCategory={product.category} />
+
+      {/* AI-Curated Total Look */}
+      {product.product_code && (
+        <ProductGeneratedLook 
+          productCode={product.product_code} 
+          cachedLook={(product as any).generated_look || null}
+          onTrackEvent={trackEvent}
+          onColorPaletteReady={setLookPalette}
+        />
+      )}
+
       {/* Activations Section */}
       {(productActivations.length > 0 || autoMatchedActivations.length > 0) && (
         <section className="py-6 sm:py-8">
@@ -441,19 +454,6 @@ const ProductPage = () => {
             ))}
           </div>
         </section>
-      )}
-
-      {/* Celebrity Spotlight */}
-      <CelebritySpotlight productCode={product.product_code} productCategory={product.category} />
-
-      {/* AI-Curated Total Look */}
-      {product.product_code && (
-        <ProductGeneratedLook 
-          productCode={product.product_code} 
-          cachedLook={(product as any).generated_look || null}
-          onTrackEvent={trackEvent}
-          onColorPaletteReady={setLookPalette}
-        />
       )}
 
       {/* Similar Products */}
