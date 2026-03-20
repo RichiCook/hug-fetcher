@@ -29,6 +29,7 @@ const LooksPage = () => {
   const [mainView, setMainView] = useState<MainView>('generator');
   const [looksVersion, setLooksVersion] = useState<'v1' | 'v2'>('v2');
   const [similarProductsEnabled, setSimilarProductsEnabled] = useState(true);
+  const [quickPreviewSimilar, setQuickPreviewSimilar] = useState(true);
   const [savingToggle, setSavingToggle] = useState(false);
 
   useEffect(() => {
@@ -36,6 +37,8 @@ const LooksPage = () => {
       .then(({ data }) => { if ((data?.value as any)?.version === 'v1') setLooksVersion('v1'); });
     supabase.from('app_settings').select('value').eq('id', 'similar_products_enabled').single()
       .then(({ data }) => { if ((data?.value as any)?.enabled === false) setSimilarProductsEnabled(false); });
+    supabase.from('app_settings').select('value').eq('id', 'quick_preview_similar_enabled').single()
+      .then(({ data }) => { if ((data?.value as any)?.enabled === false) setQuickPreviewSimilar(false); });
   }, []);
 
   const saveSetting = async (id: string, value: any, label: string) => {
@@ -271,6 +274,38 @@ const LooksPage = () => {
                     {similarProductsEnabled
                       ? 'Shows a horizontal carousel of similar products below AI-Curated Looks on product pages.'
                       : 'Similar Products section is hidden on product pages.'}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Quick Preview Similar Products Toggle */}
+              <Card>
+                <CardHeader className="py-4">
+                  <CardTitle className="text-lg">Quick Preview — Similar Products</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={quickPreviewSimilar ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setQuickPreviewSimilar(true); saveSetting('quick_preview_similar_enabled', { enabled: true }, 'Quick Preview similar products enabled'); }}
+                      disabled={savingToggle}
+                    >
+                      On
+                    </Button>
+                    <Button
+                      variant={!quickPreviewSimilar ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setQuickPreviewSimilar(false); saveSetting('quick_preview_similar_enabled', { enabled: false }, 'Quick Preview similar products disabled'); }}
+                      disabled={savingToggle}
+                    >
+                      Off
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {quickPreviewSimilar
+                      ? 'Shows a "You may also like" section with related products when scrolling in the Quick Preview popup.'
+                      : 'Quick Preview shows only product info and CTA — no similar products.'}
                   </p>
                 </CardContent>
               </Card>
