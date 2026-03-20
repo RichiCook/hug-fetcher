@@ -261,9 +261,18 @@ const ProductPreviewSheet = ({ product, onClose }: ProductPreviewSheetProps) => 
             </div>
           )}
           {(p as any)?.description && (
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#888', lineHeight: 1.65, margin: '10px 0 0' }}>
-              {(p as any).description}
-            </p>
+            <details style={{ margin: '10px 0 0' }}>
+              <summary style={{
+                fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: '#b5ada5',
+                cursor: 'pointer', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 4,
+              }}>
+                <span>Description</span>
+                <ChevronDown style={{ width: 12, height: 12 }} />
+              </summary>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#888', lineHeight: 1.65, margin: '6px 0 0' }}>
+                {(p as any).description}
+              </p>
+            </details>
           )}
         </div>
 
