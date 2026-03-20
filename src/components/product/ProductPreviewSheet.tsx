@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { X, ExternalLink } from 'lucide-react';
+import { X, ExternalLink, ChevronDown } from 'lucide-react';
 import { getFlatLayImage, filterImagesBySku } from '@/utils/imageUtils';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeImages } from '@/hooks/useProducts';
