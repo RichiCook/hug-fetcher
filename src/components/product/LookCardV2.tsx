@@ -223,13 +223,10 @@ const LookCardV2 = ({ looks, productCode, loading, loadingMore, onTrackEvent, on
                         <div style={{ width: 44, height: 44, borderRadius: 6, background: '#f7f7f5', overflow: 'hidden', flexShrink: 0 }}>
                           {thumb && <img src={thumb} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} referrerPolicy="no-referrer" />}
                         </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{p.name}</p>
-                        </div>
-                        {p.price && (
-                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: '#1a1a1a', flexShrink: 0, marginRight: 4 }}>{p.price}</span>
-                        )}
-                        <ChevronRight style={{ width: 16, height: 16, stroke: '#ccc', strokeWidth: 1.5, flexShrink: 0 }} />
+                         <div style={{ flex: 1, minWidth: 0 }}>
+                           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{p.name}</p>
+                         </div>
+                         <ChevronRight style={{ width: 16, height: 16, stroke: '#ccc', strokeWidth: 1.5, flexShrink: 0 }} />
                       </button>
                     );
                   })}

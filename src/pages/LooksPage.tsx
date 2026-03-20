@@ -37,6 +37,8 @@ const LooksPage = () => {
       .then(({ data }) => { if ((data?.value as any)?.version === 'v1') setLooksVersion('v1'); });
     supabase.from('app_settings').select('value').eq('id', 'similar_products_enabled').single()
       .then(({ data }) => { if ((data?.value as any)?.enabled === false) setSimilarProductsEnabled(false); });
+    supabase.from('app_settings').select('value').eq('id', 'quick_preview_similar_enabled').single()
+      .then(({ data }) => { if ((data?.value as any)?.enabled === false) setQuickPreviewSimilar(false); });
   }, []);
 
   const saveSetting = async (id: string, value: any, label: string) => {
