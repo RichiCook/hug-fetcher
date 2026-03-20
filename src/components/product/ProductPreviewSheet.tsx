@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { X, ExternalLink } from 'lucide-react';
+import { X, ExternalLink, ChevronDown } from 'lucide-react';
 import { getFlatLayImage, filterImagesBySku } from '@/utils/imageUtils';
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeImages } from '@/hooks/useProducts';
@@ -26,6 +26,7 @@ interface SimilarItem {
   category: string | null;
   collection: string | null;
   product_code: string | null;
+  source_url: string | null;
 }
 
 interface ProductPreviewSheetProps {
@@ -79,7 +80,7 @@ const ProductPreviewSheet = ({ product, onClose }: ProductPreviewSheetProps) => 
     if (!product || !showSimilar) { setSimilarProducts([]); return; }
     const load = async () => {
       const { data } = await supabase.from('products')
-        .select('id, name, price, images, slug, category, collection, product_code')
+        .select('id, name, price, images, slug, category, collection, product_code, source_url')
         .neq('id', product.id)
         .eq('category', product.category || '')
         .limit(8);
@@ -260,9 +261,18 @@ const ProductPreviewSheet = ({ product, onClose }: ProductPreviewSheetProps) => 
             </div>
           )}
           {(p as any)?.description && (
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#888', lineHeight: 1.65, margin: '10px 0 0' }}>
-              {(p as any).description}
-            </p>
+            <details style={{ margin: '10px 0 0' }}>
+              <summary style={{
+                fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: '#b5ada5',
+                cursor: 'pointer', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 4,
+              }}>
+                <span>Description</span>
+                <ChevronDown style={{ width: 12, height: 12 }} />
+              </summary>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#888', lineHeight: 1.65, margin: '6px 0 0' }}>
+                {(p as any).description}
+              </p>
+            </details>
           )}
         </div>
 
@@ -312,7 +322,9 @@ const ProductPreviewSheet = ({ product, onClose }: ProductPreviewSheetProps) => 
                 return (
                   <a
                     key={sp.id}
-                    href={`/product/${sp.slug}`}
+                    href={sp.source_url || `/product/${sp.slug}`}
+                    target={sp.source_url ? '_blank' : undefined}
+                    rel={sp.source_url ? 'noopener noreferrer' : undefined}
                     className="shrink-0 snap-start"
                     style={{ minWidth: 140, maxWidth: 140, textDecoration: 'none' }}
                   >
