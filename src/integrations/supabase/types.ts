@@ -423,7 +423,9 @@ export type Database = {
           id: string
           images: Json | null
           is_available: boolean
+          model_3d_url: string | null
           name: string
+          panorama_url: string | null
           price: string | null
           product_code: string | null
           short_code: string | null
@@ -446,7 +448,9 @@ export type Database = {
           id?: string
           images?: Json | null
           is_available?: boolean
+          model_3d_url?: string | null
           name: string
+          panorama_url?: string | null
           price?: string | null
           product_code?: string | null
           short_code?: string | null
@@ -469,7 +473,9 @@ export type Database = {
           id?: string
           images?: Json | null
           is_available?: boolean
+          model_3d_url?: string | null
           name?: string
+          panorama_url?: string | null
           price?: string | null
           product_code?: string | null
           short_code?: string | null
