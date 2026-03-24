@@ -1,24 +1,62 @@
-import { Suspense, useRef, useState, useEffect, useCallback } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Suspense, useRef, useState, useEffect, useCallback, Component, ReactNode } from 'react';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
+import { useLoader } from '@react-three/fiber';
+import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 import { RotateCcw, Maximize, Pause, Play } from 'lucide-react';
 
-/* ── Panoramic Sphere (360° background) ── */
-const PanoramaSphere = ({ url }: { url: string }) => {
-  const texture = useTexture(url);
+/* ── Error Boundary to prevent white-screen crashes ── */
+class ViewerErrorBoundary extends Component<{ children: ReactNode; fallback?: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error) { console.error('3D Viewer error:', error); }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="w-full flex items-center justify-center bg-black/90 text-white/60 text-sm" style={{ aspectRatio: '3/4' }}>
+          3D viewer failed to load
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
+/* ── Panoramic Sphere for standard images (jpg/png) ── */
+const PanoramaSphereImage = ({ url }: { url: string }) => {
+  const texture = useTexture(url);
   useEffect(() => {
     texture.mapping = THREE.EquirectangularReflectionMapping;
     texture.needsUpdate = true;
   }, [texture]);
-
   return (
     <mesh>
       <sphereGeometry args={[500, 60, 40]} />
       <meshBasicMaterial map={texture} side={THREE.BackSide} />
     </mesh>
   );
+};
+
+/* ── Panoramic Sphere for EXR files ── */
+const PanoramaSphereEXR = ({ url }: { url: string }) => {
+  const texture = useLoader(EXRLoader as any, url) as THREE.DataTexture;
+  useEffect(() => {
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    texture.needsUpdate = true;
+  }, [texture]);
+  return (
+    <mesh>
+      <sphereGeometry args={[500, 60, 40]} />
+      <meshBasicMaterial map={texture} side={THREE.BackSide} toneMapped={false} />
+    </mesh>
+  );
+};
+
+/* ── Panorama dispatcher ── */
+const PanoramaSphere = ({ url }: { url: string }) => {
+  const isEXR = url.toLowerCase().endsWith('.exr');
+  return isEXR ? <PanoramaSphereEXR url={url} /> : <PanoramaSphereImage url={url} />;
 };
 
 /* ── Auto-scaled GLB Model ── */
@@ -47,11 +85,8 @@ const SceneControls = ({
   autoRotate: boolean;
   onInteraction: () => void;
 }) => {
-  const controlsRef = useRef<any>(null);
-
   return (
     <OrbitControls
-      ref={controlsRef}
       autoRotate={autoRotate}
       autoRotateSpeed={1.2}
       enableDamping
@@ -91,7 +126,6 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl }: ProductViewer3DProps) => {
   }, []);
 
   const handleReset = () => {
-    // Force re-mount canvas by toggling key — simple approach
     setAutoRotate(true);
   };
 
@@ -109,64 +143,66 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl }: ProductViewer3DProps) => {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full bg-black"
-      style={{ aspectRatio: '3/4' }}
-    >
-      <Suspense fallback={<Loader />}>
-        <Canvas
-          camera={{ position: [0, 0, 4], fov: 50 }}
-          style={{ width: '100%', height: '100%' }}
-          gl={{ antialias: true, alpha: false }}
-        >
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 5, 5]} intensity={0.8} />
-          <directionalLight position={[-3, -3, 2]} intensity={0.3} />
-
-          {panoramaUrl && <PanoramaSphere url={panoramaUrl} />}
-
-          <Model url={modelUrl} />
-
-          <SceneControls
-            autoRotate={autoRotate}
-            onInteraction={handleInteraction}
-          />
-        </Canvas>
-      </Suspense>
-
-      {/* Floating controls — glassmorphism */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full"
-        style={{
-          background: 'rgba(0,0,0,0.45)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255,255,255,0.12)',
-        }}
+    <ViewerErrorBoundary>
+      <div
+        ref={containerRef}
+        className="relative w-full bg-black"
+        style={{ aspectRatio: '3/4' }}
       >
-        <button
-          onClick={handleReset}
-          className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
-          title="Reset view"
+        <Suspense fallback={<Loader />}>
+          <Canvas
+            camera={{ position: [0, 0, 4], fov: 50 }}
+            style={{ width: '100%', height: '100%' }}
+            gl={{ antialias: true, alpha: false }}
+          >
+            <ambientLight intensity={0.6} />
+            <directionalLight position={[5, 5, 5]} intensity={0.8} />
+            <directionalLight position={[-3, -3, 2]} intensity={0.3} />
+
+            {panoramaUrl && <PanoramaSphere url={panoramaUrl} />}
+
+            <Model url={modelUrl} />
+
+            <SceneControls
+              autoRotate={autoRotate}
+              onInteraction={handleInteraction}
+            />
+          </Canvas>
+        </Suspense>
+
+        {/* Floating controls — glassmorphism */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full"
+          style={{
+            background: 'rgba(0,0,0,0.45)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}
         >
-          <RotateCcw className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => setAutoRotate(prev => !prev)}
-          className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
-          title={autoRotate ? 'Pause rotation' : 'Resume rotation'}
-        >
-          {autoRotate ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-        </button>
-        <button
-          onClick={handleFullscreen}
-          className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
-          title="Fullscreen"
-        >
-          <Maximize className="w-4 h-4" />
-        </button>
+          <button
+            onClick={handleReset}
+            className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
+            title="Reset view"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setAutoRotate(prev => !prev)}
+            className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
+            title={autoRotate ? 'Pause rotation' : 'Resume rotation'}
+          >
+            {autoRotate ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
+          <button
+            onClick={handleFullscreen}
+            className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
+            title="Fullscreen"
+          >
+            <Maximize className="w-4 h-4" />
+          </button>
+        </div>
       </div>
-    </div>
+    </ViewerErrorBoundary>
   );
 };
 
