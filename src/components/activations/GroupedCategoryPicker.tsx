@@ -18,17 +18,14 @@ interface GroupedCategoryPickerProps {
 }
 
 const CATEGORY_GROUPS: Record<string, { keywords: string[] }> = {
-  'Blade Family': {
-    keywords: ['blade', 'superblade', 'cappa blade'],
+  'Shoes': {
+    keywords: ['shoes', 'pumps', 'sandals', 'boots', 'mules', 'slippers', 'sneakers', 'loafers', 'flats'],
   },
-  'Core Lines': {
-    keywords: ['nexus', 'off road', 'julia', 'flora', 'mia', 'patty', 'avenida', 'sirio', 'emily', 'versilia', 'concept', 'nancy', 'muni', 'hanoi', 'michelle'],
+  'Clothing': {
+    keywords: ['clothing', 'dresses', 'tops', 'pants', 'skirts', 'jackets', 'coats', 'shirts', 'blouses'],
   },
-  'Signature Lines': {
-    keywords: ['jelly', 'riderama', 'malesia', 'divine', 'starsway', 'josephine', 'geraldine', 'double face', 'beat', 'charlie', 'ale', 'betty'],
-  },
-  'Editorial Lines': {
-    keywords: ['vegas', 'universe', 'infinity', 'lingerie', 'cathedral', 'soraya', 'winnie', 'reflex', 'liberty', 'positano', 'twiga'],
+  'Accessories': {
+    keywords: ['accessories', 'bags', 'belts', 'scarves', 'hats', 'jewelry', 'sunglasses', 'wallets'],
   },
 };
 
@@ -44,12 +41,10 @@ export const GroupedCategoryPicker = ({
     const groups: Record<string, CategoryData[]> = {};
     const ungrouped: CategoryData[] = [];
 
-    // Initialize groups
     Object.keys(CATEGORY_GROUPS).forEach(group => {
       groups[group] = [];
     });
 
-    // Categorize each category
     categories.forEach(cat => {
       const catLower = cat.name.toLowerCase();
       let matched = false;
@@ -104,14 +99,12 @@ export const GroupedCategoryPicker = ({
 
   return (
     <div className="space-y-2">
-      {/* Category Groups */}
-      {Object.entries(CATEGORY_GROUPS).map(([groupName, groupDef]) => {
+      {Object.entries(CATEGORY_GROUPS).map(([groupName]) => {
         const groupCats = groupedCategories.groups[groupName] || [];
         if (groupCats.length === 0) return null;
 
         const isOpen = openGroups.has(groupName);
         const selectedCount = getGroupSelectedCount(groupName);
-        const totalCount = groupCats.reduce((sum, c) => sum + c.count, 0);
 
         return (
           <Collapsible
@@ -130,7 +123,7 @@ export const GroupedCategoryPicker = ({
                     )}
                     <span className="font-medium">{groupName}</span>
                     <Badge variant="secondary" className="text-xs">
-                       {groupCats.length} approved categories
+                      {groupCats.length}
                     </Badge>
                   </div>
                   {selectedCount > 0 && (
@@ -169,7 +162,7 @@ export const GroupedCategoryPicker = ({
                           onClick={() => onToggleCategory(cat.name)}
                         >
                           {isSelected && <Check className="w-3 h-3 mr-1" />}
-                           {cat.name}
+                          {cat.name} ({cat.count})
                         </Badge>
                       );
                     })}
@@ -181,15 +174,14 @@ export const GroupedCategoryPicker = ({
         );
       })}
 
-      {/* Ungrouped categories */}
       {groupedCategories.ungrouped.length > 0 && (
         <Collapsible>
           <CollapsibleTrigger className="w-full">
             <div className="border rounded-lg p-3 flex items-center gap-2 hover:bg-accent/50 transition-colors">
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                <span className="font-medium">Other approved categories</span>
+              <span className="font-medium">Other</span>
               <Badge variant="secondary" className="text-xs">
-                  {groupedCategories.ungrouped.length} approved categories
+                {groupedCategories.ungrouped.length}
               </Badge>
             </div>
           </CollapsibleTrigger>
@@ -205,7 +197,7 @@ export const GroupedCategoryPicker = ({
                     onClick={() => onToggleCategory(cat.name)}
                   >
                     {isSelected && <Check className="w-3 h-3 mr-1" />}
-                    {cat.name}
+                    {cat.name} ({cat.count})
                   </Badge>
                 );
               })}
@@ -214,7 +206,6 @@ export const GroupedCategoryPicker = ({
         </Collapsible>
       )}
 
-      {/* Selected Categories Summary */}
       {selectedCategories.length > 0 && (
         <div className="pt-3 border-t border-border mt-4">
           <p className="text-sm font-medium mb-2">

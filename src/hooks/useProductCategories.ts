@@ -6,17 +6,6 @@ export interface CategoryData {
   count: number;
 }
 
-const ALLOWED_CATEGORIES = [
-  'Blade', 'Superblade', 'Nexus', 'Off Road', 'Julia', 'Flora', 'Mia', 'Patty',
-  'Avenida', 'Sirio', 'Emily', 'Versilia', 'Concept', 'Nancy', 'Muni', 'Hanoi',
-  'Michelle', 'Cappa Blade', 'Jelly', 'Riderama', 'Malesia', 'Divine', 'Starsway',
-  'Josephine', 'Geraldine', 'Double Face', 'Beat', 'Charlie', 'Ale', 'Betty',
-  'Vegas', 'Universe', 'Infinity', 'Lingerie', 'Cathedral', 'Soraya', 'Winnie',
-  'Reflex', 'Liberty', 'Positano', 'Twiga',
-];
-
-const ALLOWED_SET = new Set(ALLOWED_CATEGORIES.map(c => c.toLowerCase()));
-
 export const useProductCategories = () => {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,23 +14,21 @@ export const useProductCategories = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('products')
-      .select('name');
+      .select('category');
 
     if (error) {
       console.error('Error fetching product categories:', error);
     } else {
-      // Match model names from product names (e.g. "Liberty Blade Pumps" → "Blade")
       const categoryCount: Record<string, number> = {};
       
       (data || []).forEach(product => {
-        const productName = (product.name || '').toLowerCase();
-        ALLOWED_CATEGORIES.forEach(modelName => {
-          // Word-boundary check: model name must appear as a whole word in the product name
-          const regex = new RegExp(`\\b${modelName.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
-          if (regex.test(productName)) {
-            categoryCount[modelName] = (categoryCount[modelName] || 0) + 1;
-          }
-        });
+        if (product.category && product.category.trim()) {
+          // Split by " > " to get individual segments
+          const segments = product.category.split(' > ').map(s => s.trim()).filter(Boolean);
+          segments.forEach(segment => {
+            categoryCount[segment] = (categoryCount[segment] || 0) + 1;
+          });
+        }
       });
 
       const categoryArray = Object.entries(categoryCount)
