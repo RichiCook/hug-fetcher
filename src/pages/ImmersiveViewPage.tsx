@@ -194,8 +194,8 @@ const ImmersiveViewPage = () => {
                   onRemoved={() => handleSave3DField(product, 'model_3d_url', null)}
                 />
                 <ThreeDUpload
-                  label="360° Panoramic Image (.jpg / .png)"
-                  accept=".jpg,.jpeg,.png"
+                  label="360° Panoramic Image (.jpg / .png / .exr)"
+                  accept=".jpg,.jpeg,.png,.exr"
                   currentUrl={getFieldValue(product, 'panorama_url')}
                   folder={`panoramas/${product.id}`}
                   onUploaded={(url) => handleSave3DField(product, 'panorama_url', url)}
