@@ -1,13 +1,18 @@
 import { Suspense, useRef, useState, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import { OrbitControls, useGLTF, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { RotateCcw, Maximize, Pause, Play } from 'lucide-react';
 
 /* ── Panoramic Sphere (360° background) ── */
 const PanoramaSphere = ({ url }: { url: string }) => {
-  const texture = new THREE.TextureLoader().load(url);
-  texture.mapping = THREE.EquirectangularReflectionMapping;
+  const texture = useTexture(url);
+
+  useEffect(() => {
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    texture.needsUpdate = true;
+  }, [texture]);
+
   return (
     <mesh>
       <sphereGeometry args={[500, 60, 40]} />
