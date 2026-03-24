@@ -56,7 +56,7 @@ const SceneControls = ({
       maxDistance={10}
       onStart={onInteraction}
       enableZoom
-      touchZoomSpeed={0.5}
+      zoomSpeed={0.5}
     />
   );
 };
