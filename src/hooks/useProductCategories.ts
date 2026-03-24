@@ -25,32 +25,27 @@ export const useProductCategories = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('products')
-      .select('category')
-      .not('category', 'is', null);
+      .select('name');
 
     if (error) {
       console.error('Error fetching product categories:', error);
     } else {
+      // Match model names from product names (e.g. "Liberty Blade Pumps" → "Blade")
       const categoryCount: Record<string, number> = {};
       
       (data || []).forEach(product => {
-        const cat = product.category;
-        if (cat && cat.trim() !== '') {
-          const segments = cat.split(' > ').map((s: string) => s.trim()).filter((s: string) => s);
-          segments.forEach((segment: string) => {
-            categoryCount[segment] = (categoryCount[segment] || 0) + 1;
-          });
-        }
+        const productName = (product.name || '').toLowerCase();
+        ALLOWED_CATEGORIES.forEach(modelName => {
+          // Word-boundary check: model name must appear as a whole word in the product name
+          const regex = new RegExp(`\\b${modelName.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+          if (regex.test(productName)) {
+            categoryCount[modelName] = (categoryCount[modelName] || 0) + 1;
+          }
+        });
       });
 
-      // Filter to only allowed categories (case-insensitive match, use canonical name)
-      const categoryArray = ALLOWED_CATEGORIES
-        .map(name => ({
-          name,
-          count: Object.entries(categoryCount).reduce((sum, [k, v]) => 
-            k.toLowerCase() === name.toLowerCase() ? sum + v : sum, 0),
-        }))
-        .filter(c => c.count > 0)
+      const categoryArray = Object.entries(categoryCount)
+        .map(([name, count]) => ({ name, count }))
         .sort((a, b) => b.count - a.count);
 
       setCategories(categoryArray);
