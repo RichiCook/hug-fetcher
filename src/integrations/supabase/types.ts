@@ -499,6 +499,65 @@ export type Database = {
         }
         Relationships: []
       }
+      repair_requests: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          damage_type: string
+          estimated_cost_max: number | null
+          estimated_cost_min: number | null
+          id: string
+          photos: string[] | null
+          product_id: string | null
+          status: string
+          updated_at: string
+          user_email: string | null
+          user_name: string | null
+          warranty_status: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          damage_type: string
+          estimated_cost_max?: number | null
+          estimated_cost_min?: number | null
+          id?: string
+          photos?: string[] | null
+          product_id?: string | null
+          status?: string
+          updated_at?: string
+          user_email?: string | null
+          user_name?: string | null
+          warranty_status?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          damage_type?: string
+          estimated_cost_max?: number | null
+          estimated_cost_min?: number | null
+          id?: string
+          photos?: string[] | null
+          product_id?: string | null
+          status?: string
+          updated_at?: string
+          user_email?: string | null
+          user_name?: string | null
+          warranty_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "repair_requests_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scan_events: {
         Row: {
           created_at: string

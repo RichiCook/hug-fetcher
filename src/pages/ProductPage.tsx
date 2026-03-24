@@ -406,6 +406,8 @@ const ProductPage = () => {
         description={product.description}
         composition={product.composition}
         sourceUrl={product.source_url}
+        productName={product.name}
+        productId={product.id}
       />
 
       <DigitalPassportPopup
