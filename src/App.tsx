@@ -17,6 +17,7 @@ import ApiSettingsPage from "./pages/ApiSettingsPage";
 import SettingsPage from "./pages/SettingsPage";
 import ScanAnalyticsPage from "./pages/ScanAnalyticsPage";
 import CelebrityContentPage from "./pages/CelebrityContentPage";
+import ImmersiveViewPage from "./pages/ImmersiveViewPage";
 import AuthPage from "./pages/AuthPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PlatformSettingsProvider } from "./contexts/PlatformSettingsContext";
