@@ -17,35 +17,18 @@ interface GroupedCategoryPickerProps {
   onRemoveCategory: (category: string) => void;
 }
 
-// Category groupings for LINGERIE / SWIMWEAR brand
-const CATEGORY_GROUPS: Record<string, { icon: string; keywords: string[] }> = {
-  'Bras & Tops': {
-    icon: '👙',
-    keywords: ['reggiseni', 'reggiseno', 'bralette', 'corsetti', 'corsetto', 'bustier', 'bras', 'bra', 'balconette', 'push-up', 'triangle', 'bandeau', 'strapless', 'underwire', 'soft-cup', 'top']
+const CATEGORY_GROUPS: Record<string, { keywords: string[] }> = {
+  'Blade Family': {
+    keywords: ['blade', 'superblade', 'cappa blade'],
   },
-  'Bottoms': {
-    icon: '🩲',
-    keywords: ['slip', 'perizomi', 'perizoma', 'mutande', 'mutanda', 'culotte', 'brazilian', 'g-string', 'tanga', 'thong', 'panties', 'briefs', 'hipster', 'high-waist', 'shorts']
+  'Core Lines': {
+    keywords: ['nexus', 'off road', 'julia', 'flora', 'mia', 'patty', 'avenida', 'sirio', 'emily', 'versilia', 'concept', 'nancy', 'muni', 'hanoi', 'michelle'],
   },
-  'Bodies & Sets': {
-    icon: '💃',
-    keywords: ['body', 'bodysuit', 'completi', 'completo', 'set', 'teddy', 'babydoll', 'chemise', 'coordinato']
+  'Signature Lines': {
+    keywords: ['jelly', 'riderama', 'malesia', 'divine', 'starsway', 'josephine', 'geraldine', 'double face', 'beat', 'charlie', 'ale', 'betty'],
   },
-  'Swimwear': {
-    icon: '🩱',
-    keywords: ['mare', 'costumi', 'costume', 'bikini', 'costume intero', 'swimsuit', 'swimwear', 'beachwear', 'monokini', 'tankini', 'one-piece', 'two-piece']
-  },
-  'Nightwear': {
-    icon: '🌙',
-    keywords: ['notte', 'pigiami', 'pigiama', 'camicie da notte', 'camicia da notte', 'vestaglie', 'vestaglia', 'pajamas', 'pyjamas', 'nightgown', 'nightdress', 'sleepwear', 'loungewear']
-  },
-  'Cover-ups & Robes': {
-    icon: '🥻',
-    keywords: ['caftani', 'caftano', 'copricostume', 'pareo', 'kimono', 'cover-up', 'coverup', 'robe', 'accappatoio', 'dressing gown', 'wrapper']
-  },
-  'Accessories': {
-    icon: '✨',
-    keywords: ['accessori', 'giarrettiere', 'giarrettiera', 'calze', 'calza', 'stockings', 'suspender', 'garter', 'belt', 'cintura', 'reggicalze', 'autoreggenti', 'collant', 'tights', 'hosiery']
+  'Editorial Lines': {
+    keywords: ['vegas', 'universe', 'infinity', 'lingerie', 'cathedral', 'soraya', 'winnie', 'reflex', 'liberty', 'positano', 'twiga'],
   },
 };
 
@@ -55,7 +38,7 @@ export const GroupedCategoryPicker = ({
   onToggleCategory,
   onRemoveCategory,
 }: GroupedCategoryPickerProps) => {
-  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set(['Outerwear', 'Tops']));
+  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set(Object.keys(CATEGORY_GROUPS)));
 
   const groupedCategories = useMemo(() => {
     const groups: Record<string, CategoryData[]> = {};
@@ -145,10 +128,9 @@ export const GroupedCategoryPicker = ({
                     ) : (
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     )}
-                    <span className="text-lg">{groupDef.icon}</span>
                     <span className="font-medium">{groupName}</span>
                     <Badge variant="secondary" className="text-xs">
-                      {groupCats.length} types • {totalCount} products
+                       {groupCats.length} approved categories
                     </Badge>
                   </div>
                   {selectedCount > 0 && (
@@ -187,7 +169,7 @@ export const GroupedCategoryPicker = ({
                           onClick={() => onToggleCategory(cat.name)}
                         >
                           {isSelected && <Check className="w-3 h-3 mr-1" />}
-                          {cat.name} ({cat.count})
+                           {cat.name}
                         </Badge>
                       );
                     })}
@@ -205,9 +187,9 @@ export const GroupedCategoryPicker = ({
           <CollapsibleTrigger className="w-full">
             <div className="border rounded-lg p-3 flex items-center gap-2 hover:bg-accent/50 transition-colors">
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              <span className="font-medium">Other</span>
+                <span className="font-medium">Other approved categories</span>
               <Badge variant="secondary" className="text-xs">
-                {groupedCategories.ungrouped.length} types
+                  {groupedCategories.ungrouped.length} approved categories
               </Badge>
             </div>
           </CollapsibleTrigger>
@@ -223,7 +205,7 @@ export const GroupedCategoryPicker = ({
                     onClick={() => onToggleCategory(cat.name)}
                   >
                     {isSelected && <Check className="w-3 h-3 mr-1" />}
-                    {cat.name} ({cat.count})
+                    {cat.name}
                   </Badge>
                 );
               })}
