@@ -10,10 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, Trash2, GripVertical, Eye, Image, Video, Layout, Code, Save, Gift, Upload, X, Box } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, GripVertical, Eye, Image, Video, Layout, Code, Save, Gift } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Progress } from '@/components/ui/progress';
 import logo from '@/assets/logo.png';
 
 
