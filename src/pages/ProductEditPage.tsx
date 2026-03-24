@@ -200,6 +200,37 @@ const ProductEditPage = () => {
           </CardContent>
         </Card>
 
+        {/* 3D Viewer Assets Section */}
+        <Card className="mb-8">
+          <CardHeader className="py-4">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Box className="w-5 h-5" />
+              3D Viewer
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ThreeDUpload
+              label="3D Model (.glb / .gltf)"
+              accept=".glb,.gltf"
+              currentUrl={(product as any)?.model_3d_url || null}
+              folder={`models/${product.id}`}
+              onUploaded={(url) => handleSave3DField('model_3d_url', url)}
+              onRemoved={() => handleSave3DField('model_3d_url', null)}
+            />
+            <ThreeDUpload
+              label="360° Panoramic Image (.jpg / .png)"
+              accept=".jpg,.jpeg,.png"
+              currentUrl={(product as any)?.panorama_url || null}
+              folder={`panoramas/${product.id}`}
+              onUploaded={(url) => handleSave3DField('panorama_url', url)}
+              onRemoved={() => handleSave3DField('panorama_url', null)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Upload a 3D model and optional 360° background to enable the immersive product viewer on the product page.
+            </p>
+          </CardContent>
+        </Card>
+
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left: Current Activations */}
