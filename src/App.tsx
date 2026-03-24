@@ -50,6 +50,7 @@ const App = () => (
           <Route path="/settings" element={<PlatformSettingsProvider><ProtectedRoute><SettingsPage /></ProtectedRoute></PlatformSettingsProvider>} />
           <Route path="/scan-analytics" element={<PlatformSettingsProvider><ProtectedRoute><ScanAnalyticsPage /></ProtectedRoute></PlatformSettingsProvider>} />
           <Route path="/celebrity-content" element={<PlatformSettingsProvider><ProtectedRoute><CelebrityContentPage /></ProtectedRoute></PlatformSettingsProvider>} />
+          <Route path="/immersive-view" element={<PlatformSettingsProvider><ProtectedRoute><ImmersiveViewPage /></ProtectedRoute></PlatformSettingsProvider>} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
