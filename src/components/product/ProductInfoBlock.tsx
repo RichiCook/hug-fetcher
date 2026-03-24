@@ -114,6 +114,36 @@ const ProductInfoBlock = ({ price, productCode, description, composition, source
         </div>
       )}
 
+      {/* Repair Button */}
+      {repairSettings && (
+        <>
+          <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, #e8e4df 20%, #e8e4df 80%, transparent)', margin: '26px 0' }} />
+          <button
+            onClick={() => setRepairOpen(true)}
+            className="flex items-center w-full"
+            style={{
+              padding: '16px',
+              borderRadius: 8,
+              border: '1px solid #e4e0db',
+              background: '#fff',
+              cursor: 'pointer',
+              gap: 12,
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
+            </svg>
+            <div className="flex-1 text-left">
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: '#1a1a1a', display: 'block' }}>Request a Repair</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: '#b5ada5' }}>Ship to us · Photo assessment included</span>
+            </div>
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M1 1l6 6-6 6" />
+            </svg>
+          </button>
+        </>
+      )}
+
       {/* Divider */}
       <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, #e8e4df 20%, #e8e4df 80%, transparent)', margin: '26px 0' }} />
 
@@ -149,6 +179,18 @@ const ProductInfoBlock = ({ price, productCode, description, composition, source
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '11px', color: '#ccc', textAlign: 'center' as const, marginTop: 12 }}>
         Powered by Aitems · Product Intelligence
       </p>
+
+      {/* Repair Sheet */}
+      {repairSettings && (
+        <RepairRequestSheet
+          open={repairOpen}
+          onClose={() => setRepairOpen(false)}
+          productName={productName || 'Product'}
+          productCode={productCode}
+          productId={productId}
+          repairSettings={repairSettings}
+        />
+      )}
     </div>
   );
 };
