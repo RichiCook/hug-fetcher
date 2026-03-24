@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AppHeader } from '@/components/AppHeader';
 import { useProducts, Product } from '@/hooks/useProducts';
@@ -10,8 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, Trash2, GripVertical, Eye, Image, Video, Layout, Code, Save, Gift } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, GripVertical, Eye, Image, Video, Layout, Code, Save, Gift, Upload, X, Box } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Progress } from '@/components/ui/progress';
 import logo from '@/assets/logo.png';
 
 
@@ -29,6 +31,103 @@ const typeLabels: Record<ActivationType, string> = {
   banner: 'Banner / CTA',
   custom_html: 'Custom HTML',
   lead_capture: 'Lead Capture',
+};
+/* ── Drag-and-drop 3D asset uploader ── */
+const ThreeDUpload = ({
+  label,
+  accept,
+  currentUrl,
+  folder,
+  onUploaded,
+  onRemoved,
+}: {
+  label: string;
+  accept: string;
+  currentUrl: string | null;
+  folder: string;
+  onUploaded: (url: string) => void;
+  onRemoved: () => void;
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleFile = async (file: File) => {
+    setUploading(true);
+    setProgress(10);
+    const ext = file.name.split('.').pop();
+    const path = `${folder}/${Date.now()}.${ext}`;
+    setProgress(30);
+    const { error } = await supabase.storage
+      .from('product-3d-assets')
+      .upload(path, file, { upsert: true });
+    setProgress(80);
+    if (error) {
+      console.error('Upload error:', error);
+      setUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage
+      .from('product-3d-assets')
+      .getPublicUrl(path);
+    setProgress(100);
+    onUploaded(urlData.publicUrl);
+    setUploading(false);
+  };
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  if (currentUrl) {
+    const fileName = currentUrl.split('/').pop() || 'file';
+    return (
+      <div className="flex items-center gap-3 p-3 border border-border rounded-lg bg-secondary/30">
+        <Upload className="w-4 h-4 text-muted-foreground shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate">{label}</p>
+          <p className="text-xs text-muted-foreground truncate">{fileName}</p>
+        </div>
+        <Button variant="ghost" size="sm" onClick={onRemoved}>
+          <X className="w-4 h-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={onDrop}
+      className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        dragOver ? 'border-primary bg-primary/5' : 'border-border'
+      }`}
+    >
+      <Upload className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
+      <p className="text-sm font-medium">{label}</p>
+      <p className="text-xs text-muted-foreground mt-1">Drag & drop or tap to upload</p>
+      <input
+        type="file"
+        accept={accept}
+        onChange={onFileChange}
+        className="absolute inset-0 opacity-0 cursor-pointer"
+      />
+      {uploading && (
+        <div className="mt-3">
+          <Progress value={progress} className="h-1.5" />
+        </div>
+      )}
+    </div>
+  );
 };
 
 const ProductEditPage = () => {
@@ -62,7 +161,19 @@ const ProductEditPage = () => {
     loadProduct();
   }, [slug]);
 
-
+  const handleSave3DField = async (field: 'model_3d_url' | 'panorama_url', value: string | null) => {
+    if (!product) return;
+    const { error } = await supabase
+      .from('products')
+      .update({ [field]: value } as any)
+      .eq('id', product.id);
+    if (error) {
+      toast({ title: 'Error', description: `Failed to update ${field}`, variant: 'destructive' });
+    } else {
+      setProduct({ ...product, [field]: value } as Product);
+      toast({ title: 'Saved', description: value ? 'File uploaded successfully' : 'File removed' });
+    }
+  };
 
   const handleCreateActivation = async (
     name: string,
@@ -194,6 +305,37 @@ const ProductEditPage = () => {
             )}
             <p className="text-xs text-muted-foreground">
               Set a category to auto-display matching activations on the product page.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* 3D Viewer Assets Section */}
+        <Card className="mb-8">
+          <CardHeader className="py-4">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Box className="w-5 h-5" />
+              3D Viewer
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ThreeDUpload
+              label="3D Model (.glb / .gltf)"
+              accept=".glb,.gltf"
+              currentUrl={(product as any)?.model_3d_url || null}
+              folder={`models/${product.id}`}
+              onUploaded={(url) => handleSave3DField('model_3d_url', url)}
+              onRemoved={() => handleSave3DField('model_3d_url', null)}
+            />
+            <ThreeDUpload
+              label="360° Panoramic Image (.jpg / .png)"
+              accept=".jpg,.jpeg,.png"
+              currentUrl={(product as any)?.panorama_url || null}
+              folder={`panoramas/${product.id}`}
+              onUploaded={(url) => handleSave3DField('panorama_url', url)}
+              onRemoved={() => handleSave3DField('panorama_url', null)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Upload a 3D model and optional 360° background to enable the immersive product viewer on the product page.
             </p>
           </CardContent>
         </Card>

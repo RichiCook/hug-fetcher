@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, lazy, Suspense } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { useProducts, Product } from '@/hooks/useProducts';
 import { useProductActivations, useActivations } from '@/hooks/useActivations';
@@ -17,6 +17,8 @@ import ProductInfoBlock from '@/components/product/ProductInfoBlock';
 import DigitalPassportPopup from '@/components/product/DigitalPassportPopup';
 import CelebritySpotlight from '@/components/product/CelebritySpotlight';
 import SimilarProducts from '@/components/product/SimilarProducts';
+
+const ProductViewer3D = lazy(() => import('@/components/product/ProductViewer3D'));
 
 const ProductPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -274,6 +276,22 @@ const ProductPage = () => {
           </Button>
         </div>
       </header>
+
+      {/* 3D Viewer — shown when model exists */}
+      {(product as any).model_3d_url && (
+        <section className="sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:pt-6">
+          <Suspense fallback={
+            <div className="w-full bg-black flex items-center justify-center" style={{ aspectRatio: '3/4' }}>
+              <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            </div>
+          }>
+            <ProductViewer3D
+              modelUrl={(product as any).model_3d_url}
+              panoramaUrl={(product as any).panorama_url}
+            />
+          </Suspense>
+        </section>
+      )}
 
       {/* Hero Section — edge-to-edge image on mobile */}
       <section className="sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:py-10">

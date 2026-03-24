@@ -19,6 +19,8 @@ export interface Product {
   collection: string | null;
   created_at: string;
   updated_at: string;
+  model_3d_url: string | null;
+  panorama_url: string | null;
 }
 
 /** Normalize image arrays: split any newline-joined URLs into separate entries */
