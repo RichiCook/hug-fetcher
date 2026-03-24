@@ -130,7 +130,7 @@ const ThreeDUpload = ({
   );
 };
 
-
+const ProductEditPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { getProductBySlug, updateProductCategory, getUsedCategories, products } = useProducts();
   const { activations, createActivation, getUsedCategories: getActivationCategories } = useActivations();
@@ -161,7 +161,19 @@ const ThreeDUpload = ({
     loadProduct();
   }, [slug]);
 
-
+  const handleSave3DField = async (field: 'model_3d_url' | 'panorama_url', value: string | null) => {
+    if (!product) return;
+    const { error } = await supabase
+      .from('products')
+      .update({ [field]: value } as any)
+      .eq('id', product.id);
+    if (error) {
+      toast({ title: 'Error', description: `Failed to update ${field}`, variant: 'destructive' });
+    } else {
+      setProduct({ ...product, [field]: value } as Product);
+      toast({ title: 'Saved', description: value ? 'File uploaded successfully' : 'File removed' });
+    }
+  };
 
   const handleCreateActivation = async (
     name: string,
