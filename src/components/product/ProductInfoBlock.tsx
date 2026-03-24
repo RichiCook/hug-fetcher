@@ -1,9 +1,16 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import RepairRequestSheet from '@/components/repair/RepairRequestSheet';
+import { RepairSettings, DEFAULT_REPAIR_SETTINGS } from '@/hooks/useRepairSettings';
+
 interface ProductInfoBlockProps {
   price?: string | null;
   productCode?: string | null;
   description?: string | null;
   composition?: string | null;
   sourceUrl?: string | null;
+  productName?: string;
+  productId?: string;
 }
 
 const PALETTES: Record<string, string[]> = {
@@ -27,9 +34,25 @@ const parseComposition = (comp: string): { name: string; pct: number }[] => {
   return parts.sort((a, b) => b.pct - a.pct);
 };
 
-const ProductInfoBlock = ({ price, productCode, description, composition, sourceUrl }: ProductInfoBlockProps) => {
+const ProductInfoBlock = ({ price, productCode, description, composition, sourceUrl, productName, productId }: ProductInfoBlockProps) => {
   const palette = PALETTES['warm-naturals'];
   const compParts = composition ? parseComposition(composition) : [];
+  const [repairSettings, setRepairSettings] = useState<RepairSettings | null>(null);
+  const [repairOpen, setRepairOpen] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from('app_settings')
+      .select('value')
+      .eq('id', 'repair_service')
+      .single()
+      .then(({ data }) => {
+        if (data?.value) {
+          const s = { ...DEFAULT_REPAIR_SETTINGS, ...(data.value as any) };
+          if (s.enabled) setRepairSettings(s);
+        }
+      });
+  }, []);
 
   return (
     <div style={{ padding: '0 16px' }}>
