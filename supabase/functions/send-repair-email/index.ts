@@ -16,6 +16,7 @@ serve(async (req) => {
       to, productName, productCode, damageType, damageDescription,
       photos, customerEmail, customerName, country, city,
       estimatedCostMin, estimatedCostMax, returnShippingCost, emailFields,
+      isCustomerCopy,
     } = body;
 
     if (!to) {
@@ -76,6 +77,14 @@ serve(async (req) => {
       });
     }
 
+    const subject = isCustomerCopy
+      ? `Repair Request Received: ${productName || 'Your Product'}`
+      : `Repair Request: ${productName || 'Product'} — ${damageType || 'General'}`;
+
+    const customerHeader = isCustomerCopy
+      ? '<p style="font-family: sans-serif; color: #555;">Thank you for submitting your repair request. Here is a summary of your claim:</p>'
+      : '';
+
     const emailRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -85,9 +94,9 @@ serve(async (req) => {
       body: JSON.stringify({
         from: RESEND_FROM_EMAIL,
         to: [to],
-        reply_to: customerEmail || undefined,
-        subject: `Repair Request: ${productName || 'Product'} — ${damageType || 'General'}`,
-        html: htmlBody,
+        reply_to: isCustomerCopy ? undefined : (customerEmail || undefined),
+        subject,
+        html: customerHeader + htmlBody,
       }),
     });
 

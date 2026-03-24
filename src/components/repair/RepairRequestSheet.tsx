@@ -86,26 +86,36 @@ const RepairRequestSheet = ({ open, onClose, productName, productCode, productId
         status: 'submitted',
       } as any);
 
-      // Send email via edge function
+      // Send email to brand via edge function
+      const emailPayload = {
+        productName,
+        productCode,
+        damageType: selectedDamage.name,
+        damageDescription: selectedDamage.description,
+        photos: photoUrls,
+        customerEmail: email,
+        customerName: name,
+        country,
+        city,
+        estimatedCostMin: priceRule?.min,
+        estimatedCostMax: priceRule?.max,
+        returnShippingCost: repairSettings.returnShippingCost,
+        emailFields: repairSettings.emailFields.filter(f => f.enabled),
+      };
+
       if (repairSettings.repairEmail) {
-        await supabase.functions.invoke('send-repair-email', {
-          body: {
-            to: repairSettings.repairEmail,
-            productName,
-            productCode,
-            damageType: selectedDamage.name,
-            damageDescription: selectedDamage.description,
-            photos: photoUrls,
-            customerEmail: email,
-            customerName: name,
-            country,
-            city,
-            estimatedCostMin: priceRule?.min,
-            estimatedCostMax: priceRule?.max,
-            returnShippingCost: repairSettings.returnShippingCost,
-            emailFields: repairSettings.emailFields.filter(f => f.enabled),
-          },
+        const { error: brandEmailError } = await supabase.functions.invoke('send-repair-email', {
+          body: { ...emailPayload, to: repairSettings.repairEmail },
         });
+        if (brandEmailError) console.error('Brand email error:', brandEmailError);
+      }
+
+      // Send confirmation email to customer
+      if (email) {
+        const { error: customerEmailError } = await supabase.functions.invoke('send-repair-email', {
+          body: { ...emailPayload, to: email, isCustomerCopy: true },
+        });
+        if (customerEmailError) console.error('Customer email error:', customerEmailError);
       }
 
       setSubmitted(true);
