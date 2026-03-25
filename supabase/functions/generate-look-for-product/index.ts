@@ -86,9 +86,9 @@ function shuffleArray<T>(arr: T[]): T[] {
   return shuffled;
 }
 
-function isMareProduct(category: string | null, name: string | null): boolean {
-  const text = `${category || ''} ${name || ''}`.toLowerCase();
-  return CATEGORY_KEYWORDS['mare'].some(keyword => text.includes(keyword.toLowerCase()));
+// No longer needed — mare category removed for PDO brand
+function isMareProduct(_category: string | null, _name: string | null): boolean {
+  return false;
 }
 
 // Keywords that imply women's-only products
