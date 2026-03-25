@@ -510,8 +510,8 @@ serve(async (req) => {
     
     const exclusionContext = `
 EXCLUSION RULES (MUST FOLLOW):
-- Mare/beachwear products ONLY go with other mare products and accessories
-- Respect style coherence: keep the look within a consistent sportswear aesthetic (casual, performance, or streetwear)
+- Football boots and classic shoes should NOT appear in the same look
+- Respect style coherence: keep the look within a consistent Pantofola d'Oro aesthetic (football, casual, or heritage)
 - GENDER RULE: NEVER mix "Donna" (women), "Uomo" (men), and "Bambini" (children) products. Each look must be for ONE audience only.${startingGender ? ` The starting product is ${startingGender === 'bambini' ? 'CHILDREN\'S' : startingGender === 'donna' ? 'WOMEN\'S' : 'MEN\'S'} — only select ${startingGender === 'bambini' ? 'children\'s' : startingGender === 'donna' ? 'women\'s' : 'men\'s'} or unisex items.` : ''}`;
 
     // Build configuration context from settings
