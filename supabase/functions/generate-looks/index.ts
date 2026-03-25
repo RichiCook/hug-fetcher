@@ -458,25 +458,12 @@ serve(async (req) => {
 
     console.log('Using template:', templateKey, template.name);
 
-    // Check if starting product is mare - if so, force mare template
-    if (startingProduct && isMareProduct(startingProduct) && templateKey !== 'mare') {
-      console.log('Starting product is mare, forcing mare template');
-      templateKey = 'mare';
-    }
-
-    // Filter out mare products if not using mare template (unless starting product)
+    // Filter products for this look
     let filteredProducts = products;
     
     // Apply gender filter first — never mix Uomo and Donna
     filteredProducts = filterByGender(filteredProducts, startingProduct);
     console.log(`After gender filter: ${filteredProducts.length} products`);
-    
-    if (templateKey !== 'mare') {
-      filteredProducts = filteredProducts.filter(p => !isMareProduct(p) || p.id === startingProductId);
-    } else {
-      // Mare template: only mare products
-      filteredProducts = filteredProducts.filter(p => isMareProduct(p));
-    }
 
     // Group products by category
     const groupedProducts = groupProductsByCategory(filteredProducts);
