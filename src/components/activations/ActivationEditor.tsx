@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ActivationType, ActivationContent, TextImageContent, VideoContent, BannerContent, CustomHtmlContent, LeadCaptureContent } from '@/hooks/useActivations';
+import { ActivationType, ActivationContent, TextImageContent, VideoContent, BannerContent, CustomHtmlContent, LeadCaptureContent, ImageCarouselContent } from '@/hooks/useActivations';
 import { LeadCaptureEditor } from './LeadCaptureEditor';
 import { Plus, X, Eye, EyeOff, Pencil } from 'lucide-react';
 import { GroupedCategoryPicker } from './GroupedCategoryPicker';
