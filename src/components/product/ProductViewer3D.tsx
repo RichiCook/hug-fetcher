@@ -149,10 +149,22 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl }: ProductViewer3DProps) => {
         className="relative w-full bg-black"
         style={{ aspectRatio: '3/4' }}
       >
+        {/* Transparent overlay edges that allow scroll-through */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          {/* Top strip */}
+          <div className="absolute top-0 left-0 right-0 h-[20%] pointer-events-auto" style={{ touchAction: 'pan-y' }} />
+          {/* Bottom strip */}
+          <div className="absolute bottom-0 left-0 right-0 h-[20%] pointer-events-auto" style={{ touchAction: 'pan-y' }} />
+          {/* Left strip */}
+          <div className="absolute top-[20%] left-0 w-[15%] bottom-[20%] pointer-events-auto" style={{ touchAction: 'pan-y' }} />
+          {/* Right strip */}
+          <div className="absolute top-[20%] right-0 w-[15%] bottom-[20%] pointer-events-auto" style={{ touchAction: 'pan-y' }} />
+        </div>
+
         <Suspense fallback={<Loader />}>
           <Canvas
             camera={{ position: [0, 0, 4], fov: 50 }}
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: '100%', height: '100%', touchAction: 'none' }}
             gl={{ antialias: true, alpha: false }}
           >
             <ambientLight intensity={4} />
