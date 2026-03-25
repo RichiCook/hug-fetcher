@@ -528,18 +528,8 @@ EXCLUSION RULES (MUST FOLLOW):
       }).join('\n')}`;
     }).join('\n\n');
 
-    // Build shoe-trouser pairing hints
-    let shoePairingHint = '';
-    if (bottomType) {
-      const pairingMap: Record<string, string> = {
-        'pantalone': 'Prefer "court" or "lifestyle" shoes for trousers — clean, low-profile.',
-        'leggings': 'Prefer "runner" or "performance" shoes for leggings — athletic and dynamic.',
-        'pantaloncini': 'Prefer "runner" or "lifestyle" shoes for shorts — sporty and casual.',
-        'tuta': 'Prefer "runner" or "lifestyle" shoes for tracksuits — sporty heritage.',
-        'mare': 'Prefer "slide" shoes for beachwear — open-toe, casual.',
-      };
-      shoePairingHint = pairingMap[bottomType] || '';
-    }
+    // Shoe pairing hints removed — PDO brand is shoe-centric
+    const shoePairingHint = '';
 
     const startingProductContext = startingProduct 
       ? `\nSTARTING PRODUCT (MUST be included in every look):
