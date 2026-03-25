@@ -17,6 +17,7 @@ import ProductInfoBlock from '@/components/product/ProductInfoBlock';
 import DigitalPassportPopup from '@/components/product/DigitalPassportPopup';
 import CelebritySpotlight from '@/components/product/CelebritySpotlight';
 import SimilarProducts from '@/components/product/SimilarProducts';
+import CategoryProductCarousel from '@/components/product/CategoryProductCarousel';
 
 const ProductViewer3D = lazy(() => import('@/components/product/ProductViewer3D'));
 
