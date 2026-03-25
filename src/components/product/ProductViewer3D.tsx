@@ -155,10 +155,12 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl }: ProductViewer3DProps) => {
             style={{ width: '100%', height: '100%' }}
             gl={{ antialias: true, alpha: false }}
           >
-            <ambientLight intensity={1.2} />
-            <directionalLight position={[5, 5, 5]} intensity={0.8} />
-            <directionalLight position={[-3, -3, 2]} intensity={0.5} />
-            <directionalLight position={[0, -2, 4]} intensity={0.4} />
+            <ambientLight intensity={2.5} />
+            <directionalLight position={[5, 5, 5]} intensity={1.2} />
+            <directionalLight position={[-5, -3, 3]} intensity={1.0} />
+            <directionalLight position={[0, -4, 4]} intensity={0.8} />
+            <directionalLight position={[0, 5, -3]} intensity={0.6} />
+            <hemisphereLight args={['#ffffff', '#cccccc', 1.5]} />
 
             {panoramaUrl && <PanoramaSphere url={panoramaUrl} />}
 
