@@ -422,7 +422,38 @@ const ProductPage = () => {
         composition={product.composition}
       />
 
-      <ShareToResaleModal
+      {/* 3D Viewer — below product details & passport */}
+      {(product as any).model_3d_url && (
+        <section className="sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:pt-6">
+          <Suspense fallback={
+            <div className="w-full bg-black flex items-center justify-center" style={{ aspectRatio: '3/4' }}>
+              <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            </div>
+          }>
+            <ProductViewer3D
+              modelUrl={(product as any).model_3d_url}
+              panoramaUrl={(product as any).panorama_url}
+            />
+          </Suspense>
+        </section>
+      )}
+
+      {/* Football Shirts — single column carousel */}
+      <CategoryProductCarousel
+        excludeProductId={product.id}
+        category="Clothing"
+        title="Football Shirts"
+        layout="column"
+      />
+
+      {/* Lifestyle Shoes — horizontal scroll carousel */}
+      <CategoryProductCarousel
+        excludeProductId={product.id}
+        category="Sneakers"
+        title="Lifestyle Shoes"
+        layout="scroll"
+      />
+
         open={shareModalOpen}
         onOpenChange={setShareModalOpen}
         product={product}
