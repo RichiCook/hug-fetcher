@@ -591,7 +591,7 @@ EXCLUSION RULES (MUST FOLLOW):
       );
     }
 
-    const prompt = `You are a professional SPORTSWEAR stylist creating a complete outfit look for the Champion brand.
+    const prompt = `You are a professional stylist creating a complete outfit look for the Pantofola d'Oro brand — an Italian heritage brand known for premium leather football boots, sneakers, and lifestyle clothing.
 
 HERO PRODUCT (the centerpiece of this outfit - MUST be included):
 - Name: ${heroProduct.name}
@@ -612,26 +612,22 @@ AVAILABLE PRODUCTS TO COMPLETE THE LOOK:
 ${JSON.stringify(productOptions, null, 2)}
 
 YOUR TASK:
-Select ONE product from each available category slot to create a cohesive, stylish sportswear outfit that complements the hero product.
-Consider color harmony, style consistency, and overall athletic/streetwear aesthetic.
-
-IMPORTANT: You MUST select a shoe (scarpe) and an accessory (accessori) if they are listed in the available products. These complete the total look.
-CRITICAL: Select EXACTLY ONE shoe. Never select two shoes. Select EXACTLY ONE accessory. Never select two accessories. Each category slot must have EXACTLY ONE product.
+Select ONE product from each available category slot to create a cohesive, stylish outfit that complements the hero product.
+Consider color harmony, style consistency, and the overall Italian heritage aesthetic.
 
 RULES:
 1. Select exactly ONE item from each category slot listed above — NO DUPLICATES within the same category
 2. Items should match in style (${effectiveStyle}) and work together aesthetically
 3. Colors should be harmonious - consider matching or complementary colors
 4. STRICTLY follow the exclusion rules above
-5. Consider the overall vibe: casual, performance, or streetwear
-6. Gender/age consistency: NEVER mix "Donna" (women), "Uomo" (men), and "Bambini" (children) products. All items must be for the same audience.
-7. ALWAYS include exactly ONE shoe and exactly ONE accessory to complete the total look
+5. Consider the overall vibe: football heritage, casual Italian style, or sporty lifestyle
+6. Gender/age consistency: NEVER mix "Donna" (women), "Uomo" (men), and "Bambini" (children) products
 
-IMPORTANT: In the color_palette, include the main colors of the selected products PLUS one additional complementary or accent color that would enhance the overall look. This extra color should be a creative addition that ties the outfit together (e.g., a warm accent to contrast cool tones, or a metallic highlight). Always include at least 3-4 colors total.
+IMPORTANT: In the color_palette, include the main colors of the selected products PLUS one additional complementary or accent color. Always include at least 3-4 colors total.
 
 RESPOND WITH ONLY A JSON OBJECT (no markdown, no explanation):
 {
-  "name": "Creative Italian-inspired name for this look (e.g., 'Urban Champion', 'Street Power')",
+  "name": "Creative Italian-inspired name for this look (e.g., 'Heritage Calcio', 'Dolce Vita Casual')",
   "description": "One sentence describing the overall style and occasion",
   "selected_product_codes": ["code1", "code2", ...],
   "style": "${effectiveStyle}",
