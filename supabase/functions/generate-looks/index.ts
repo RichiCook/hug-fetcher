@@ -543,7 +543,7 @@ EXCLUSION RULES (MUST FOLLOW):
 IMPORTANT: Every look MUST include this starting product. Build complementary outfits around it.\n`
       : '';
 
-    const prompt = `You are a professional SPORTSWEAR stylist for the Champion brand. Create ${count} complete outfit look(s) using the "${template.name}" template.
+    const prompt = `You are a professional stylist for the Pantofola d'Oro brand — an Italian heritage brand known for premium leather football boots, sneakers, and lifestyle clothing. Create ${count} complete outfit look(s) using the "${template.name}" template.
 ${startingProductContext}
 TEMPLATE: ${template.name}
 DESCRIPTION: ${template.description}
@@ -558,20 +558,19 @@ AVAILABLE PRODUCTS BY CATEGORY:
 ${productSummary}
 
 RULES:
-1. Each look MUST include exactly ONE item from EACH category listed above (including SCARPE and ACCESSORI if available) — NO DUPLICATES within the same category
+1. Each look MUST include exactly ONE item from EACH category listed above — NO DUPLICATES within the same category
 ${startingProduct ? '2. EVERY look MUST include the starting product specified above' : ''}
 ${startingProduct ? '3' : '2'}. Items should match in style (${effectiveStyle}) and work together aesthetically
 ${startingProduct ? '4' : '3'}. Colors should be harmonious - consider matching or complementary colors
-${startingProduct ? '5' : '4'}. Consider the overall vibe: casual, performance, or streetwear
-${startingProduct ? '6' : '5'}. Gender/age consistency: NEVER mix "Donna" (women), "Uomo" (men), and "Bambini" (children) products. All items must be for the same audience.
-${startingProduct ? '7' : '6'}. ALWAYS include exactly ONE shoe (scarpe) and exactly ONE accessory (accessori) to complete the total look — NEVER two shoes or two accessories
-${startingProduct ? '8' : '7'}. CRITICAL: If the hero/starting product is a shoe, do NOT add another shoe. If the hero is an accessory, do NOT add another accessory.
-${shoePairingHint ? `${startingProduct ? '9' : '8'}. SHOE PAIRING: ${shoePairingHint} Use the ShoeType attribute when available to pick the best match.` : ''}
+${startingProduct ? '5' : '4'}. Consider the overall vibe: football heritage, casual Italian style, or sporty lifestyle
+${startingProduct ? '6' : '5'}. Gender/age consistency: NEVER mix "Donna" (women), "Uomo" (men), and "Bambini" (children) products
+${startingProduct ? '7' : '6'}. Football boots and classic shoes should NEVER appear in the same look
+${shoePairingHint ? `${startingProduct ? '8' : '7'}. SHOE PAIRING: ${shoePairingHint}` : ''}
 
 Return your response as a JSON array with this exact structure:
 [
   {
-    "name": "Creative sportswear look name (e.g., 'Urban Champion', 'Street Power')",
+    "name": "Creative look name (e.g., 'Heritage Calcio', 'Italian Street Style')",
     "description": "Brief description of the outfit and its vibe",
     "product_ids": ["id1", "id2", "id3"],
     "style": "${effectiveStyle}",
@@ -591,7 +590,7 @@ Only return the JSON array, no other text.`;
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: 'You are a professional sportswear stylist for the Champion brand. You create cohesive athletic and streetwear outfits that work well together in terms of color, style, and sporty appeal. Always respond with valid JSON only. STRICTLY follow exclusion rules.' },
+          { role: 'system', content: 'You are a professional stylist for Pantofola d\'Oro, an Italian heritage brand known for premium leather football boots, sneakers, and lifestyle clothing. You create cohesive outfits combining footwear with branded apparel. Always respond with valid JSON only. STRICTLY follow exclusion rules.' },
           { role: 'user', content: prompt }
         ],
       }),
