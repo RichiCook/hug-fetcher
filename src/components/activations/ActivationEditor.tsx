@@ -115,9 +115,86 @@ export const ActivationEditor = ({
     setType(newType);
     if (newType === 'lead_capture') {
       setContent({ rewardType: 'code_screen' } as LeadCaptureContent);
+    } else if (newType === 'image_carousel') {
+      setContent({ slides: [], placement: 'default' } as ImageCarouselContent);
     } else {
       setContent({});
     }
+  };
+
+  const renderImageCarouselEditor = () => {
+    const carouselContent = content as ImageCarouselContent;
+    const slides = carouselContent.slides || [];
+
+    const addSlide = () => {
+      updateContent({ slides: [...slides, { imageUrl: '', caption: '' }] });
+    };
+
+    const updateSlide = (idx: number, field: 'imageUrl' | 'caption', value: string) => {
+      const updated = slides.map((s, i) => i === idx ? { ...s, [field]: value } : s);
+      updateContent({ slides: updated });
+    };
+
+    const removeSlide = (idx: number) => {
+      updateContent({ slides: slides.filter((_, i) => i !== idx) });
+    };
+
+    return (
+      <div className="space-y-4">
+        <div>
+          <Label>Page Placement</Label>
+          <Select
+            value={carouselContent.placement || 'default'}
+            onValueChange={(v) => updateContent({ placement: v })}
+          >
+            <SelectTrigger className="max-w-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">Default (with other activations)</SelectItem>
+              <SelectItem value="above_details">Above product details</SelectItem>
+              <SelectItem value="below_details">Below product details</SelectItem>
+              <SelectItem value="below_3d">Below 3D viewer</SelectItem>
+              <SelectItem value="above_similar">Above similar products</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Label className="text-base font-medium">Slides</Label>
+        {slides.map((slide, idx) => (
+          <div key={idx} className="border rounded-lg p-3 space-y-2 bg-secondary/10">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Slide {idx + 1}</span>
+              <Button type="button" variant="ghost" size="sm" onClick={() => removeSlide(idx)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <div>
+              <Label>Image URL</Label>
+              <Input
+                value={slide.imageUrl}
+                onChange={(e) => updateSlide(idx, 'imageUrl', e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            {slide.imageUrl && (
+              <img src={slide.imageUrl} alt="" className="w-full max-h-32 object-cover rounded" referrerPolicy="no-referrer" />
+            )}
+            <div>
+              <Label>Caption</Label>
+              <Input
+                value={slide.caption}
+                onChange={(e) => updateSlide(idx, 'caption', e.target.value)}
+                placeholder="Caption text..."
+              />
+            </div>
+          </div>
+        ))}
+        <Button type="button" variant="outline" onClick={addSlide}>
+          <Plus className="w-4 h-4 mr-2" /> Add Slide
+        </Button>
+      </div>
+    );
   };
 
   const handleSubmit = (e: React.FormEvent) => {
