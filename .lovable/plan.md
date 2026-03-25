@@ -1,79 +1,30 @@
 
 
-## Plan: 3D Product Viewer with 360° Background
+## Plan: Switch Look Image Generation from "Worn" to "Composition" Style
 
-### Summary
-Add a 3D product viewer feature with two parts: (1) a backend settings section where admins upload `.glb`/`.gltf` models and 360° panoramic images per product, and (2) a viewer on the product landing page that renders the model inside a spherical panoramic environment using Three.js.
+### What Changes
 
----
-
-### 1. Install Dependencies
-- `three@>=0.133`
-- `@react-three/fiber@^8.18`
-- `@react-three/drei@^9.122.0`
-
-### 2. Database Migration
-Add two nullable columns to the `products` table:
-- `model_3d_url` (text) — URL of uploaded .glb/.gltf file
-- `panorama_url` (text) — URL of uploaded 360° image
-
-### 3. Storage Bucket
-Create a `product-3d-assets` storage bucket for .glb, .gltf, .jpg, .png uploads. Public read access, authenticated write.
-
-### 4. Backend — Product Edit Page Upload UI
-In `ProductEditPage.tsx`, add a new "3D Viewer" section with:
-- Drag-and-drop upload for 3D model file (.glb/.gltf), with progress indicator
-- Drag-and-drop upload for 360° panoramic image (.jpg/.png), with progress indicator
-- Preview thumbnails / file names once uploaded
-- Remove buttons to clear uploads
-- Saves URLs to `model_3d_url` and `panorama_url` columns on the product
-
-### 5. Frontend — 3D Viewer Component
-Create `src/components/product/ProductViewer3D.tsx`:
-- Full-width container with 3:4 aspect ratio (mobile-first)
-- `<Canvas>` from @react-three/fiber
-- Load .glb model via `useGLTF`, center at origin, auto-scale to fit
-- Render 360° image on inside of a large sphere (`BackSide` material)
-- `<OrbitControls>` for drag/swipe rotation, pinch-to-zoom on mobile
-- Auto-rotate model when idle (stop on interaction, resume after 3s)
-- `<Suspense>` with a loading spinner fallback
-- Floating controls overlay (glassmorphism): reset view, toggle auto-rotate, fullscreen
-- Dark-themed container background
-
-### 6. Integration on Product Page
-In `ProductPage.tsx`:
-- If `product.model_3d_url` exists, render `<ProductViewer3D>` above or replacing the image carousel
-- If no 3D model, show the existing image carousel (no change)
-- Pass `model_3d_url` and `panorama_url` as props
-
-### 7. Update Product Type
-Add `model_3d_url` and `panorama_url` to the `Product` interface in `useProducts.ts` and include them in the select query.
-
----
+Update the AI prompt in the `generate-look-image` edge function to generate flat-lay/composition images (products arranged artistically on a surface) instead of images of a model wearing the outfit.
 
 ### Technical Details
 
-```text
-Product Page Layout (when 3D model exists):
-┌─────────────────────────┐
-│   3D Viewer (3:4)       │  ← Canvas with model + 360° bg
-│   [🔄] [📐] [⛶]        │  ← floating controls
-├─────────────────────────┤
-│   Product Info           │
-│   Repair button          │
-│   CTA                    │
-└─────────────────────────┘
-```
+**File: `supabase/functions/generate-look-image/index.ts`**
 
-- The 360° image is mapped to a sphere of radius 500 with `THREE.BackSide`
-- The model is auto-scaled: compute bounding box, normalize to fit within ~2 units
-- OrbitControls: `enableDamping`, `dampingFactor: 0.05`, `enablePan: false`, `minDistance: 1`, `maxDistance: 10`
-- Auto-rotate via `autoRotate` prop on OrbitControls, toggled by user and idle timer
+Rewrite the `buildPrompt` function to request a flat-lay composition instead of a fashion model photo:
 
-### Files to Create/Edit
-- **Create**: `src/components/product/ProductViewer3D.tsx`
-- **Edit**: `src/pages/ProductEditPage.tsx` (add upload section)
-- **Edit**: `src/pages/ProductPage.tsx` (conditionally render viewer)
-- **Edit**: `src/hooks/useProducts.ts` (add new fields to interface + query)
-- **Migration**: Add `model_3d_url` and `panorama_url` columns + storage bucket
+1. **Replace the header** from "FASHION CATALOG PHOTO" to "PRODUCT COMPOSITION / FLAT-LAY PHOTO"
+2. **Remove all model/body references** — no "worn by the model", no "model's feet", no "pose", no "full body"
+3. **Update photography style** to describe a top-down or angled flat-lay arrangement on a clean surface (marble, wood, fabric backdrop)
+4. **Update garment rules** to say "arrange products neatly" instead of "wear on body"
+5. **Keep color accuracy rules** — these are still critical
+6. **Keep style reference logic** — but reframe it for composition style (lighting, color grading, texture) rather than pose/framing
+7. **Keep environment reference** — reframe as surface/backdrop reference
+8. **Keep model reference** — reframe or skip (model refs become less relevant for compositions; could ignore or use as "mood" reference)
+9. **Update the background section** default from "studio lighting on model" to "clean surface with products arranged in a visually appealing layout"
+
+Key prompt changes:
+- "Arrange all products in a stylish flat-lay composition viewed from above or at a slight angle"
+- "Products should be neatly laid out, slightly overlapping or staggered for visual interest"
+- "Show each product's full shape, design details, and colors clearly"
+- "No mannequin, no human body, no worn styling"
 
