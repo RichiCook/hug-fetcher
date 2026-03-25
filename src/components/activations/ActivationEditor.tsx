@@ -665,6 +665,7 @@ export const ActivationEditor = ({
                 onChange={(c) => setContent(c)} 
               />
             )}
+            {type === 'image_carousel' && renderImageCarouselEditor()}
           </div>
 
           <div className="flex gap-3 pt-4">
