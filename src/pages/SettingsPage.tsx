@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Upload, Palette, Type, Image, Save, Loader2, User, X, Tag, Wrench } from 'lucide-react';
 import RepairServiceSettings from '@/components/repair/RepairServiceSettings';
+import FeaturedCarouselSettings from '@/components/settings/FeaturedCarouselSettings';
 import { AppHeader } from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
