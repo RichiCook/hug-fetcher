@@ -7,12 +7,10 @@ export interface CollectionData {
 }
 
 const ALLOWED_COLLECTIONS = [
-  'Blade', 'Superblade', 'Nexus', 'Off Road', 'Julia', 'Flora', 'Mia', 'Patty',
-  'Avenida', 'Sirio', 'Emily', 'Versilia', 'Concept', 'Nancy', 'Muni', 'Hanoi',
-  'Michelle', 'Cappa Blade', 'Jelly', 'Riderama', 'Malesia', 'Divine', 'Starsway',
-  'Josephine', 'Geraldine', 'Double Face', 'Beat', 'Charlie', 'Ale', 'Betty',
-  'Vegas', 'Universe', 'Infinity', 'Lingerie', 'Cathedral', 'Soraya', 'Winnie',
-  'Reflex', 'Liberty', 'Positano', 'Twiga',
+  'Derby', 'Lazzarini', 'Epoca', 'Alloro', 'Superleggera', 'Del Duca', 'Emidio',
+  'Galassia', 'New Star', 'N.10', 'Classic', 'Del Bello', 'Foro Italico',
+  'Gold Mid', 'N.100', 'SANTIAGO', 'Italia Ottantadue', 'KIDSUPER',
+  'Venice Beach FC', 'Tacchettee',
 ];
 
 export const useProductCollections = () => {
