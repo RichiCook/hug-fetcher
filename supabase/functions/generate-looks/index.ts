@@ -53,70 +53,46 @@ interface StyleReference {
   styleDominantCategories?: string[];
 }
 
-// Category detection based on sportswear categories (order matters — more specific first)
+// Category detection based on Pantofola d'Oro product categories
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
-  'mare': ['mare', 'beachwear', 'pantaloncini da mare', 'swim'],
-  'reggiseno_sportivo': ['reggiseni sportivi', 'reggiseno sportivo', 'sports bra', 'reggiseni', 'bra'],
-  'leggings': ['leggings', 'legging'],
-  'pantaloncini': ['pantaloncini', 'shorts', 'short'],
-  'tuta': ['tuta', 'tute', 'tracksuit'],
-  'polo': ['polo'],
-  'pile': ['pile', 'fleece'],
-  'maglione': ['maglione', 'maglioni', 'sweater', 'sweaters'],
-  'giacca': ['giacca', 'giacche', 'jacket', 'jackets'],
-  'felpa': ['felpa', 'felpe', 'hoodie', 'hoodies', 'felpe con cappuccio', 'felpe con zip'],
-  'camicia': ['camicia', 'camicie', 'shirt'],
-  'tshirt': ['t-shirt', 't-shirts', 'tshirt'],
-  'scarpe': ['scarpe', 'scarpa', 'sneaker', 'sneakers', 'shoes', 'shoe', 'ciabatte', 'ciabatta', 'sandali', 'sandalo', 'slide', 'slides', 'calzature', 'trainers', 'trainer'],
-  'top': ['top', 'canotta', 'canotte', 'tank'],
-  'pantalone': ['pantaloni', 'pantalone', 'jogger', 'joggers', 'cargo', 'pantaloni tuta', 'pantaloni con polsini'],
-  'performance': ['performance', 'activewear'],
-  'accessori': ['accessori', 'cappelli', 'berretti', 'borse', 'zaini', 'borsoni', 'sacca', 'borsa', 'zaino', 'cappello', 'berretto', 'fascia', 'polsini', 'cintura'],
-  'intimo': ['calze', 'intimo', 'underwear', 'socks'],
+  'football_boots': ['football boots', 'scarpe da calcio', 'calcio', 'derby', 'epoca', 'alloro', 'lazzarini', 'outdoor', 'superleggera', 'junior', 'boots'],
+  'sneakers': ['sneakers', 'sneaker', 'trainer', 'trainers'],
+  'classics': ['classiche', 'classica', 'classic', 'classics', 'heritage'],
+  'tshirt': ['t-shirt', 't-shirts', 'tshirt', 'soccer t-shirt'],
+  'felpa': ['felpa', 'felpe', 'hoodie', 'hoodies'],
+  'joggers': ['jogger', 'joggers', 'pantaloni'],
+  'tracksuit': ['tracksuit', 'tuta', 'tute'],
+  'maglia': ['maglia', 'knit', 'maglia knit'],
 };
 
-// Sportswear outfit templates
+// Pantofola d'Oro outfit templates
 const OUTFIT_TEMPLATES: Record<string, { name: string; required: string[][]; description: string }> = {
-  'casual_top_bottom': {
-    name: 'T-Shirt/Polo + Pantaloni/Shorts',
-    required: [['tshirt', 'polo', 'top'], ['pantalone', 'pantaloncini']],
-    description: 'Classic casual sportswear combination'
+  'football_look': {
+    name: 'Football Boots + Clothing',
+    required: [['football_boots'], ['tshirt', 'felpa', 'maglia']],
+    description: 'Football boots paired with PDO branded clothing'
   },
-  'layered_sport': {
-    name: 'Felpa/Giacca + T-Shirt + Pantaloni',
-    required: [['felpa', 'giacca', 'pile'], ['tshirt', 'top'], ['pantalone', 'pantaloncini', 'leggings']],
-    description: 'Layered sportswear look with outerwear'
+  'sneaker_casual': {
+    name: 'Sneakers + Casual Clothing',
+    required: [['sneakers'], ['tshirt', 'felpa', 'maglia'], ['joggers', 'tracksuit']],
+    description: 'Casual sneaker look with PDO clothing'
   },
-  'activewear': {
-    name: 'Reggiseno Sportivo + Leggings/Shorts + Top',
-    required: [['reggiseno_sportivo'], ['leggings', 'pantaloncini'], ['top', 'tshirt']],
-    description: 'Active workout outfit'
+  'classic_look': {
+    name: 'Classic Shoes + Clothing',
+    required: [['classics'], ['tshirt', 'maglia']],
+    description: 'Classic heritage shoes with refined PDO pieces'
   },
-  'full_tracksuit': {
-    name: 'Tuta + T-Shirt/Top',
-    required: [['tuta'], ['tshirt', 'top']],
-    description: 'Full tracksuit with underlayer'
+  'full_outfit': {
+    name: 'Shoes + Top + Bottom',
+    required: [['football_boots', 'sneakers', 'classics'], ['tshirt', 'felpa', 'maglia'], ['joggers', 'tracksuit']],
+    description: 'Complete outfit with shoes, top, and bottom'
   },
-  'performance_set': {
-    name: 'Performance Top + Leggings/Shorts',
-    required: [['performance', 'tshirt', 'top'], ['leggings', 'pantaloncini']],
-    description: 'Performance workout set'
-  },
-  'outerwear_combo': {
-    name: 'Giacca/Pile + T-Shirt + Pantaloni',
-    required: [['giacca', 'pile', 'maglione'], ['tshirt', 'polo', 'camicia'], ['pantalone']],
-    description: 'Outerwear layered look'
-  },
-  'mare': {
-    name: 'Mare (Beachwear)',
-    required: [['mare']],
-    description: 'Beachwear - only matches with other mare/beach products'
-  }
 };
 
-// Exclusion rules for sportswear
+// Exclusion rules for Pantofola d'Oro
 const EXCLUSION_RULES: Record<string, string[]> = {
-  'mare': ['tshirt', 'felpa', 'giacca', 'pantalone', 'leggings', 'reggiseno_sportivo', 'tuta', 'polo', 'pile', 'maglione', 'camicia', 'performance', 'intimo'],
+  'football_boots': ['classics'],
+  'classics': ['football_boots'],
 };
 
 // Fisher-Yates shuffle to randomize product selection
