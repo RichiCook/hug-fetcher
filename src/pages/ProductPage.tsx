@@ -438,12 +438,13 @@ const ProductPage = () => {
         </section>
       )}
 
-      {/* Football Shirts — single column carousel */}
+      {/* Football Shirts — single product carousel */}
       <CategoryProductCarousel
         excludeProductId={product.id}
         category="Clothing"
         title="Football Shirts"
-        layout="column"
+        layout="single"
+        nameFilter="Soccer"
       />
 
       {/* Lifestyle Shoes — horizontal scroll carousel */}
