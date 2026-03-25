@@ -145,7 +145,7 @@ export const ActivationEditor = ({
           <Label>Page Placement</Label>
           <Select
             value={carouselContent.placement || 'default'}
-            onValueChange={(v) => updateContent({ placement: v })}
+            onValueChange={(v) => updateContent({ placement: v as ImageCarouselContent['placement'] })}
           >
             <SelectTrigger className="max-w-xs">
               <SelectValue />
