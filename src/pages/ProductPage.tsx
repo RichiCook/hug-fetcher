@@ -534,6 +534,9 @@ const ProductPage = () => {
         </section>
       )}
 
+      {/* Placed activations: above similar */}
+      {renderPlacedActivations('above_similar')}
+
       {/* Similar Products */}
       {product.product_code && (
         <SimilarProducts
