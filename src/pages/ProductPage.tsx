@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, lazy, Suspense } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { useProducts, Product } from '@/hooks/useProducts';
-import { useProductActivations, useActivations } from '@/hooks/useActivations';
+import { useProductActivations, useActivations, ImageCarouselContent, Activation } from '@/hooks/useActivations';
 import { ActivationRenderer } from '@/components/activations/ActivationRenderer';
 import { ProductGeneratedLook } from '@/components/ProductGeneratedLook';
 import { Button } from '@/components/ui/button';
