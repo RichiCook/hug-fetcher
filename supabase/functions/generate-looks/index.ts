@@ -483,54 +483,11 @@ serve(async (req) => {
       
       // Add detected categories from this slot to selectedCategories for next iterations
       const detectedCats = new Set<string>();
-      for (const p of prods.slice(0, 5)) { // Sample first few
+      for (const p of prods.slice(0, 5)) {
         const cat = detectCategory(p.category, p.name);
         if (cat) detectedCats.add(cat);
       }
       selectedCategories.push(...Array.from(detectedCats));
-    }
-
-    // Add optional shoes slot if shoes are available and hero isn't shoes
-    const startingIsMare = startingProduct ? isMareProduct(startingProduct) : false;
-    
-    // Detect bottom type for shoe pairing hints
-    let bottomType: string | null = null;
-    if (startingProduct) {
-      const sc = detectCategory(startingProduct.category, startingProduct.name);
-      if (sc === 'pantalone') bottomType = 'pantalone';
-      else if (sc === 'leggings') bottomType = 'leggings';
-      else if (sc === 'pantaloncini') bottomType = 'pantaloncini';
-      else if (sc === 'tuta') bottomType = 'tuta';
-      else if (sc === 'mare') bottomType = 'mare';
-    }
-    // Also check non-starting slot products for bottom type
-    if (!bottomType) {
-      for (const sp of slotProducts) {
-        for (const cat of sp.slot) {
-          if (['pantalone', 'leggings', 'pantaloncini', 'tuta', 'mare'].includes(cat)) {
-            bottomType = cat;
-            break;
-          }
-        }
-        if (bottomType) break;
-      }
-    }
-    
-    if (!startingIsMare && groupedProducts['scarpe']?.length > 0 && startingCategory !== 'scarpe') {
-      const shoeProds = getProductsForSlot(groupedProducts, ['scarpe'], [], selectedCategories, startingProduct, dynamicExclusions);
-      if (shoeProds.length > 0) {
-        slotProducts.push({ slot: ['scarpe'], products: shoeProds });
-        console.log(`Added optional shoes slot: ${shoeProds.length} products`);
-      }
-    }
-
-    // Add optional accessories slot if accessories are available and hero isn't accessories
-    if (!startingIsMare && groupedProducts['accessori']?.length > 0 && startingCategory !== 'accessori') {
-      const accProds = getProductsForSlot(groupedProducts, ['accessori'], [], selectedCategories, startingProduct, dynamicExclusions);
-      if (accProds.length > 0) {
-        slotProducts.push({ slot: ['accessori'], products: accProds });
-        console.log(`Added optional accessories slot: ${accProds.length} products`);
-      }
     }
 
     console.log('Slot products:', slotProducts.map(s => `${s.slot.join('/')}: ${s.products.length}`));
