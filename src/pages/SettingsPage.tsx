@@ -535,6 +535,18 @@ const SettingsPage = () => {
           {/* Repair Service */}
           <RepairServiceSettings />
 
+          {/* Featured Carousels */}
+          <FeaturedCarouselSettings
+            settingsKey="featured_carousel_football"
+            title="Football Shirts Carousel"
+            description="Configure which products appear in the Football Shirts carousel on product pages."
+          />
+          <FeaturedCarouselSettings
+            settingsKey="featured_carousel_shoes"
+            title="Lifestyle Shoes Carousel"
+            description="Configure which products appear in the Lifestyle Shoes carousel on product pages."
+          />
+
           <div className="flex justify-end">
             <Button onClick={handleSave} disabled={saving}>
               {saving ? (
