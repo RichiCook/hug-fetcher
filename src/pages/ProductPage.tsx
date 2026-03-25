@@ -441,16 +441,18 @@ const ProductPage = () => {
       {/* Football Shirts — single product carousel */}
       <CategoryProductCarousel
         excludeProductId={product.id}
-        category="Clothing"
+        settingsKey="featured_carousel_football"
+        fallbackCategory="Clothing"
+        fallbackNameFilter="Soccer"
         title="Football Shirts"
         layout="single"
-        nameFilter="Soccer"
       />
 
       {/* Lifestyle Shoes — horizontal scroll carousel */}
       <CategoryProductCarousel
         excludeProductId={product.id}
-        category="Sneakers"
+        settingsKey="featured_carousel_shoes"
+        fallbackCategory="Sneakers"
         title="Lifestyle Shoes"
         layout="scroll"
       />
