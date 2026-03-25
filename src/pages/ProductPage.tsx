@@ -514,25 +514,22 @@ const ProductPage = () => {
         />
       )}
 
-      {/* Activations Section */}
-      {(productActivations.length > 0 || autoMatchedActivations.length > 0) && (
-        <section className="py-6 sm:py-8">
-          <div className="space-y-6">
-            {productActivations.map((pa) =>
-              pa.activation ? (
-                <div key={pa.id} className={pa.activation.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
-                  <ActivationRenderer activation={pa.activation} />
+      {/* Activations Section (default placement only) */}
+      {(() => {
+        const defaultActs = getPlacementActivations('default');
+        if (defaultActs.length === 0) return null;
+        return (
+          <section className="py-6 sm:py-8">
+            <div className="space-y-6">
+              {defaultActs.map(a => (
+                <div key={a.id} className={a.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
+                  <ActivationRenderer activation={a} productId={product.id} />
                 </div>
-              ) : null
-            )}
-            {autoMatchedActivations.map((activation) => (
-              <div key={activation.id} className={activation.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
-                <ActivationRenderer activation={activation} />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+              ))}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Placed activations: above similar */}
       {renderPlacedActivations('above_similar')}
