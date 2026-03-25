@@ -426,6 +426,9 @@ const ProductPage = () => {
         </div>
       </section>
 
+      {/* Placed activations: above details */}
+      {renderPlacedActivations('above_details')}
+
       <GenuineProductBanner
         productName={product.name}
         collection={(product as any).collection}
