@@ -165,8 +165,8 @@ const CategoryProductCarousel = ({
 
   if (products.length === 0) return null;
 
-  const prev = () => setCurrent(i => (i - 1 + products.length) % products.length);
-  const next = () => setCurrent(i => (i + 1) % products.length);
+  const prev = () => { setSlideDir('right'); setCurrent(i => (i - 1 + products.length) % products.length); };
+  const next = () => { setSlideDir('left'); setCurrent(i => (i + 1) % products.length); };
 
   return (
     <section className="py-8 border-t" style={{ borderColor: '#e4e0db' }}>
