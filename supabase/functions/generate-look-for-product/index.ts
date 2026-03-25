@@ -186,44 +186,28 @@ function filterByExclusions(products: any[], heroCategory: string | null, dynami
   });
 }
 
-// Filter mare products - they only go with other mare products
-function filterMareCompatibility(products: any[], heroIsMare: boolean): any[] {
-  if (heroIsMare) {
-    // Only return mare products
-    return products.filter(p => isMareProduct(p.category, p.name));
-  } else {
-    // Exclude mare products
-    return products.filter(p => !isMareProduct(p.category, p.name));
-  }
+// Filter mare products — no-op for PDO brand
+function filterMareCompatibility(products: any[], _heroIsMare: boolean): any[] {
+  return products;
 }
 
 // Determine the best matching template based on hero product category
 function getBestTemplateForCategory(heroCategory: string): string {
   switch (heroCategory) {
+    case 'football_boots':
+      return 'football_look';
+    case 'sneakers':
+      return 'sneaker_casual';
+    case 'classics':
+      return 'classic_look';
     case 'tshirt':
-    case 'polo':
-    case 'top':
-      return 'casual_top_bottom';
     case 'felpa':
-    case 'giacca':
-    case 'pile':
-    case 'maglione':
-      return 'layered_sport';
-    case 'reggiseno_sportivo':
-    case 'performance':
-      return 'activewear';
-    case 'tuta':
-      return 'full_tracksuit';
-    case 'pantalone':
-    case 'pantaloncini':
-    case 'leggings':
-      return 'casual_top_bottom';
-    case 'camicia':
-      return 'outerwear_combo';
-    case 'mare':
-      return 'mare';
+    case 'maglia':
+    case 'joggers':
+    case 'tracksuit':
+      return 'full_outfit';
     default:
-      return 'casual_top_bottom'; // Default fallback for sportswear
+      return 'full_outfit';
   }
 }
 
