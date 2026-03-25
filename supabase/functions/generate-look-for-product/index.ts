@@ -34,70 +34,46 @@ interface StyleReference {
   styleDominantCategories?: string[];
 }
 
-// Category detection based on sportswear categories (order matters — more specific first)
+// Category detection based on Pantofola d'Oro product categories
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
-  'mare': ['mare', 'beachwear', 'pantaloncini da mare', 'swim'],
-  'reggiseno_sportivo': ['reggiseni sportivi', 'reggiseno sportivo', 'sports bra', 'reggiseni', 'bra'],
-  'leggings': ['leggings', 'legging'],
-  'pantaloncini': ['pantaloncini', 'shorts', 'short'],
-  'tuta': ['tuta', 'tute', 'tracksuit'],
-  'polo': ['polo'],
-  'pile': ['pile', 'fleece'],
-  'maglione': ['maglione', 'maglioni', 'sweater', 'sweaters'],
-  'giacca': ['giacca', 'giacche', 'jacket', 'jackets'],
-  'felpa': ['felpa', 'felpe', 'hoodie', 'hoodies', 'felpe con cappuccio', 'felpe con zip'],
-  'camicia': ['camicia', 'camicie', 'shirt'],
-  'tshirt': ['t-shirt', 't-shirts', 'tshirt'],
-  'scarpe': ['scarpe', 'scarpa', 'sneaker', 'sneakers', 'shoes', 'shoe', 'ciabatte', 'ciabatta', 'sandali', 'sandalo', 'slide', 'slides', 'calzature', 'trainers', 'trainer'],
-  'top': ['top', 'canotta', 'canotte', 'tank'],
-  'pantalone': ['pantaloni', 'pantalone', 'jogger', 'joggers', 'cargo', 'pantaloni tuta', 'pantaloni con polsini'],
-  'performance': ['performance', 'activewear'],
-  'accessori': ['accessori', 'cappelli', 'berretti', 'borse', 'zaini', 'borsoni', 'sacca', 'borsa', 'zaino', 'cappello', 'berretto', 'fascia', 'polsini', 'cintura'],
-  'intimo': ['calze', 'intimo', 'underwear', 'socks'],
+  'football_boots': ['football boots', 'scarpe da calcio', 'calcio', 'derby', 'epoca', 'alloro', 'lazzarini', 'outdoor', 'superleggera', 'junior', 'boots'],
+  'sneakers': ['sneakers', 'sneaker', 'trainer', 'trainers'],
+  'classics': ['classiche', 'classica', 'classic', 'classics', 'heritage'],
+  'tshirt': ['t-shirt', 't-shirts', 'tshirt', 'soccer t-shirt'],
+  'felpa': ['felpa', 'felpe', 'hoodie', 'hoodies'],
+  'joggers': ['jogger', 'joggers', 'pantaloni'],
+  'tracksuit': ['tracksuit', 'tuta', 'tute'],
+  'maglia': ['maglia', 'knit', 'maglia knit'],
 };
 
-// Sportswear outfit templates
+// Pantofola d'Oro outfit templates
 const OUTFIT_TEMPLATES: Record<string, { name: string; required: string[][]; description: string }> = {
-  'casual_top_bottom': {
-    name: 'T-Shirt/Polo + Pantaloni/Shorts',
-    required: [['tshirt', 'polo', 'top'], ['pantalone', 'pantaloncini']],
-    description: 'Classic casual sportswear combination'
+  'football_look': {
+    name: 'Football Boots + Clothing',
+    required: [['football_boots'], ['tshirt', 'felpa', 'maglia']],
+    description: 'Football boots paired with PDO branded clothing'
   },
-  'layered_sport': {
-    name: 'Felpa/Giacca + T-Shirt + Pantaloni',
-    required: [['felpa', 'giacca', 'pile'], ['tshirt', 'top'], ['pantalone', 'pantaloncini', 'leggings']],
-    description: 'Layered sportswear look with outerwear'
+  'sneaker_casual': {
+    name: 'Sneakers + Casual Clothing',
+    required: [['sneakers'], ['tshirt', 'felpa', 'maglia'], ['joggers', 'tracksuit']],
+    description: 'Casual sneaker look with PDO clothing'
   },
-  'activewear': {
-    name: 'Reggiseno Sportivo + Leggings/Shorts + Top',
-    required: [['reggiseno_sportivo'], ['leggings', 'pantaloncini'], ['top', 'tshirt']],
-    description: 'Active workout outfit'
+  'classic_look': {
+    name: 'Classic Shoes + Clothing',
+    required: [['classics'], ['tshirt', 'maglia']],
+    description: 'Classic heritage shoes with refined PDO pieces'
   },
-  'full_tracksuit': {
-    name: 'Tuta + T-Shirt/Top',
-    required: [['tuta'], ['tshirt', 'top']],
-    description: 'Full tracksuit with underlayer'
+  'full_outfit': {
+    name: 'Shoes + Top + Bottom',
+    required: [['football_boots', 'sneakers', 'classics'], ['tshirt', 'felpa', 'maglia'], ['joggers', 'tracksuit']],
+    description: 'Complete outfit with shoes, top, and bottom'
   },
-  'performance_set': {
-    name: 'Performance Top + Leggings/Shorts',
-    required: [['performance', 'tshirt', 'top'], ['leggings', 'pantaloncini']],
-    description: 'Performance workout set'
-  },
-  'outerwear_combo': {
-    name: 'Giacca/Pile + T-Shirt + Pantaloni',
-    required: [['giacca', 'pile', 'maglione'], ['tshirt', 'polo', 'camicia'], ['pantalone']],
-    description: 'Outerwear layered look'
-  },
-  'mare': {
-    name: 'Mare (Beachwear)',
-    required: [['mare']],
-    description: 'Beachwear - only matches with other mare/beach products'
-  }
 };
 
-// Exclusion rules for sportswear
+// Exclusion rules for Pantofola d'Oro
 const EXCLUSION_RULES: Record<string, string[]> = {
-  'mare': ['tshirt', 'felpa', 'giacca', 'pantalone', 'leggings', 'reggiseno_sportivo', 'tuta', 'polo', 'pile', 'maglione', 'camicia', 'performance', 'intimo'],
+  'football_boots': ['classics'],
+  'classics': ['football_boots'],
 };
 
 // Fisher-Yates shuffle to randomize product selection
@@ -110,9 +86,9 @@ function shuffleArray<T>(arr: T[]): T[] {
   return shuffled;
 }
 
-function isMareProduct(category: string | null, name: string | null): boolean {
-  const text = `${category || ''} ${name || ''}`.toLowerCase();
-  return CATEGORY_KEYWORDS['mare'].some(keyword => text.includes(keyword.toLowerCase()));
+// No longer needed — mare category removed for PDO brand
+function isMareProduct(_category: string | null, _name: string | null): boolean {
+  return false;
 }
 
 // Keywords that imply women's-only products
@@ -160,13 +136,7 @@ function detectCategory(category: string | null, name: string | null): string | 
   
   const text = `${category || ''} ${name || ''}`.toLowerCase();
   
-  // Check mare first as it's exclusive
-  if (CATEGORY_KEYWORDS['mare'].some(keyword => text.includes(keyword.toLowerCase()))) {
-    return 'mare';
-  }
-  
   for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (cat === 'mare') continue; // Already checked
     if (keywords.some(keyword => text.includes(keyword.toLowerCase()))) {
       return cat;
     }
@@ -216,44 +186,28 @@ function filterByExclusions(products: any[], heroCategory: string | null, dynami
   });
 }
 
-// Filter mare products - they only go with other mare products
-function filterMareCompatibility(products: any[], heroIsMare: boolean): any[] {
-  if (heroIsMare) {
-    // Only return mare products
-    return products.filter(p => isMareProduct(p.category, p.name));
-  } else {
-    // Exclude mare products
-    return products.filter(p => !isMareProduct(p.category, p.name));
-  }
+// Filter mare products — no-op for PDO brand
+function filterMareCompatibility(products: any[], _heroIsMare: boolean): any[] {
+  return products;
 }
 
 // Determine the best matching template based on hero product category
 function getBestTemplateForCategory(heroCategory: string): string {
   switch (heroCategory) {
+    case 'football_boots':
+      return 'football_look';
+    case 'sneakers':
+      return 'sneaker_casual';
+    case 'classics':
+      return 'classic_look';
     case 'tshirt':
-    case 'polo':
-    case 'top':
-      return 'casual_top_bottom';
     case 'felpa':
-    case 'giacca':
-    case 'pile':
-    case 'maglione':
-      return 'layered_sport';
-    case 'reggiseno_sportivo':
-    case 'performance':
-      return 'activewear';
-    case 'tuta':
-      return 'full_tracksuit';
-    case 'pantalone':
-    case 'pantaloncini':
-    case 'leggings':
-      return 'casual_top_bottom';
-    case 'camicia':
-      return 'outerwear_combo';
-    case 'mare':
-      return 'mare';
+    case 'maglia':
+    case 'joggers':
+    case 'tracksuit':
+      return 'full_outfit';
     default:
-      return 'casual_top_bottom'; // Default fallback for sportswear
+      return 'full_outfit';
   }
 }
 
@@ -586,9 +540,9 @@ serve(async (req) => {
     
     const exclusionContext = `
 EXCLUSION RULES (MUST FOLLOW):
-- Mare/beachwear products ONLY go with other mare products and accessories
+- Football boots and classic shoes should NOT appear in the same look
 - The hero product is: ${heroCategory || 'unknown category'}
-- Respect style coherence: keep the look within a consistent sportswear aesthetic (casual, performance, or streetwear)
+- Respect style coherence: keep the look within a consistent Pantofola d'Oro aesthetic (football, casual, or heritage)
 - GENDER RULE: NEVER mix "Donna" (women), "Uomo" (men), and "Bambini" (children) products. Each look must be for ONE audience only.${heroGender ? ` The hero product is ${heroGender === 'bambini' ? 'CHILDREN\'S' : heroGender === 'donna' ? 'WOMEN\'S' : 'MEN\'S'} — only select ${heroGender === 'bambini' ? 'children\'s' : heroGender === 'donna' ? 'women\'s' : 'men\'s'} or unisex items.` : ''}`;
 
     // Build configuration context from settings
@@ -637,7 +591,7 @@ EXCLUSION RULES (MUST FOLLOW):
       );
     }
 
-    const prompt = `You are a professional SPORTSWEAR stylist creating a complete outfit look for the Champion brand.
+    const prompt = `You are a professional stylist creating a complete outfit look for the Pantofola d'Oro brand — an Italian heritage brand known for premium leather football boots, sneakers, and lifestyle clothing.
 
 HERO PRODUCT (the centerpiece of this outfit - MUST be included):
 - Name: ${heroProduct.name}
@@ -658,26 +612,22 @@ AVAILABLE PRODUCTS TO COMPLETE THE LOOK:
 ${JSON.stringify(productOptions, null, 2)}
 
 YOUR TASK:
-Select ONE product from each available category slot to create a cohesive, stylish sportswear outfit that complements the hero product.
-Consider color harmony, style consistency, and overall athletic/streetwear aesthetic.
-
-IMPORTANT: You MUST select a shoe (scarpe) and an accessory (accessori) if they are listed in the available products. These complete the total look.
-CRITICAL: Select EXACTLY ONE shoe. Never select two shoes. Select EXACTLY ONE accessory. Never select two accessories. Each category slot must have EXACTLY ONE product.
+Select ONE product from each available category slot to create a cohesive, stylish outfit that complements the hero product.
+Consider color harmony, style consistency, and the overall Italian heritage aesthetic.
 
 RULES:
 1. Select exactly ONE item from each category slot listed above — NO DUPLICATES within the same category
 2. Items should match in style (${effectiveStyle}) and work together aesthetically
 3. Colors should be harmonious - consider matching or complementary colors
 4. STRICTLY follow the exclusion rules above
-5. Consider the overall vibe: casual, performance, or streetwear
-6. Gender/age consistency: NEVER mix "Donna" (women), "Uomo" (men), and "Bambini" (children) products. All items must be for the same audience.
-7. ALWAYS include exactly ONE shoe and exactly ONE accessory to complete the total look
+5. Consider the overall vibe: football heritage, casual Italian style, or sporty lifestyle
+6. Gender/age consistency: NEVER mix "Donna" (women), "Uomo" (men), and "Bambini" (children) products
 
-IMPORTANT: In the color_palette, include the main colors of the selected products PLUS one additional complementary or accent color that would enhance the overall look. This extra color should be a creative addition that ties the outfit together (e.g., a warm accent to contrast cool tones, or a metallic highlight). Always include at least 3-4 colors total.
+IMPORTANT: In the color_palette, include the main colors of the selected products PLUS one additional complementary or accent color. Always include at least 3-4 colors total.
 
 RESPOND WITH ONLY A JSON OBJECT (no markdown, no explanation):
 {
-  "name": "Creative Italian-inspired name for this look (e.g., 'Urban Champion', 'Street Power')",
+  "name": "Creative Italian-inspired name for this look (e.g., 'Heritage Calcio', 'Dolce Vita Casual')",
   "description": "One sentence describing the overall style and occasion",
   "selected_product_codes": ["code1", "code2", ...],
   "style": "${effectiveStyle}",
@@ -695,7 +645,7 @@ RESPOND WITH ONLY A JSON OBJECT (no markdown, no explanation):
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: 'You are a professional sportswear stylist for the Champion brand. You create cohesive athletic and streetwear outfits that work well together in terms of color, style, and sporty appeal. Always respond with valid JSON only. STRICTLY follow exclusion rules.' },
+          { role: 'system', content: 'You are a professional stylist for Pantofola d\'Oro, an Italian heritage brand known for premium leather football boots, sneakers, and lifestyle clothing. You create cohesive outfits combining footwear with branded apparel. Always respond with valid JSON only. STRICTLY follow exclusion rules.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,

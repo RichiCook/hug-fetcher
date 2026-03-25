@@ -10,25 +10,16 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-// All available category keywords — sportswear
+// All available category keywords — Pantofola d'Oro
 const ALL_CATEGORIES = [
-  { id: 'tshirt', label: 'T-Shirt', keywords: ['t-shirt', 't-shirts', 'tshirt'] },
-  { id: 'felpa', label: 'Felpe/Hoodies', keywords: ['felpa', 'felpe', 'hoodie', 'hoodies', 'felpe con cappuccio', 'felpe con zip'] },
-  { id: 'giacca', label: 'Giacche/Jacket', keywords: ['giacca', 'giacche', 'jacket', 'jackets'] },
-  { id: 'pantalone', label: 'Pantaloni/Joggers', keywords: ['pantaloni', 'pantalone', 'jogger', 'joggers', 'cargo', 'pantaloni tuta', 'pantaloni con polsini'] },
-  { id: 'pantaloncini', label: 'Pantaloncini/Shorts', keywords: ['pantaloncini', 'shorts', 'short'] },
-  { id: 'leggings', label: 'Leggings', keywords: ['leggings', 'legging'] },
-  { id: 'reggiseno_sportivo', label: 'Reggiseni Sportivi', keywords: ['reggiseni sportivi', 'reggiseno sportivo', 'sports bra', 'reggiseni', 'bra'] },
-  { id: 'top', label: 'Top/Canotte', keywords: ['top', 'canotta', 'canotte', 'tank'] },
-  { id: 'tuta', label: 'Tute/Tracksuit', keywords: ['tuta', 'tute', 'tracksuit'] },
-  { id: 'polo', label: 'Polo', keywords: ['polo'] },
-  { id: 'pile', label: 'Pile/Fleece', keywords: ['pile', 'fleece'] },
-  { id: 'maglione', label: 'Maglioni', keywords: ['maglione', 'maglioni', 'sweater', 'sweaters'] },
-  { id: 'camicia', label: 'Camicie', keywords: ['camicia', 'camicie', 'shirt'] },
-  { id: 'performance', label: 'Performance/Activewear', keywords: ['performance', 'activewear'] },
-  { id: 'accessori', label: 'Accessori', keywords: ['accessori', 'cappelli', 'berretti', 'borse', 'zaini', 'borsoni', 'sacca', 'borsa', 'zaino', 'cappello', 'berretto'] },
-  { id: 'intimo', label: 'Calze e Intimo', keywords: ['calze', 'intimo', 'underwear', 'socks'] },
-  { id: 'mare', label: 'Mare/Beachwear', keywords: ['mare', 'beachwear', 'pantaloncini da mare', 'swim'] },
+  { id: 'football_boots', label: 'Football Boots', keywords: ['football boots', 'scarpe da calcio', 'calcio', 'derby', 'epoca', 'alloro', 'lazzarini', 'superleggera', 'outdoor'] },
+  { id: 'sneakers', label: 'Sneakers', keywords: ['sneakers', 'sneaker', 'trainer', 'trainers'] },
+  { id: 'classics', label: 'Classics', keywords: ['classics', 'classiche', 'classica', 'classic', 'heritage'] },
+  { id: 'tshirt', label: 'T-Shirt', keywords: ['t-shirt', 't-shirts', 'tshirt', 'soccer t-shirt'] },
+  { id: 'felpa', label: 'Felpe/Hoodies', keywords: ['felpa', 'felpe', 'hoodie', 'hoodies'] },
+  { id: 'joggers', label: 'Joggers/Pantaloni', keywords: ['jogger', 'joggers', 'pantaloni'] },
+  { id: 'tracksuit', label: 'Tracksuit/Tuta', keywords: ['tracksuit', 'tuta', 'tute'] },
+  { id: 'maglia', label: 'Maglia/Knit', keywords: ['maglia', 'knit', 'maglia knit'] },
 ];
 
 // Types
@@ -43,29 +34,22 @@ export interface ExclusionRule {
   reason?: string;
 }
 
-// Default category pairings — sportswear outfit logic
+// Default category pairings — Pantofola d'Oro look logic
 const DEFAULT_PAIRINGS: CategoryPairing[] = [
-  { category: 'tshirt', allowedWith: ['pantalone', 'pantaloncini', 'leggings', 'giacca', 'felpa', 'accessori'] },
-  { category: 'felpa', allowedWith: ['pantalone', 'pantaloncini', 'leggings', 'tshirt', 'top', 'accessori'] },
-  { category: 'giacca', allowedWith: ['tshirt', 'polo', 'felpa', 'top', 'pantalone', 'pantaloncini', 'leggings', 'accessori'] },
-  { category: 'pantalone', allowedWith: ['tshirt', 'felpa', 'giacca', 'polo', 'top', 'pile', 'maglione', 'camicia', 'accessori'] },
-  { category: 'pantaloncini', allowedWith: ['tshirt', 'felpa', 'top', 'polo', 'reggiseno_sportivo', 'accessori'] },
-  { category: 'leggings', allowedWith: ['tshirt', 'felpa', 'top', 'reggiseno_sportivo', 'giacca', 'accessori'] },
-  { category: 'reggiseno_sportivo', allowedWith: ['leggings', 'pantaloncini', 'top', 'felpa', 'giacca'] },
-  { category: 'top', allowedWith: ['pantalone', 'pantaloncini', 'leggings', 'giacca', 'felpa', 'accessori'] },
-  { category: 'tuta', allowedWith: ['tshirt', 'top', 'accessori'] },
-  { category: 'polo', allowedWith: ['pantalone', 'pantaloncini', 'giacca', 'accessori'] },
-  { category: 'pile', allowedWith: ['tshirt', 'pantalone', 'pantaloncini', 'accessori'] },
-  { category: 'maglione', allowedWith: ['pantalone', 'camicia', 'giacca', 'accessori'] },
-  { category: 'camicia', allowedWith: ['pantalone', 'maglione', 'giacca', 'accessori'] },
-  { category: 'performance', allowedWith: ['leggings', 'pantaloncini', 'reggiseno_sportivo', 'top', 'accessori'] },
-  { category: 'accessori', allowedWith: ['tshirt', 'felpa', 'giacca', 'pantalone', 'pantaloncini', 'top', 'polo', 'pile'] },
-  { category: 'mare', allowedWith: ['mare', 'accessori'] },
+  { category: 'football_boots', allowedWith: ['tshirt', 'felpa', 'joggers', 'tracksuit', 'maglia'] },
+  { category: 'sneakers', allowedWith: ['tshirt', 'felpa', 'joggers', 'tracksuit', 'maglia'] },
+  { category: 'classics', allowedWith: ['tshirt', 'felpa', 'joggers', 'maglia'] },
+  { category: 'tshirt', allowedWith: ['football_boots', 'sneakers', 'classics', 'joggers', 'tracksuit'] },
+  { category: 'felpa', allowedWith: ['football_boots', 'sneakers', 'classics', 'joggers', 'tracksuit'] },
+  { category: 'joggers', allowedWith: ['football_boots', 'sneakers', 'classics', 'tshirt', 'felpa', 'maglia'] },
+  { category: 'tracksuit', allowedWith: ['football_boots', 'sneakers', 'tshirt'] },
+  { category: 'maglia', allowedWith: ['football_boots', 'sneakers', 'classics', 'joggers'] },
 ];
 
-// Default exclusion rules — sportswear
+// Default exclusion rules — Pantofola d'Oro
 const DEFAULT_EXCLUSIONS: ExclusionRule[] = [
-  { category: 'mare', excludes: ['tshirt', 'felpa', 'giacca', 'pantalone', 'leggings', 'reggiseno_sportivo', 'tuta', 'polo', 'pile', 'maglione', 'camicia', 'performance', 'intimo'], reason: 'I prodotti mare si abbinano solo tra loro e con accessori' },
+  { category: 'football_boots', excludes: ['classics'], reason: 'Football boots and classic shoes should not be in the same look' },
+  { category: 'classics', excludes: ['football_boots'], reason: 'Classic shoes and football boots should not be in the same look' },
 ];
 
 interface LookGroupsManagerProps {
