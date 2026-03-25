@@ -145,8 +145,10 @@ const CategoryProductCarousel = ({
     swiping.current = false;
     if (Math.abs(touchDeltaX.current) > 50) {
       if (touchDeltaX.current < 0) {
+        setSlideDir('left');
         setCurrent(i => (i + 1) % products.length);
       } else {
+        setSlideDir('right');
         setCurrent(i => (i - 1 + products.length) % products.length);
       }
     }
