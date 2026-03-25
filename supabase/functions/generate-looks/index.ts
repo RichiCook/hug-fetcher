@@ -105,9 +105,9 @@ function shuffleArray<T>(arr: T[]): T[] {
   return shuffled;
 }
 
-function isMareProduct(product: Product): boolean {
-  const text = `${product.category || ''} ${product.name || ''}`.toLowerCase();
-  return CATEGORY_KEYWORDS['mare'].some(keyword => text.includes(keyword.toLowerCase()));
+// No longer needed — mare category removed for PDO brand
+function isMareProduct(_product: Product): boolean {
+  return false;
 }
 
 // Detect gender/age from category AND name: "Donna" = female, "Uomo" = male, "Bambini" = children, null = unisex/unknown
