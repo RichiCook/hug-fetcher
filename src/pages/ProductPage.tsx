@@ -228,7 +228,35 @@ const ProductPage = () => {
     } as React.CSSProperties;
   }, [resolvedPalette]);
 
-  if (loading) {
+  // Gather all activations and split by placement
+  const allActivationsList = useMemo(() => {
+    const manual = productActivations.map(pa => pa.activation).filter(Boolean) as Activation[];
+    return [...manual, ...autoMatchedActivations];
+  }, [productActivations, autoMatchedActivations]);
+
+  const getPlacementActivations = (placement: string) =>
+    allActivationsList.filter(a => {
+      if (a.type === 'image_carousel') {
+        const p = (a.content as ImageCarouselContent).placement || 'default';
+        return p === placement;
+      }
+      return placement === 'default';
+    });
+
+  const renderPlacedActivations = (placement: string) => {
+    const acts = getPlacementActivations(placement);
+    if (acts.length === 0) return null;
+    return (
+      <div className="space-y-6">
+        {acts.map(a => (
+          <div key={a.id} className={a.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
+            <ActivationRenderer activation={a} productId={product?.id} />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
