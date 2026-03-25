@@ -159,13 +159,7 @@ function detectCategory(category: string | null, name: string | null): string | 
   
   const text = `${category || ''} ${name || ''}`.toLowerCase();
   
-  // Check mare first as it's exclusive
-  if (CATEGORY_KEYWORDS['mare'].some(keyword => text.includes(keyword.toLowerCase()))) {
-    return 'mare';
-  }
-  
   for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (cat === 'mare') continue; // Already checked
     if (keywords.some(keyword => text.includes(keyword.toLowerCase()))) {
       return cat;
     }
