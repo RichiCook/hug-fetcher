@@ -1,9 +1,10 @@
-import { Activation, TextImageContent, VideoContent, BannerContent, CustomHtmlContent, LeadCaptureContent } from '@/hooks/useActivations';
+import { Activation, TextImageContent, VideoContent, BannerContent, CustomHtmlContent, LeadCaptureContent, ImageCarouselContent } from '@/hooks/useActivations';
 import { TextImageModule } from './TextImageModule';
 import { VideoModule } from './VideoModule';
 import { BannerModule } from './BannerModule';
 import { CustomHtmlModule } from './CustomHtmlModule';
 import { LeadCaptureModule } from './LeadCaptureModule';
+import { ImageCarouselModule } from './ImageCarouselModule';
 
 interface ActivationRendererProps {
   activation: Activation;
@@ -24,6 +25,8 @@ export const ActivationRenderer = ({ activation, productId }: ActivationRenderer
       return <CustomHtmlModule content={activation.content as CustomHtmlContent} />;
     case 'lead_capture':
       return <LeadCaptureModule content={activation.content as LeadCaptureContent} activationId={activation.id} productId={productId} hideTitle={hideTitle} />;
+    case 'image_carousel':
+      return <ImageCarouselModule content={activation.content as ImageCarouselContent} hideTitle={hideTitle} />;
     default:
       return null;
   }
