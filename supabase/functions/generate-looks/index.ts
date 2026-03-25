@@ -436,19 +436,17 @@ serve(async (req) => {
     });
 
     // Auto-detect template based on starting product category
-    let templateKey = 'casual_top_bottom';
+    let templateKey = 'full_outfit';
     
     if (startingProduct) {
       const startingCat = detectCategory(startingProduct.category, startingProduct.name);
       if (startingCat) {
         switch (startingCat) {
-          case 'mare': templateKey = 'mare'; break;
-          case 'tshirt': case 'polo': case 'top': templateKey = 'casual_top_bottom'; break;
-          case 'felpa': case 'giacca': case 'pile': case 'maglione': templateKey = 'layered_sport'; break;
-          case 'reggiseno_sportivo': case 'performance': templateKey = 'activewear'; break;
-          case 'tuta': templateKey = 'full_tracksuit'; break;
-          case 'pantalone': case 'pantaloncini': case 'leggings': templateKey = 'casual_top_bottom'; break;
-          case 'camicia': templateKey = 'outerwear_combo'; break;
+          case 'football_boots': templateKey = 'football_look'; break;
+          case 'sneakers': templateKey = 'sneaker_casual'; break;
+          case 'classics': templateKey = 'classic_look'; break;
+          case 'tshirt': case 'felpa': case 'maglia': templateKey = 'full_outfit'; break;
+          case 'joggers': case 'tracksuit': templateKey = 'full_outfit'; break;
         }
       }
     }
