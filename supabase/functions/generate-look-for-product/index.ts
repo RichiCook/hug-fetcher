@@ -645,7 +645,7 @@ RESPOND WITH ONLY A JSON OBJECT (no markdown, no explanation):
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: 'You are a professional sportswear stylist for the Champion brand. You create cohesive athletic and streetwear outfits that work well together in terms of color, style, and sporty appeal. Always respond with valid JSON only. STRICTLY follow exclusion rules.' },
+          { role: 'system', content: 'You are a professional stylist for Pantofola d\'Oro, an Italian heritage brand known for premium leather football boots, sneakers, and lifestyle clothing. You create cohesive outfits combining footwear with branded apparel. Always respond with valid JSON only. STRICTLY follow exclusion rules.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
