@@ -18,14 +18,17 @@ interface GroupedCategoryPickerProps {
 }
 
 const CATEGORY_GROUPS: Record<string, { keywords: string[] }> = {
-  'Shoes': {
-    keywords: ['shoes', 'pumps', 'sandals', 'boots', 'mules', 'slippers', 'sneakers', 'loafers', 'flats'],
+  'Football Boots': {
+    keywords: ['football', 'boots', 'calcio', 'derby', 'epoca', 'alloro', 'lazzarini', 'superleggera', 'outdoor', 'junior'],
+  },
+  'Sneakers': {
+    keywords: ['sneakers', 'sneaker', 'trainer', 'trainers', 'casual', 'lifestyle'],
   },
   'Clothing': {
-    keywords: ['clothing', 'dresses', 'tops', 'pants', 'skirts', 'jackets', 'coats', 'shirts', 'blouses'],
+    keywords: ['clothing', 't-shirt', 'tshirt', 'felpa', 'hoodie', 'jogger', 'tracksuit', 'maglia', 'knit', 'soccer'],
   },
-  'Accessories': {
-    keywords: ['accessories', 'bags', 'belts', 'scarves', 'hats', 'jewelry', 'sunglasses', 'wallets'],
+  'Classics': {
+    keywords: ['classics', 'classic', 'classiche', 'classica', 'heritage', 'vintage'],
   },
 };
 

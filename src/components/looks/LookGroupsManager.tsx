@@ -10,25 +10,16 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-// All available category keywords — sportswear
+// All available category keywords — Pantofola d'Oro
 const ALL_CATEGORIES = [
-  { id: 'tshirt', label: 'T-Shirt', keywords: ['t-shirt', 't-shirts', 'tshirt'] },
-  { id: 'felpa', label: 'Felpe/Hoodies', keywords: ['felpa', 'felpe', 'hoodie', 'hoodies', 'felpe con cappuccio', 'felpe con zip'] },
-  { id: 'giacca', label: 'Giacche/Jacket', keywords: ['giacca', 'giacche', 'jacket', 'jackets'] },
-  { id: 'pantalone', label: 'Pantaloni/Joggers', keywords: ['pantaloni', 'pantalone', 'jogger', 'joggers', 'cargo', 'pantaloni tuta', 'pantaloni con polsini'] },
-  { id: 'pantaloncini', label: 'Pantaloncini/Shorts', keywords: ['pantaloncini', 'shorts', 'short'] },
-  { id: 'leggings', label: 'Leggings', keywords: ['leggings', 'legging'] },
-  { id: 'reggiseno_sportivo', label: 'Reggiseni Sportivi', keywords: ['reggiseni sportivi', 'reggiseno sportivo', 'sports bra', 'reggiseni', 'bra'] },
-  { id: 'top', label: 'Top/Canotte', keywords: ['top', 'canotta', 'canotte', 'tank'] },
-  { id: 'tuta', label: 'Tute/Tracksuit', keywords: ['tuta', 'tute', 'tracksuit'] },
-  { id: 'polo', label: 'Polo', keywords: ['polo'] },
-  { id: 'pile', label: 'Pile/Fleece', keywords: ['pile', 'fleece'] },
-  { id: 'maglione', label: 'Maglioni', keywords: ['maglione', 'maglioni', 'sweater', 'sweaters'] },
-  { id: 'camicia', label: 'Camicie', keywords: ['camicia', 'camicie', 'shirt'] },
-  { id: 'performance', label: 'Performance/Activewear', keywords: ['performance', 'activewear'] },
-  { id: 'accessori', label: 'Accessori', keywords: ['accessori', 'cappelli', 'berretti', 'borse', 'zaini', 'borsoni', 'sacca', 'borsa', 'zaino', 'cappello', 'berretto'] },
-  { id: 'intimo', label: 'Calze e Intimo', keywords: ['calze', 'intimo', 'underwear', 'socks'] },
-  { id: 'mare', label: 'Mare/Beachwear', keywords: ['mare', 'beachwear', 'pantaloncini da mare', 'swim'] },
+  { id: 'football_boots', label: 'Football Boots', keywords: ['football boots', 'scarpe da calcio', 'calcio', 'derby', 'epoca', 'alloro', 'lazzarini', 'superleggera', 'outdoor'] },
+  { id: 'sneakers', label: 'Sneakers', keywords: ['sneakers', 'sneaker', 'trainer', 'trainers'] },
+  { id: 'classics', label: 'Classics', keywords: ['classics', 'classiche', 'classica', 'classic', 'heritage'] },
+  { id: 'tshirt', label: 'T-Shirt', keywords: ['t-shirt', 't-shirts', 'tshirt', 'soccer t-shirt'] },
+  { id: 'felpa', label: 'Felpe/Hoodies', keywords: ['felpa', 'felpe', 'hoodie', 'hoodies'] },
+  { id: 'joggers', label: 'Joggers/Pantaloni', keywords: ['jogger', 'joggers', 'pantaloni'] },
+  { id: 'tracksuit', label: 'Tracksuit/Tuta', keywords: ['tracksuit', 'tuta', 'tute'] },
+  { id: 'maglia', label: 'Maglia/Knit', keywords: ['maglia', 'knit', 'maglia knit'] },
 ];
 
 // Types
