@@ -53,6 +53,7 @@ const CategoryProductCarousel = ({
   const [products, setProducts] = useState<CarouselProduct[]>([]);
   const [current, setCurrent] = useState(0);
   const [settings, setSettings] = useState<CarouselSettings>(DEFAULT_SETTINGS);
+  const [slideDir, setSlideDir] = useState<'left' | 'right' | null>(null);
   const navigate = useNavigate();
 
   // Touch / swipe state
@@ -144,8 +145,10 @@ const CategoryProductCarousel = ({
     swiping.current = false;
     if (Math.abs(touchDeltaX.current) > 50) {
       if (touchDeltaX.current < 0) {
+        setSlideDir('left');
         setCurrent(i => (i + 1) % products.length);
       } else {
+        setSlideDir('right');
         setCurrent(i => (i - 1 + products.length) % products.length);
       }
     }
@@ -162,8 +165,8 @@ const CategoryProductCarousel = ({
 
   if (products.length === 0) return null;
 
-  const prev = () => setCurrent(i => (i - 1 + products.length) % products.length);
-  const next = () => setCurrent(i => (i + 1) % products.length);
+  const prev = () => { setSlideDir('right'); setCurrent(i => (i - 1 + products.length) % products.length); };
+  const next = () => { setSlideDir('left'); setCurrent(i => (i + 1) % products.length); };
 
   return (
     <section className="py-8 border-t" style={{ borderColor: '#e4e0db' }}>
@@ -189,8 +192,11 @@ const CategoryProductCarousel = ({
             const img = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
             return (
               <div
+                key={`${p.id}-${current}`}
                 onClick={() => handleProductClick(p)}
+                className={slideDir === 'left' ? 'animate-slide-in-left' : slideDir === 'right' ? 'animate-slide-in-right' : ''}
                 style={{ cursor: 'pointer', borderRadius: 12, border: '1px solid #e4e0db', background: '#fff', overflow: 'hidden' }}
+                onAnimationEnd={() => setSlideDir(null)}
               >
                 <div style={{ aspectRatio: '4/5', overflow: 'hidden' }}>
                   {img && (
