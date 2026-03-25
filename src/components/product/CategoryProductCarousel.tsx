@@ -53,6 +53,7 @@ const CategoryProductCarousel = ({
   const [products, setProducts] = useState<CarouselProduct[]>([]);
   const [current, setCurrent] = useState(0);
   const [settings, setSettings] = useState<CarouselSettings>(DEFAULT_SETTINGS);
+  const [slideDir, setSlideDir] = useState<'left' | 'right' | null>(null);
   const navigate = useNavigate();
 
   // Touch / swipe state
