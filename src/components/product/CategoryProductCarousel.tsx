@@ -192,8 +192,11 @@ const CategoryProductCarousel = ({
             const img = getFlatLayImage(filterImagesBySku(p.images, p.product_code), p.category) || p.images[0];
             return (
               <div
+                key={`${p.id}-${current}`}
                 onClick={() => handleProductClick(p)}
+                className={slideDir === 'left' ? 'animate-slide-in-left' : slideDir === 'right' ? 'animate-slide-in-right' : ''}
                 style={{ cursor: 'pointer', borderRadius: 12, border: '1px solid #e4e0db', background: '#fff', overflow: 'hidden' }}
+                onAnimationEnd={() => setSlideDir(null)}
               >
                 <div style={{ aspectRatio: '4/5', overflow: 'hidden' }}>
                   {img && (
