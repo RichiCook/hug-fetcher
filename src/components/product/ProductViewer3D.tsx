@@ -189,37 +189,6 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl }: ProductViewer3DProps) => {
           </Canvas>
         </Suspense>
 
-        {/* Floating controls — glassmorphism */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full"
-          style={{
-            background: 'rgba(0,0,0,0.45)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.12)',
-          }}
-        >
-          <button
-            onClick={handleReset}
-            className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
-            title="Reset view"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setAutoRotate(prev => !prev)}
-            className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
-            title={autoRotate ? 'Pause rotation' : 'Resume rotation'}
-          >
-            {autoRotate ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-          </button>
-          <button
-            onClick={handleFullscreen}
-            className="p-2 rounded-full text-white/70 hover:text-white transition-colors"
-            title="Fullscreen"
-          >
-            <Maximize className="w-4 h-4" />
-          </button>
-        </div>
       </div>
     </ViewerErrorBoundary>
   );
