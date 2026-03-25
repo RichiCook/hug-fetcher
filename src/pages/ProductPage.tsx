@@ -473,6 +473,9 @@ const ProductPage = () => {
         </section>
       )}
 
+      {/* Placed activations: below 3D */}
+      {renderPlacedActivations('below_3d')}
+
       {/* Football Shirts — single product carousel */}
       <CategoryProductCarousel
         excludeProductId={product.id}
