@@ -31,6 +31,7 @@ const typeIcons: Record<ActivationType, React.ElementType> = {
   banner: Layout,
   custom_html: Code,
   lead_capture: Gift,
+  image_carousel: Image,
 };
 
 const typeLabels: Record<ActivationType, string> = {
@@ -39,6 +40,7 @@ const typeLabels: Record<ActivationType, string> = {
   banner: 'Banner / CTA',
   custom_html: 'Custom HTML',
   lead_capture: 'Lead Capture',
+  image_carousel: 'Image Carousel',
 };
 
 const ActivationsPage = () => {

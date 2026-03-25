@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, lazy, Suspense } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { useProducts, Product } from '@/hooks/useProducts';
-import { useProductActivations, useActivations } from '@/hooks/useActivations';
+import { useProductActivations, useActivations, ImageCarouselContent, Activation } from '@/hooks/useActivations';
 import { ActivationRenderer } from '@/components/activations/ActivationRenderer';
 import { ProductGeneratedLook } from '@/components/ProductGeneratedLook';
 import { Button } from '@/components/ui/button';
@@ -228,6 +228,35 @@ const ProductPage = () => {
     } as React.CSSProperties;
   }, [resolvedPalette]);
 
+  // Gather all activations and split by placement
+  const allActivationsList = useMemo(() => {
+    const manual = productActivations.map(pa => pa.activation).filter(Boolean) as Activation[];
+    return [...manual, ...autoMatchedActivations];
+  }, [productActivations, autoMatchedActivations]);
+
+  const getPlacementActivations = (placement: string) =>
+    allActivationsList.filter(a => {
+      if (a.type === 'image_carousel') {
+        const p = (a.content as ImageCarouselContent).placement || 'default';
+        return p === placement;
+      }
+      return placement === 'default';
+    });
+
+  const renderPlacedActivations = (placement: string) => {
+    const acts = getPlacementActivations(placement);
+    if (acts.length === 0) return null;
+    return (
+      <div className="space-y-6">
+        {acts.map(a => (
+          <div key={a.id} className={a.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
+            <ActivationRenderer activation={a} productId={product?.id} />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -397,6 +426,9 @@ const ProductPage = () => {
         </div>
       </section>
 
+      {/* Placed activations: above details */}
+      {renderPlacedActivations('above_details')}
+
       <GenuineProductBanner
         productName={product.name}
         collection={(product as any).collection}
@@ -422,6 +454,9 @@ const ProductPage = () => {
         composition={product.composition}
       />
 
+      {/* Placed activations: below details */}
+      {renderPlacedActivations('below_details')}
+
       {/* 3D Viewer — below product details & passport */}
       {(product as any).model_3d_url && (
         <section className="sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:pt-6">
@@ -437,6 +472,9 @@ const ProductPage = () => {
           </Suspense>
         </section>
       )}
+
+      {/* Placed activations: below 3D */}
+      {renderPlacedActivations('below_3d')}
 
       {/* Football Shirts — single product carousel */}
       <CategoryProductCarousel
@@ -476,25 +514,25 @@ const ProductPage = () => {
         />
       )}
 
-      {/* Activations Section */}
-      {(productActivations.length > 0 || autoMatchedActivations.length > 0) && (
-        <section className="py-6 sm:py-8">
-          <div className="space-y-6">
-            {productActivations.map((pa) =>
-              pa.activation ? (
-                <div key={pa.id} className={pa.activation.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
-                  <ActivationRenderer activation={pa.activation} />
+      {/* Activations Section (default placement only) */}
+      {(() => {
+        const defaultActs = getPlacementActivations('default');
+        if (defaultActs.length === 0) return null;
+        return (
+          <section className="py-6 sm:py-8">
+            <div className="space-y-6">
+              {defaultActs.map(a => (
+                <div key={a.id} className={a.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
+                  <ActivationRenderer activation={a} productId={product.id} />
                 </div>
-              ) : null
-            )}
-            {autoMatchedActivations.map((activation) => (
-              <div key={activation.id} className={activation.full_width ? '' : 'max-w-6xl mx-auto px-4'}>
-                <ActivationRenderer activation={activation} />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+              ))}
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* Placed activations: above similar */}
+      {renderPlacedActivations('above_similar')}
 
       {/* Similar Products */}
       {product.product_code && (

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export type ActivationType = 'text_image' | 'video' | 'banner' | 'custom_html' | 'lead_capture';
+export type ActivationType = 'text_image' | 'video' | 'banner' | 'custom_html' | 'lead_capture' | 'image_carousel';
 
 export interface TextImageContent {
   title?: string;
@@ -45,7 +45,12 @@ export interface LeadCaptureContent {
   textColor?: string;
 }
 
-export type ActivationContent = TextImageContent | VideoContent | BannerContent | CustomHtmlContent | LeadCaptureContent;
+export interface ImageCarouselContent {
+  slides: { imageUrl: string; caption: string }[];
+  placement?: 'default' | 'above_details' | 'below_details' | 'below_3d' | 'above_similar';
+}
+
+export type ActivationContent = TextImageContent | VideoContent | BannerContent | CustomHtmlContent | LeadCaptureContent | ImageCarouselContent;
 
 export interface Activation {
   id: string;
