@@ -454,6 +454,9 @@ const ProductPage = () => {
         composition={product.composition}
       />
 
+      {/* Placed activations: below details */}
+      {renderPlacedActivations('below_details')}
+
       {/* 3D Viewer — below product details & passport */}
       {(product as any).model_3d_url && (
         <section className="sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:pt-6">
