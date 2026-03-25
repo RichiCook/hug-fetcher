@@ -26,6 +26,7 @@ export const useProductCategories = () => {
           // Split by " > " to get individual segments
           const segments = product.category.split(' > ').map(s => s.trim()).filter(Boolean);
           segments.forEach(segment => {
+            if (segment.toLowerCase() === 'pending') return;
             categoryCount[segment] = (categoryCount[segment] || 0) + 1;
           });
         }
