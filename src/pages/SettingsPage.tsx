@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Upload, Palette, Type, Image, Save, Loader2, User, X, Tag, Wrench } from 'lucide-react';
 import RepairServiceSettings from '@/components/repair/RepairServiceSettings';
+import FeaturedCarouselSettings from '@/components/settings/FeaturedCarouselSettings';
 import { AppHeader } from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -533,6 +534,18 @@ const SettingsPage = () => {
 
           {/* Repair Service */}
           <RepairServiceSettings />
+
+          {/* Featured Carousels */}
+          <FeaturedCarouselSettings
+            settingsKey="featured_carousel_football"
+            title="Football Shirts Carousel"
+            description="Configure which products appear in the Football Shirts carousel on product pages."
+          />
+          <FeaturedCarouselSettings
+            settingsKey="featured_carousel_shoes"
+            title="Lifestyle Shoes Carousel"
+            description="Configure which products appear in the Lifestyle Shoes carousel on product pages."
+          />
 
           <div className="flex justify-end">
             <Button onClick={handleSave} disabled={saving}>
