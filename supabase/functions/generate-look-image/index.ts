@@ -385,29 +385,26 @@ function buildPrompt(
   productImageCount: number,
   styleDominant: boolean = false
 ): string {
-  // Build a map of which attached image index corresponds to which role
-  // Order of attached images: model ref, environment ref, style refs, then product images
   let imageIndex = 1;
   const imageLabels: string[] = [];
   
   if (hasModelReference) {
-    imageLabels.push(`- Attached image ${imageIndex}: MODEL REFERENCE — use ONLY for body proportions and pose. IGNORE garment colors/designs in this image.`);
+    imageLabels.push(`- Attached image ${imageIndex}: MOOD REFERENCE — use ONLY for overall aesthetic mood and color temperature inspiration. IGNORE any garments, people, or poses.`);
     imageIndex++;
   }
   if (hasEnvironmentReference) {
-    imageLabels.push(`- Attached image ${imageIndex}: ENVIRONMENT/BACKGROUND REFERENCE — reproduce this exact setting, location, and atmosphere as the background of the photo. IGNORE any garments or colors in this image.`);
+    imageLabels.push(`- Attached image ${imageIndex}: SURFACE/BACKDROP REFERENCE — reproduce this exact surface texture, material, and color as the background surface for the flat-lay arrangement. IGNORE any garments in this image.`);
     imageIndex++;
   }
   if (hasStyleReferences) {
     if (styleDominant) {
-      imageLabels.push(`- Attached image ${imageIndex}: STYLE REFERENCE — CRITICAL: EXACTLY REPLICATE the photographic treatment, composition, pose angle, framing, color grading, contrast, lighting setup, editorial feel, FILM GRAIN/NOISE TEXTURE, and ENVIRONMENT/SETTING of this reference. The generated image MUST look like it was shot in the same photoshoot as this reference — same camera, same film stock, same location. This is the HIGHEST PRIORITY reference — the final image must be indistinguishable in style, texture, and atmosphere from this photo. IGNORE the specific garments/products shown — only replicate the photographic treatment and environment.`);
+      imageLabels.push(`- Attached image ${imageIndex}: STYLE REFERENCE — CRITICAL: EXACTLY REPLICATE the photographic treatment, color grading, contrast, lighting setup, FILM GRAIN/NOISE TEXTURE, and overall editorial feel of this reference. The generated image MUST look like it was shot with the same camera, same film stock, same lighting rig. This is the HIGHEST PRIORITY reference. IGNORE the specific garments/products shown — only replicate the photographic treatment.`);
     } else {
-      imageLabels.push(`- Attached image ${imageIndex}: STYLE REFERENCE — this is the MOST IMPORTANT reference for the overall look and feel of the photo. Match the same photographic style, lighting setup, color grading, mood, composition, camera angle, and editorial tone. The generated photo should feel like it belongs in the same editorial series as this reference. IGNORE the specific garments/products shown — only replicate the photographic treatment.`);
+      imageLabels.push(`- Attached image ${imageIndex}: STYLE REFERENCE — match the same photographic style, lighting, color grading, mood, and editorial tone. The generated photo should feel like it belongs in the same editorial series. IGNORE the specific garments/products shown — only replicate the photographic treatment.`);
     }
     imageIndex++;
   }
   
-  // Build EXACT product descriptions with emphasis on accuracy and link to image index
   const productDescriptions = products
     .map((p, index) => {
       const parts = [];
@@ -415,86 +412,78 @@ function buildPrompt(
       if (p.name) parts.push(`Name: ${p.name}`);
       if (p.category) parts.push(`Category: ${p.category}`);
       
-      // Only label images we actually have (limited to productImageCount)
       if (index < productImageCount) {
         const thisImageIndex = imageIndex + index;
-        imageLabels.push(`- Attached image ${thisImageIndex}: PRODUCT REFERENCE for "${p.name}" — this image is the ONLY source of truth for this garment's exact color, texture, pattern, and design details. Copy the color EXACTLY as shown.`);
-        return `- GARMENT ${index + 1} (see attached image ${thisImageIndex}): ${parts.join(' | ')}`;
+        imageLabels.push(`- Attached image ${thisImageIndex}: PRODUCT REFERENCE for "${p.name}" — this image is the ONLY source of truth for this product's exact color, texture, pattern, and design details. Copy the color EXACTLY as shown.`);
+        return `- PRODUCT ${index + 1} (see attached image ${thisImageIndex}): ${parts.join(' | ')}`;
       }
-      return `- GARMENT ${index + 1} (no reference image): ${parts.join(' | ')}`;
+      return `- PRODUCT ${index + 1} (no reference image): ${parts.join(' | ')}`;
     })
     .join('\n');
 
   const styleDirection = lookStyle || 'sporty streetwear';
 
-  // Build background/environment section based on whether we have an environment reference
   let backgroundSection: string;
   if (hasEnvironmentReference) {
-    backgroundSection = `- Use the ENVIRONMENT REFERENCE image as the background/setting for this photo
-- Reproduce the same location, atmosphere, and spatial composition shown in the environment reference
-- The model should be placed naturally within this environment
-- Do NOT use a plain studio background — the environment reference defines the setting`;
+    backgroundSection = `- Use the SURFACE/BACKDROP REFERENCE image as the surface for this flat-lay
+- Reproduce the same material, texture, and color of the surface shown in the reference
+- Products should be arranged naturally on this surface`;
   } else if (styleDominant && hasStyleReferences) {
-    backgroundSection = `- REPRODUCE the exact background, environment, setting, and atmosphere shown in the STYLE REFERENCE image.
-- The location, lighting conditions, and spatial composition must match the style reference.
-- Do NOT default to a studio background — the style reference defines the setting.
-- REPLICATE the exact FILM GRAIN, NOISE LEVEL, and TEXTURE visible in the style reference. If the reference has visible grain, the output MUST have the same grain level and character.
-- Match the exact COLOR TEMPERATURE and TONAL RANGE of the style reference — if it is cool/blue-tinted, warm/amber, or muted/dark, reproduce that exactly. Do NOT brighten or clean up the tones.`;
+    backgroundSection = `- REPRODUCE the exact surface/background aesthetic from the STYLE REFERENCE image.
+- Match color temperature, tonal range, grain, and texture exactly.
+- Do NOT default to plain white — the style reference defines the surface and lighting mood.`;
   } else {
-    backgroundSection = `- Clean neutral background (white or light gray studio)
-- Even studio lighting`;
+    backgroundSection = `- Clean, elegant surface — marble, light wood, or neutral fabric backdrop
+- Soft, even overhead lighting with subtle shadows for depth`;
   }
 
   const headerLine = styleDominant && hasStyleReferences
-    ? `STYLE REPLICATION PHOTO — MATCH THE STYLE REFERENCE EXACTLY`
-    : `FASHION CATALOG PHOTO — COLOR ACCURACY IS THE #1 PRIORITY`;
+    ? `STYLE REPLICATION — PRODUCT COMPOSITION / FLAT-LAY PHOTO`
+    : `PRODUCT COMPOSITION / FLAT-LAY PHOTO — COLOR ACCURACY IS THE #1 PRIORITY`;
 
   return `${headerLine}
 
 IMAGE REFERENCE MAP (each attached image has ONE specific role — do not mix roles):
 ${imageLabels.join('\n')}
 
-GARMENTS TO SHOW ON THE MODEL:
+PRODUCTS TO ARRANGE IN THE COMPOSITION:
 ${productDescriptions}
 
-COLOR ACCURACY RULES (CRITICAL — violating these makes the image unusable):
-1. For each garment, look at its PRODUCT REFERENCE image and extract the EXACT color as it appears in that photo.
-2. DO NOT darken, lighten, saturate, desaturate, warm, cool, or shift the hue of any garment color.
-3. A light pastel color must remain a light pastel. A muted tone must remain muted. Match the EXACT shade, brightness, and saturation from the product reference.
-4. If the product reference shows a light mauve/lilac jacket, the generated image must show the same light mauve/lilac — NOT a darker, more saturated, or brownish version.
-5. The PRODUCT REFERENCE images are the ONLY source of truth for garment colors. Text color names are approximate — always defer to what the image actually shows.
-6. Ambient light, background color, and environment must NOT tint or shift garment colors.
+COMPOSITION RULES:
+1. Arrange ALL products in a stylish flat-lay composition, viewed from directly above (top-down) or at a slight angle.
+2. Products should be neatly laid out — slightly overlapping or staggered for visual interest and depth.
+3. Show each product's FULL shape, design details, colors, and textures clearly.
+4. NO mannequin, NO human body, NO limbs, NO worn styling. Products are laid flat or artistically folded/placed.
+5. Shoes should be placed sole-down or at an angle showing their design. Clothing should be neatly folded or spread to show the full front design.
+6. Create a harmonious, editorial-quality arrangement that feels curated and intentional.
 
-GARMENT DESIGN RULES:
+COLOR ACCURACY RULES (CRITICAL — violating these makes the image unusable):
+1. For each product, look at its PRODUCT REFERENCE image and extract the EXACT color as it appears in that photo.
+2. DO NOT darken, lighten, saturate, desaturate, warm, cool, or shift the hue of any product color.
+3. A light pastel color must remain a light pastel. A muted tone must remain muted. Match the EXACT shade, brightness, and saturation from the product reference.
+4. The PRODUCT REFERENCE images are the ONLY source of truth for product colors. Text color names are approximate — always defer to what the image actually shows.
+5. Surface color and ambient light must NOT tint or shift product colors.
+
+PRODUCT DESIGN RULES:
 1. Replicate the EXACT design, cut, silhouette, and details visible in each product reference image.
-2. DO NOT invent features, add patterns, change proportions, or modify the garment.
+2. DO NOT invent features, add patterns, change proportions, or modify any product.
 3. Logos, zippers, buttons, stitching, and pockets must match the reference exactly.
-4. NEVER generate competitor brand logos, designs, or recognizable shoes/garments from other brands (e.g. Nike, Adidas, Puma, New Balance, etc.). Only the brand's own products as shown in the product reference images are allowed.
-5. Shoes MUST look exactly like the product reference image — same silhouette, same colors, same logo. Do NOT replace them with generic or other-brand sneakers.
+4. NEVER generate competitor brand logos or recognizable products from other brands (e.g. Nike, Adidas, Puma, New Balance, etc.).
 
 PHOTOGRAPHY STYLE:
-${styleDominant && hasStyleReferences ? `- THE STYLE REFERENCE IS THE ABSOLUTE AUTHORITY for ALL photographic decisions: composition, pose, framing, camera angle, lighting direction, color grading, contrast, saturation, mood, atmosphere, and editorial tone.
-- The generated image MUST be INDISTINGUISHABLE in photographic style from the style reference — as if shot in the same session, same photographer, same setup. Only the garments change.
-- Do NOT apply generic fashion catalog lighting or studio aesthetics. The style reference overrides ALL default photography directions.
-- Garment colors must still be accurate to their product reference images, but lighting mood and color grading should match the style reference.
-- REPLICATE the exact FILM GRAIN, NOISE, and TEXTURE visible in the style reference. If the reference has visible grain, the output MUST have the same grain level and character (fine grain, heavy grain, digital noise, etc.).
-- Match the exact COLOR TEMPERATURE and TONAL RANGE — if the reference is cool/blue-tinted or warm/amber, reproduce that exactly. Do NOT default to neutral/clean tones.
-- Match the DEPTH OF FIELD, FOCUS SOFTNESS, and any lens characteristics (wide angle distortion, telephoto compression, vignetting).
-- Reproduce the same level of CONTRAST: crushed blacks, lifted shadows, highlight rolloff — copy it precisely from the style reference.
-- If the reference looks like it was shot on film, the output MUST look like film too — with the same grain structure and color response.
-- The ENVIRONMENT in the style reference (outdoor pitch, urban night, warehouse, etc.) defines WHERE this photo takes place. Reproduce that setting exactly.` : `- ${styleDirection} editorial fashion photography
-${hasStyleReferences ? `- THE STYLE REFERENCE IMAGE DEFINES THE OVERALL PHOTOGRAPHIC TREATMENT. Match its lighting, color grading, mood, contrast, and editorial feel as closely as possible. The generated image should look like it was shot in the same editorial series.` : ''}
-- Lighting must be balanced so garment colors appear exactly as in their product reference images`}
-${styleDominant && hasStyleReferences ? `- FRAMING, CROP, and POSE must match the style reference — do NOT default to full-body if the reference shows a different crop or angle.` : `- Full body or 3/4 pose showing all garments clearly`}
-- ALL garments including shoes MUST be WORN by the model on their body. Never place shoes or any product on the ground beside the model. Shoes go on the model's feet.
+${styleDominant && hasStyleReferences ? `- THE STYLE REFERENCE IS THE ABSOLUTE AUTHORITY for ALL photographic decisions: lighting, color grading, contrast, saturation, mood, grain, and texture.
+- The generated image MUST be INDISTINGUISHABLE in photographic style from the style reference. Only the products and arrangement change.
+- REPLICATE the exact FILM GRAIN, NOISE, and TEXTURE visible in the style reference.
+- Match the exact COLOR TEMPERATURE and TONAL RANGE.` : `- ${styleDirection} editorial product photography
+${hasStyleReferences ? `- THE STYLE REFERENCE IMAGE DEFINES THE OVERALL PHOTOGRAPHIC TREATMENT. Match its lighting, color grading, mood, contrast, and editorial feel.` : ''}
+- Lighting must be balanced so product colors appear exactly as in their product reference images`}
 ${backgroundSection}
 
 TEXT/WATERMARK RULES (CRITICAL):
-- The generated image MUST contain ABSOLUTELY NO TEXT of any kind — no brand names, no product names, no labels, no captions, no watermarks, no signatures, no logos overlaid on the image, no letters, no words, no numbers.
-- Do NOT render any text, title, or description anywhere on or near the image.
+- The generated image MUST contain ABSOLUTELY NO TEXT of any kind — no brand names, no labels, no captions, no watermarks, no signatures, no letters, no words, no numbers.
 - The image must be a pure photograph with zero typographic elements.
 
-Collection: ${lookName || 'Champion Sportswear'}`;
+Collection: ${lookName || 'Pantofola d\'Oro'}`;
 }
 
 serve(async (req) => {
