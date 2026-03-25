@@ -509,6 +509,7 @@ export const ActivationEditor = ({
                   <SelectItem value="banner">Banner / CTA</SelectItem>
                   <SelectItem value="custom_html">Custom HTML</SelectItem>
                   <SelectItem value="lead_capture">Lead Capture</SelectItem>
+                  <SelectItem value="image_carousel">Image Carousel + Caption</SelectItem>
                 </SelectContent>
               </Select>
             </div>
