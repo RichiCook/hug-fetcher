@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export type ActivationType = 'text_image' | 'video' | 'banner' | 'custom_html' | 'lead_capture';
+export type ActivationType = 'text_image' | 'video' | 'banner' | 'custom_html' | 'lead_capture' | 'image_carousel';
 
 export interface TextImageContent {
   title?: string;
