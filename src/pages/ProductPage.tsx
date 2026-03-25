@@ -454,6 +454,7 @@ const ProductPage = () => {
         layout="scroll"
       />
 
+      <ShareToResaleModal
         open={shareModalOpen}
         onOpenChange={setShareModalOpen}
         product={product}
