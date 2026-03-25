@@ -45,7 +45,12 @@ export interface LeadCaptureContent {
   textColor?: string;
 }
 
-export type ActivationContent = TextImageContent | VideoContent | BannerContent | CustomHtmlContent | LeadCaptureContent;
+export interface ImageCarouselContent {
+  slides: { imageUrl: string; caption: string }[];
+  placement?: 'default' | 'above_details' | 'below_details' | 'below_3d' | 'above_similar';
+}
+
+export type ActivationContent = TextImageContent | VideoContent | BannerContent | CustomHtmlContent | LeadCaptureContent | ImageCarouselContent;
 
 export interface Activation {
   id: string;
