@@ -6,6 +6,7 @@ import { Copy, Download, MessageCircle, Share2, ExternalLink } from 'lucide-reac
 
 interface Product {
   name: string;
+  slug?: string;
   price?: string | null;
   description?: string | null;
   composition?: string | null;
