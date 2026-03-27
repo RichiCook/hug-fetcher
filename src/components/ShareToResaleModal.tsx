@@ -6,6 +6,7 @@ import { Copy, Download, MessageCircle, Share2, ExternalLink } from 'lucide-reac
 
 interface Product {
   name: string;
+  slug?: string;
   price?: string | null;
   description?: string | null;
   composition?: string | null;
@@ -94,15 +95,24 @@ const ShareToResaleModal = ({ open, onOpenChange, product }: ShareToResaleModalP
     }
   };
 
+  const getShareUrl = () => {
+    if (product.slug) {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      return `${supabaseUrl}/functions/v1/og-product?slug=${encodeURIComponent(product.slug)}`;
+    }
+    return window.location.href;
+  };
+
   const shareViaWhatsApp = () => {
-    const text = encodeURIComponent(listing);
+    const shareUrl = getShareUrl();
+    const text = encodeURIComponent(`${listing}\n\n${shareUrl}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
   const shareNative = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: product.name, text: listing });
+        await navigator.share({ title: product.name, text: listing, url: getShareUrl() });
       } catch {
         // User cancelled
       }
