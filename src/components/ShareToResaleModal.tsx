@@ -112,7 +112,7 @@ const ShareToResaleModal = ({ open, onOpenChange, product }: ShareToResaleModalP
   const shareNative = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: product.name, text: listing });
+        await navigator.share({ title: product.name, text: listing, url: getShareUrl() });
       } catch {
         // User cancelled
       }
