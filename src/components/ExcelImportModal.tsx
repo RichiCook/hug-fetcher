@@ -168,6 +168,7 @@ export const ExcelImportModal = ({ onImportComplete }: { onImportComplete?: () =
     const importResults: ImportResults = { created: 0, skipped: 0, failed: 0, errors: [] };
 
     let globalRowIndex = 0;
+    const seenBaseCodes = new Set<string>();
 
     // Process in batches of 20
     const batchSize = 20;
@@ -184,7 +185,20 @@ export const ExcelImportModal = ({ onImportComplete }: { onImportComplete?: () =
           continue;
         }
 
-        const productCode = mapping.product_code ? String(row[mapping.product_code] || '').trim() : '';
+        const rawProductCode = mapping.product_code ? String(row[mapping.product_code] || '').trim() : '';
+        // Strip size suffix to deduplicate size variants
+        const productCode = rawProductCode ? stripSizeSuffix(rawProductCode) : '';
+
+        // Skip if we already processed this base SKU in this import
+        if (productCode && seenBaseCodes.has(productCode)) {
+          importResults.skipped++;
+          globalRowIndex++;
+          continue;
+        }
+        if (productCode) {
+          seenBaseCodes.add(productCode);
+        }
+
         const imagesRaw = mapping.images ? String(row[mapping.images] || '') : '';
         const images = imagesRaw
           ? imagesRaw.split(',').map((u) => u.trim()).filter(Boolean)
