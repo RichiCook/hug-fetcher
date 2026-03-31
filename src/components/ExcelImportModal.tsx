@@ -83,6 +83,11 @@ interface ImportResults {
   errors: string[];
 }
 
+// Strip trailing size suffix from SKU: PS2384-02CB_48_41.5 → PS2384-02CB_48
+const stripSizeSuffix = (code: string): string => {
+  return code.replace(/_\d{1,2}(\.\d{1,2})?$/, '');
+};
+
 const generateSlug = (name: string, productCode: string | undefined, index: number): string => {
   const base = name
     .toLowerCase()
