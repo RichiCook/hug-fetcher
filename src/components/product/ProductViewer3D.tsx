@@ -93,10 +93,13 @@ const SceneControls = ({
       enableDamping
       dampingFactor={0.05}
       enablePan={false}
-      minDistance={1}
-      maxDistance={10}
       onStart={onInteraction}
-      enableZoom={false}
+      enableZoom
+      zoomSpeed={0.6}
+      minDistance={2.5}
+      maxDistance={6}
+      target={[0, 0, 0]}
+      makeDefault
     />
   );
 };
