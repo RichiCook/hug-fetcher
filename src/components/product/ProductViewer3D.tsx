@@ -92,7 +92,7 @@ const Model = ({ url, onLoaded }: { url: string; onLoaded?: () => void }) => {
     const postSize = postBox.getSize(new THREE.Vector3());
     console.log('[3DViewer] Post-recenter center:', postCenter.toArray(), 'Post size:', postSize.toArray());
     onLoaded?.();
-  }, [scene, onLoaded, url]);
+  }, [scene, url]);
 
   return (
     <group>
@@ -151,6 +151,7 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
   const [camDist, setCamDist] = useState(0);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const debug = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug');
+  const handleModelLoaded = useCallback(() => setModelReady(true), []);
 
   useEffect(() => {
     if (modelReady) console.log('[3DViewer] modelReady = true');
@@ -235,7 +236,7 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
 
             {panoramaUrl && <PanoramaSphere url={panoramaUrl} />}
 
-            <Model url={modelUrl} onLoaded={() => setModelReady(true)} />
+            <Model url={modelUrl} onLoaded={handleModelLoaded} />
 
             {debug && <axesHelper args={[1]} />}
             {debug && <gridHelper args={[4, 8]} />}
