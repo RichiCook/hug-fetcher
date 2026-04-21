@@ -1,45 +1,77 @@
 
 
-## Plan: Diagnose Why the 3D Viewer Shoe Shrinks During Orbit
+## Plan: Make the 3D Shoe Look More Realistic
 
-The "shoe shrinks while orbiting" symptom is almost certainly **not** a zoom/distance problem — it's a **camera target / model centering** problem. When the model's pivot is offset from world origin `[0,0,0]` (which `OrbitControls.target` is locked to), orbiting swings the model around an off-center pivot. From a fixed FOV camera, that swing reads as the shoe drifting closer/farther → **appears to shrink and grow**.
+The current viewer uses 9 directional lights + a hemisphere light all at high intensity. This flattens materials, washes out shadows, and kills the PBR (physically-based) response that makes leather/rubber look real. Result: "plastic toy" look.
 
-To confirm this (vs. a zoom bug, a GLB problem, or a load failure), we need to instrument the viewer and read the actual numbers.
+The fix is to replace the brute-force lighting rig with **image-based lighting (IBL)** — the industry-standard technique for realistic PBR rendering — plus proper tone mapping and color management.
 
-### Diagnostic steps
+### Changes — `src/components/product/ProductViewer3D.tsx`
 
-**1. Add diagnostic logging to `src/components/product/ProductViewer3D.tsx`**
+**1. Replace the 9-light rig with an HDRI environment**
 
-In the `Model` component, after computing the bounding box:
-- Log `modelUrl`, raw `size`, raw `center`, computed `scale`, and the **post-recenter** bounding box center (should be ~`[0,0,0]`).
-- Catch GLB load errors via a `useGLTF` error path and log them.
+Use `<Environment>` from `@react-three/drei` with a studio preset. This provides 360° image-based lighting that gives materials real reflections, soft shadows, and natural highlights — exactly what makes product renders on sites like Hoka/Nike look photographic.
 
-In the main component:
-- Log when `modelReady` flips to true.
-- Add a temporary on-screen debug overlay (top-left, `text-xs bg-black/60 text-white p-2`) showing: model URL (truncated), `modelReady`, and live camera distance from `[0,0,0]` (read from `OrbitControls` ref each frame via `useFrame`).
+```tsx
+import { Environment, ContactShadows } from '@react-three/drei';
 
-**2. Add a visible reference axis helper**
+<Environment preset="studio" background={false} />
+```
 
-Drop `<axesHelper args={[1]} />` and `<gridHelper args={[4, 8]} />` into the scene (behind a `?debug=1` URL flag so it's not in production). If the shoe sits visibly off-center relative to the axes, that confirms the centering math is wrong for this specific GLB.
+Drei ships several presets: `studio`, `city`, `apartment`, `warehouse`, `sunset`, `dawn`, `lobby`. For product shots, **`studio`** is the right call — it mimics a softbox photography setup.
 
-**3. Verify with the browser console + screenshot**
+**2. Keep one subtle key light for definition**
 
-Once instrumented, you reload the product page and we read:
-- Console output → confirms model loaded, shows actual size/center/scale numbers.
-- Debug overlay → confirms whether camera distance is **actually changing** during orbit (zoom bug) or **staying constant** while the shoe still appears to shrink (centering bug — the real culprit).
+Strip the 9 directional lights down to just:
+- 1 ambient light at low intensity (`0.3`) for shadow fill.
+- 1 directional light from above-front (`[2, 4, 3]`, intensity `0.8`) to add a defined highlight on top of the IBL.
 
-### What we expect to find
+**3. Add ground contact shadow**
 
-Most likely outcome: camera distance stays at ~3.0 throughout orbit, **but** the recentered bounding-box center is not `[0,0,0]` (e.g. `[0.4, -0.2, 0.1]`). The Hoka GLB likely has a clean pivot; the Pantofola GLB does not. Fix will be to wrap the loaded scene in a `<group>` and offset the **inner** scene by `-center * scale` while keeping the outer group at origin — which is more robust than mutating `scene.position` directly (which can be overridden by animations or nested transforms inside the GLB).
+Add `<ContactShadows>` beneath the model. This grounds the shoe visually instead of letting it float — a subtle but huge realism boost.
 
-### Files touched (diagnostic only — no behavior change yet)
+```tsx
+<ContactShadows
+  position={[0, -1, 0]}
+  opacity={0.4}
+  scale={5}
+  blur={2.5}
+  far={2}
+/>
+```
 
-- `src/components/product/ProductViewer3D.tsx` — add logging, error handler, debug overlay (gated on `?debug=1`), axes/grid helpers (gated).
+**4. Enable proper tone mapping & color space on the renderer**
 
-### After diagnosis
+Currently the canvas uses default linear output, which makes PBR materials look flat. Switch to ACES Filmic tone mapping + sRGB output:
 
-Based on the console output + overlay readings you share back, I'll propose the **actual fix** in a follow-up plan — likely one of:
-- (a) Group-wrap recentering for off-pivot GLBs (most likely).
-- (b) Dynamically set `OrbitControls.target` to the model's true center instead of forcing `[0,0,0]`.
-- (c) If the GLB itself is broken (e.g. enormous bounding box from a stray mesh), flag it for re-export.
+```tsx
+<Canvas
+  gl={{
+    antialias: true,
+    alpha: false,
+    toneMapping: THREE.ACESFilmicToneMapping,
+    toneMappingExposure: 1.0,
+    outputColorSpace: THREE.SRGBColorSpace,
+  }}
+  ...
+>
+```
+
+**5. Keep the panorama logic intact**
+
+If a `panoramaUrl` is provided, it still renders as the visible background sphere. The `<Environment>` preset only affects lighting/reflections, not the visible background (`background={false}`).
+
+### Technical notes
+
+- `@react-three/drei`'s `Environment` preset auto-loads HDRIs from a CDN — no extra assets needed.
+- ACES Filmic is the same tone mapping used by Unreal Engine, Blender Cycles, and most modern 3D product viewers — it gives the "filmic" rolloff that prevents blown-out whites on leather/glossy surfaces.
+- Net light count drops from 10 → 2 (+ IBL), which also slightly improves performance.
+
+### Files touched
+
+- `src/components/product/ProductViewer3D.tsx` — swap lighting rig, add `Environment` + `ContactShadows`, configure tone mapping.
+
+### Result
+
+Materials respond properly: leather shows soft sheen, rubber soles read matte, metal eyelets get real reflections. The shoe will look like a product render rather than a flat 3D model.
 
