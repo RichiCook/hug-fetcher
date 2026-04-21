@@ -96,7 +96,12 @@ const SceneControls = ({
       minDistance={1}
       maxDistance={10}
       onStart={onInteraction}
-      enableZoom={false}
+      enableZoom
+      zoomSpeed={0.6}
+      minDistance={2.5}
+      maxDistance={6}
+      target={[0, 0, 0]}
+      makeDefault
     />
   );
 };
