@@ -93,8 +93,6 @@ const SceneControls = ({
       enableDamping
       dampingFactor={0.05}
       enablePan={false}
-      minDistance={1}
-      maxDistance={10}
       onStart={onInteraction}
       enableZoom
       zoomSpeed={0.6}
