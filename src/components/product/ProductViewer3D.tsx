@@ -1,4 +1,4 @@
-import { Suspense, useRef, useState, useEffect, useCallback, Component, ReactNode } from 'react';
+import { useRef, useState, useEffect, useCallback, Component, ReactNode } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -60,7 +60,7 @@ const PanoramaSphere = ({ url }: { url: string }) => {
 };
 
 /* ── Auto-scaled GLB Model ── */
-const Model = ({ url }: { url: string }) => {
+const Model = ({ url, onLoaded }: { url: string; onLoaded?: () => void }) => {
   const { scene } = useGLTF(url);
   const ref = useRef<THREE.Group>(null);
 
@@ -72,7 +72,8 @@ const Model = ({ url }: { url: string }) => {
     const scale = 2 / maxDim;
     scene.scale.setScalar(scale);
     scene.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
-  }, [scene]);
+    onLoaded?.();
+  }, [scene, onLoaded]);
 
   return <primitive ref={ref} object={scene} />;
 };
@@ -101,22 +102,17 @@ const SceneControls = ({
   );
 };
 
-/* ── Loading Spinner ── */
-const Loader = () => (
-  <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
-    <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-  </div>
-);
-
 /* ── Main Component ── */
 interface ProductViewer3DProps {
   modelUrl: string;
   panoramaUrl?: string | null;
+  fallbackImageUrl?: string | null;
 }
 
-const ProductViewer3D = ({ modelUrl, panoramaUrl }: ProductViewer3DProps) => {
+const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductViewer3DProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(true);
+  const [modelReady, setModelReady] = useState(false);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const handleInteraction = useCallback(() => {
