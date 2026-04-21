@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback, Component, ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useTexture } from '@react-three/drei';
+import { OrbitControls, useGLTF, useTexture, Environment, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { useLoader } from '@react-three/fiber';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
@@ -220,19 +220,25 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
         <Canvas
           camera={{ position: [-4, 0.5, 0], fov: 50 }}
           style={{ width: '100%', height: '100%', touchAction: 'none' }}
-          gl={{ antialias: true, alpha: false }}
+          gl={{
+            antialias: true,
+            alpha: false,
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1.0,
+            outputColorSpace: THREE.SRGBColorSpace,
+          }}
           onCreated={({ gl }) => gl.setClearColor('#ffffff', 1)}
         >
-            <ambientLight intensity={4} />
-            <directionalLight position={[5, 5, 5]} intensity={1.5} />
-            <directionalLight position={[-5, -3, 3]} intensity={1.5} />
-            <directionalLight position={[0, -4, 4]} intensity={1.0} />
-            <directionalLight position={[0, 5, -3]} intensity={0.8} />
-            <directionalLight position={[8, 0, 2]} intensity={2.0} />
-            <directionalLight position={[-8, 0, 2]} intensity={2.0} />
-            <directionalLight position={[4, 0, -5]} intensity={1.5} />
-            <directionalLight position={[-4, 0, -5]} intensity={1.5} />
-            <hemisphereLight args={['#ffffff', '#e0e0e0', 2.0]} />
+            <ambientLight intensity={0.3} />
+            <directionalLight position={[2, 4, 3]} intensity={0.8} />
+            <Environment preset="studio" background={false} />
+            <ContactShadows
+              position={[0, -1, 0]}
+              opacity={0.4}
+              scale={5}
+              blur={2.5}
+              far={2}
+            />
 
             {panoramaUrl && <PanoramaSphere url={panoramaUrl} />}
 
