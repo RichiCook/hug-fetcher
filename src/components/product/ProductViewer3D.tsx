@@ -232,13 +232,6 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
             <ambientLight intensity={0.3} />
             <directionalLight position={[2, 4, 3]} intensity={0.8} />
             <Environment preset="studio" background={false} />
-            <ContactShadows
-              position={[0, -1, 0]}
-              opacity={0.4}
-              scale={5}
-              blur={2.5}
-              far={2}
-            />
 
             {panoramaUrl && <PanoramaSphere url={panoramaUrl} />}
 
