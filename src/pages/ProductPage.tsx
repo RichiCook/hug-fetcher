@@ -290,10 +290,18 @@ const ProductPage = () => {
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
 
+  const has3DModel = Boolean((product as any).model_3d_url);
+  const heroFallbackImage = images[0];
+
   return (
     <div className="min-h-screen bg-background transition-colors duration-700" style={paletteStyle}>
       {/* Header — compact on mobile */}
-      <header className="border-b border-border sticky top-0 z-50 transition-colors duration-700" style={resolvedPalette.length > 0 ? { backgroundColor: resolvedPalette[0] + '10', borderColor: resolvedPalette[0] + '25', backdropFilter: 'blur(12px)' } : { backdropFilter: 'blur(12px)' }}>
+      <header
+        className={`sticky top-0 z-50 transition-colors duration-700 ${has3DModel ? 'border-b border-border/30 bg-background/45 backdrop-blur-xl' : 'border-b border-border'}`}
+        style={!has3DModel && resolvedPalette.length > 0
+          ? { backgroundColor: resolvedPalette[0] + '10', borderColor: resolvedPalette[0] + '25', backdropFilter: 'blur(12px)' }
+          : !has3DModel ? { backdropFilter: 'blur(12px)' } : undefined}
+      >
         <div className="max-w-6xl mx-auto px-4 py-2.5 sm:py-3 flex items-center justify-between">
           <Link to="/">
             <img src={logo} alt={brandName} className="h-5 sm:h-7" />
@@ -308,11 +316,31 @@ const ProductPage = () => {
       </header>
 
       {/* Hero Section — edge-to-edge image on mobile */}
-      <section className="sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:py-10">
-        <div className="grid md:grid-cols-2 gap-0 sm:gap-10">
+      <section
+        className={`sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:py-10 ${has3DModel ? '-mt-[calc(2.5rem+1.25rem+1px)] sm:-mt-[calc(3rem+1.5rem+1px)]' : ''}`}
+      >
+        <div className={has3DModel ? '' : 'grid md:grid-cols-2 gap-0 sm:gap-10'}>
           {/* Image Gallery — swipeable on mobile, full-bleed */}
           <div className="relative">
-            {images.length > 0 ? (
+            {has3DModel ? (
+              <Suspense fallback={
+                <div className="aspect-[3/4] w-full overflow-hidden bg-background/40 sm:rounded-lg">
+                  {heroFallbackImage && (
+                    <img
+                      src={heroFallbackImage}
+                      alt={product.name}
+                      className="w-full h-full object-contain object-center"
+                    />
+                  )}
+                </div>
+              }>
+                <ProductViewer3D
+                  modelUrl={(product as any).model_3d_url}
+                  panoramaUrl={(product as any).panorama_url}
+                  fallbackImageUrl={heroFallbackImage || null}
+                />
+              </Suspense>
+            ) : images.length > 0 ? (
               <>
                 {/* Mobile: horizontal scroll-snap gallery */}
                 <div className="sm:hidden">
@@ -456,23 +484,6 @@ const ProductPage = () => {
 
       {/* Placed activations: below details */}
       {renderPlacedActivations('below_details')}
-
-      {/* 3D Viewer — below product details & passport */}
-      {(product as any).model_3d_url && (
-        <section className="sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:pt-6">
-          <Suspense fallback={
-            <div className="w-full bg-white flex items-center justify-center" style={{ aspectRatio: '3/4' }}>
-              {images[0] && <img src={images[0]} alt={product.name} className="w-full h-full object-contain" />}
-            </div>
-          }>
-            <ProductViewer3D
-              modelUrl={(product as any).model_3d_url}
-              panoramaUrl={(product as any).panorama_url}
-              fallbackImageUrl={images[0] || null}
-            />
-          </Suspense>
-        </section>
-      )}
 
       {/* Placed activations: below 3D */}
       {renderPlacedActivations('below_3d')}
