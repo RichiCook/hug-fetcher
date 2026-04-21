@@ -59,31 +59,48 @@ const PanoramaSphere = ({ url }: { url: string }) => {
   return isEXR ? <PanoramaSphereEXR url={url} /> : <PanoramaSphereImage url={url} />;
 };
 
-/* ── Auto-scaled GLB Model ── */
+/* ── Auto-scaled GLB Model (group-wrapped for true centering) ── */
 const Model = ({ url, onLoaded }: { url: string; onLoaded?: () => void }) => {
   const { scene } = useGLTF(url);
-  const ref = useRef<THREE.Group>(null);
+  const innerRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
+    if (!innerRef.current) return;
     console.log('[3DViewer] Model URL:', url);
+
+    // Reset any prior transforms so re-mounts compute correctly
+    scene.position.set(0, 0, 0);
+    scene.scale.setScalar(1);
     scene.updateMatrixWorld(true);
+
     const box = new THREE.Box3().setFromObject(scene);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
     const scale = 2 / maxDim;
     console.log('[3DViewer] Raw size:', size.toArray(), 'Raw center:', center.toArray(), 'Scale:', scale);
-    scene.scale.setScalar(scale);
-    scene.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
-    scene.updateMatrixWorld(true);
-    const postBox = new THREE.Box3().setFromObject(scene);
+
+    // Offset the inner scene so its bbox-center sits at the inner group's origin,
+    // then scale the inner group. The outer <group> stays at world [0,0,0],
+    // which means OrbitControls.target=[0,0,0] orbits around the true model center.
+    scene.position.set(-center.x, -center.y, -center.z);
+    innerRef.current.scale.setScalar(scale);
+    innerRef.current.updateMatrixWorld(true);
+
+    const postBox = new THREE.Box3().setFromObject(innerRef.current);
     const postCenter = postBox.getCenter(new THREE.Vector3());
     const postSize = postBox.getSize(new THREE.Vector3());
     console.log('[3DViewer] Post-recenter center:', postCenter.toArray(), 'Post size:', postSize.toArray());
     onLoaded?.();
-  }, [scene, onLoaded]);
+  }, [scene, onLoaded, url]);
 
-  return <primitive ref={ref} object={scene} />;
+  return (
+    <group>
+      <group ref={innerRef}>
+        <primitive object={scene} />
+      </group>
+    </group>
+  );
 };
 
 /* ── Controls wrapper with idle auto-rotate ── */
