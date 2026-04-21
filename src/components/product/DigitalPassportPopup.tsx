@@ -9,53 +9,54 @@ interface DigitalPassportPopupProps {
   composition?: string | null;
 }
 
-const PulsingDot = () => (
+const MONO = "'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
+const SANS = "'Inter', system-ui, -apple-system, sans-serif";
+
+const PulsingDot = ({ color = '#4ade80' }: { color?: string }) => (
   <span className="relative inline-flex items-center justify-center w-[6px] h-[6px]">
-    <span className="absolute inline-flex h-full w-full rounded-full bg-[#8fbc8f] opacity-40 animate-[pulse-halo_2.4s_ease-in-out_infinite]" />
-    <span className="relative inline-flex rounded-full h-[6px] w-[6px] bg-[#8fbc8f]" />
+    <span className="absolute inline-flex h-full w-full rounded-full opacity-40 animate-[pulse-halo_2.4s_ease-in-out_infinite]" style={{ background: color }} />
+    <span className="relative inline-flex rounded-full h-[6px] w-[6px]" style={{ background: color }} />
   </span>
 );
 
-const ICON_STYLE = { stroke: '#aaa', strokeWidth: 1.2, fill: 'none', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
-
-const GlobeIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" {...ICON_STYLE}><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2.5 2 9.5 0 12M8 2c-2 2.5-2 9.5 0 12"/></svg>
-);
-const WrenchIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" {...ICON_STYLE}><path d="M10.5 2.5a3.5 3.5 0 00-4.87 4.17L3 9.3V13h3.7l2.63-2.63A3.5 3.5 0 0010.5 2.5z"/></svg>
-);
-const TagIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" {...ICON_STYLE}><path d="M13.5 8.5l-5 5a1 1 0 01-1.41 0L2.5 8.91V2.5h6.41l4.59 4.59a1 1 0 010 1.41z"/><circle cx="5.5" cy="5.5" r="1"/></svg>
-);
-const FactoryIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" {...ICON_STYLE}><path d="M2 14V8l3-2v2l3-2v2l3-2v6H2zM13 4V2h1v12"/></svg>
-);
-const MapPinIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" {...ICON_STYLE}><path d="M8 1.5A4.5 4.5 0 0112.5 6C12.5 9.5 8 14.5 8 14.5S3.5 9.5 3.5 6A4.5 4.5 0 018 1.5z"/><circle cx="8" cy="6" r="1.5"/></svg>
-);
-const RecycleIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" {...ICON_STYLE}><path d="M5.5 2L8 5.5 3 5.5zM10.5 2L8 5.5 13 5.5zM3 10L5.5 6.5M13 10L10.5 6.5M5.5 14H10.5M3 10h2.5v4M13 10h-2.5v4"/></svg>
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex items-center gap-2.5" style={{ margin: '24px 0 12px' }}>
+    <span style={{
+      fontFamily: MONO, fontSize: 9, fontWeight: 500, textTransform: 'uppercase',
+      letterSpacing: '0.15em', color: '#a0a0a0', whiteSpace: 'nowrap',
+    }}>{children}</span>
+    <span style={{ flex: 1, height: 1, background: '#e0e0e0' }} />
+  </div>
 );
 
-const PALETTES = ['#8c7b6b', '#b8a99a', '#d4c8bb', '#ede7e0'];
+const DataRow = ({ label, value, last = false }: { label: string; value: string; last?: boolean }) => (
+  <div className="flex justify-between items-baseline" style={{
+    padding: '14px 0',
+    borderBottom: last ? 'none' : '1px solid rgba(214,214,214,0.4)',
+  }}>
+    <span style={{ fontFamily: SANS, fontSize: 14, fontWeight: 400, color: '#6b6b6b' }}>{label}</span>
+    <span style={{ fontFamily: MONO, fontSize: 14, fontWeight: 500, color: '#272727', textAlign: 'right' }}>{value}</span>
+  </div>
+);
 
-const parseComposition = (comp: string): { name: string; pct: number }[] => {
-  const parts: { name: string; pct: number }[] = [];
-  const regex = /(\d+)\s*%\s*([A-Za-zÀ-ÿ\s]+)/g;
-  let m: RegExpExecArray | null;
-  while ((m = regex.exec(comp)) !== null) {
-    parts.push({ pct: parseInt(m[1]), name: m[2].trim() });
-  }
-  return parts.sort((a, b) => b.pct - a.pct);
+const DEFAULT_DATA = {
+  brand: "Pantofola d'Oro",
+  collection_label: 'Spring / Summer 2026',
+  materials: [
+    { component: 'Upper', material: 'Premium Italian leather' },
+    { component: 'Lining', material: 'Textile' },
+    { component: 'Sole', material: 'Rubber' },
+  ],
+  material_origin: 'European suppliers',
+  production: { country: 'Italy', batch: 'SS26-ITALY-045', date: 'March 2026' },
+  care: [
+    'Clean with a soft cloth',
+    'Avoid prolonged exposure to water',
+    'Use appropriate leather care products',
+  ],
+  repair: 'This product is designed to be repairable. Contact authorized repair services for sole or upper restoration.',
+  end_of_life: 'Dispose responsibly according to local recycling guidelines. Where possible, separate materials before disposal.',
 };
-
-const DATA_ROWS = [
-  { icon: <GlobeIcon />, label: 'Carbon Footprint', value: '4.2 kg CO₂e' },
-  { icon: <WrenchIcon />, label: 'Repairability Score', value: '7.2 / 10' },
-  { icon: <TagIcon />, label: 'Durability Class', value: 'B' },
-  { icon: <FactoryIcon />, label: 'Manufacturing', value: 'Italy' },
-  { icon: <MapPinIcon />, label: 'Materials Origin', value: 'Italy / France' },
-];
 
 const DigitalPassportPopup = ({ open, onClose, productName, productCode, collection, composition }: DigitalPassportPopupProps) => {
   const [visible, setVisible] = useState(false);
@@ -74,7 +75,14 @@ const DigitalPassportPopup = ({ open, onClose, productName, productCode, collect
 
   if (!visible) return null;
 
-  const compParts = composition ? parseComposition(composition) : [];
+  const data = DEFAULT_DATA;
+  const collectionLabel = collection || data.collection_label;
+  const productId = productCode ? `PDO-${productCode.replace(/[^A-Z0-9]/gi, '').slice(0, 8).toUpperCase()}` : 'PDO-00012876';
+
+  // If user provided composition, parse to override default materials
+  const materials = composition
+    ? [{ component: 'Composition', material: composition }, ...data.materials.slice(1)]
+    : data.materials;
 
   return (
     <div
@@ -87,117 +95,121 @@ const DigitalPassportPopup = ({ open, onClose, productName, productCode, collect
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          position: 'fixed', top: 38, bottom: 38, left: 22, right: 22,
-          background: '#fff', borderRadius: 14,
-          boxShadow: '0 8px 60px rgba(0,0,0,0.2)',
-          overflow: 'hidden', display: 'flex', flexDirection: 'column',
-          transform: animating ? 'translateY(0)' : 'translateY(20px)',
-          opacity: animating ? 1 : 0,
-          transition: 'transform 0.3s ease, opacity 0.3s ease',
+          position: 'fixed', left: 0, right: 0, bottom: 0,
+          maxHeight: '90dvh', background: '#f8f8f8',
+          borderRadius: '16px 16px 0 0',
+          boxShadow: '0 -8px 60px rgba(0,0,0,0.2)',
+          display: 'flex', flexDirection: 'column',
+          transform: animating ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.3s ease',
         }}
       >
-        {/* Header */}
-        <div style={{ padding: '14px 18px 0', flexShrink: 0 }}>
-          {/* Handle + Close */}
-          <div className="flex items-center justify-between">
-            <div style={{ width: 36, height: 4, borderRadius: 2, background: '#e0e0e0' }} />
-            <button onClick={onClose} style={{ fontSize: 18, color: '#ccc', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1 }}>×</button>
-          </div>
-
-          {/* Title */}
-          <div className="flex items-start gap-2.5" style={{ marginTop: 16 }}>
-            <div style={{ width: 16, flexShrink: 0, paddingTop: 6 }}>
-              <PulsingDot />
-            </div>
-            <div>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, fontWeight: 600, color: '#1a1a1a', margin: 0, lineHeight: 1.2 }}>
-                Digital Product Passport
-              </h2>
-            </div>
-          </div>
-
-          {/* Product reference */}
-          <div style={{ marginLeft: 26, marginTop: 8 }}>
-            <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, fontWeight: 500, color: '#555', margin: 0 }}>{productName}</p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: '#b0a89e', margin: '3px 0 0' }}>
-              {productCode && <>{productCode} · </>}Made in Italy
-            </p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, margin: '3px 0 0' }}>
-              <span style={{ fontWeight: 600, color: '#1a1a1a' }}>EU ESPR Compliant</span>
-              <span style={{ color: '#b0a89e' }}> · Updated 2025-11-14</span>
-            </p>
-          </div>
-
-          <div style={{ borderBottom: '1px solid #f0ece7', marginTop: 14 }} />
+        {/* Drag handle */}
+        <div className="flex items-center justify-center" style={{ padding: '12px 0 4px', flexShrink: 0, position: 'relative' }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: '#d6d6d6' }} />
+          <button
+            onClick={onClose}
+            style={{ position: 'absolute', right: 18, top: 10, fontSize: 20, color: '#a0a0a0', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1 }}
+            aria-label="Close"
+          >×</button>
         </div>
 
         {/* Scrollable content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 18px 18px' }}>
-          {/* Data rows */}
-          {DATA_ROWS.map((row, i) => (
-            <div key={i} className="flex items-center gap-2.5" style={{ padding: '12px 0', borderBottom: i < DATA_ROWS.length - 1 ? '1px solid #f0ece7' : 'none' }}>
-              <div style={{ width: 16, flexShrink: 0 }}>{row.icon}</div>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#777', flex: 1 }}>{row.label}</span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{row.value}</span>
-            </div>
-          ))}
-
-          {/* Recyclability */}
-          <div className="flex gap-2.5" style={{ padding: '12px 0', borderTop: '1px solid #f0ece7' }}>
-            <div style={{ width: 16, flexShrink: 0, paddingTop: 2 }}><RecycleIcon /></div>
-            <div style={{ flex: 1 }}>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: '#777' }}>Recyclability</span>
-              <div className="flex justify-between" style={{ marginTop: 6 }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: '#aaa' }}>Heel</span>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: '#1a1a1a' }}>Recyclable steel</span>
-              </div>
-              <div className="flex justify-between" style={{ marginTop: 4 }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: '#aaa' }}>Upper</span>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: '#1a1a1a' }}>Textile recycling</span>
-              </div>
-            </div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 8px' }}>
+          {/* Header label */}
+          <div style={{
+            fontFamily: MONO, fontSize: 11, fontWeight: 500, textTransform: 'uppercase',
+            letterSpacing: '0.12em', color: '#272727', margin: '20px 0 16px',
+          }}>
+            Digital Product Passport
           </div>
 
-          {/* Certifications */}
-          <div style={{ marginTop: 16 }}>
-            <div style={{ marginLeft: 26 }}>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: '#b5ada5', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>
-                Certifications
+          {/* Product identity */}
+          <h2 style={{ fontFamily: SANS, fontSize: 22, fontWeight: 500, color: '#272727', margin: 0, lineHeight: 1.2 }}>
+            {productName}
+          </h2>
+          <p style={{ fontFamily: SANS, fontSize: 14, fontWeight: 400, color: '#6b6b6b', margin: '4px 0 8px' }}>
+            {data.brand}
+          </p>
+          <p style={{ fontFamily: MONO, fontSize: 11, fontWeight: 400, color: '#a0a0a0', letterSpacing: '0.02em', margin: 0 }}>
+            {productCode || 'PDO-SL-2026-001'}
+            <span style={{ color: '#d6d6d6', margin: '0 8px' }}>·</span>
+            {productId}
+          </p>
+          <p style={{ fontFamily: MONO, fontSize: 11, fontWeight: 400, color: '#a0a0a0', letterSpacing: '0.02em', margin: '4px 0 0' }}>
+            {collectionLabel}
+          </p>
+
+          {/* Verified banner */}
+          <div style={{
+            background: '#272727', borderRadius: 6, padding: '14px 18px',
+            margin: '20px 0 8px',
+          }}>
+            <div className="flex items-center gap-2.5">
+              <PulsingDot />
+              <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#f8f8f8' }}>
+                Verified Product
               </span>
-              <div className="flex flex-wrap gap-2" style={{ marginTop: 8 }}>
-                {['OEKO-TEX® Standard 100', 'ISO 14001'].map((cert) => (
-                  <span key={cert} style={{
-                    fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 500,
-                    padding: '5px 12px', borderRadius: 5, background: '#f5f0eb', color: '#8b7355', border: '1px solid #ebe4db',
-                  }}>{cert}</span>
-                ))}
-              </div>
             </div>
+            <p style={{ fontFamily: MONO, fontSize: 10, fontWeight: 400, color: '#a0a0a0', margin: '6px 0 0', paddingLeft: 16 }}>
+              Registered and verified by {data.brand}
+            </p>
           </div>
 
-          {/* Composition */}
-          {compParts.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ marginLeft: 26 }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: '#b5ada5', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>
-                  Composition
-                </span>
-                <div className="flex overflow-hidden" style={{ borderRadius: 4, height: 6, marginTop: 8 }}>
-                  {compParts.map((part, i) => (
-                    <div key={i} style={{ width: `${part.pct}%`, background: PALETTES[i % PALETTES.length], height: '100%' }} />
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-x-3 gap-y-1" style={{ marginTop: 8 }}>
-                  {compParts.map((part, i) => (
-                    <div key={i} className="flex items-center gap-1">
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: PALETTES[i % PALETTES.length], display: 'inline-block' }} />
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: '#777' }}>{part.pct}% {part.name}</span>
-                    </div>
-                  ))}
-                </div>
+          {/* Materials */}
+          <SectionLabel>Materials & Composition</SectionLabel>
+          {materials.map((m, i) => (
+            <DataRow key={i} label={m.component} value={m.material} />
+          ))}
+          <DataRow label="Material Origin" value={data.material_origin} last />
+
+          {/* Production */}
+          <SectionLabel>Production</SectionLabel>
+          <DataRow label="Country" value={data.production.country} />
+          <DataRow label="Batch" value={data.production.batch} />
+          <DataRow label="Date" value={data.production.date} last />
+
+          {/* Care */}
+          <SectionLabel>Care</SectionLabel>
+          <div style={{ padding: '4px 0' }}>
+            {data.care.map((line, i) => (
+              <div key={i} style={{ fontFamily: MONO, fontSize: 12, color: '#272727', lineHeight: 1.8 }}>
+                <span style={{ color: '#d6d6d6', marginRight: 8 }}>—</span>{line}
               </div>
+            ))}
+          </div>
+
+          {/* Repair & End of life */}
+          <SectionLabel>Repair & End of Life</SectionLabel>
+          <p style={{ fontFamily: MONO, fontSize: 11, color: '#6b6b6b', lineHeight: 1.6, margin: '0 0 12px' }}>
+            {data.repair}
+          </p>
+          <p style={{ fontFamily: MONO, fontSize: 11, color: '#6b6b6b', lineHeight: 1.6, margin: 0 }}>
+            {data.end_of_life}
+          </p>
+
+          {/* Attribution footer */}
+          <div style={{
+            margin: '32px 0 24px', paddingTop: 20, borderTop: '1px solid #e0e0e0', textAlign: 'center',
+          }}>
+            <div style={{
+              fontFamily: MONO, fontSize: 9, textTransform: 'uppercase',
+              letterSpacing: '0.12em', color: '#a0a0a0', lineHeight: 1.8,
+            }}>
+              Digital Product Passport powered by
             </div>
-          )}
+            <img
+              src="/images/ympact-logo-white.png"
+              alt="Ympact"
+              style={{ height: 14, margin: '6px auto 2px', display: 'block', filter: 'invert(1)', opacity: 0.5 }}
+            />
+            <div style={{
+              fontFamily: MONO, fontSize: 8, textTransform: 'uppercase',
+              letterSpacing: '0.12em', color: '#c0c0c0', marginTop: 4,
+            }}>
+              Aitemz Platform
+            </div>
+          </div>
         </div>
       </div>
     </div>
