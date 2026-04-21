@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback, Component, ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useGLTF, useTexture } from '@react-three/drei';
+import { OrbitControls, useGLTF, useTexture, Environment, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { useLoader } from '@react-three/fiber';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
