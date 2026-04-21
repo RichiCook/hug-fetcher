@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback, Component, ReactNode } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { useLoader } from '@react-three/fiber';
@@ -65,13 +65,21 @@ const Model = ({ url, onLoaded }: { url: string; onLoaded?: () => void }) => {
   const ref = useRef<THREE.Group>(null);
 
   useEffect(() => {
+    console.log('[3DViewer] Model URL:', url);
+    scene.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(scene);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
     const scale = 2 / maxDim;
+    console.log('[3DViewer] Raw size:', size.toArray(), 'Raw center:', center.toArray(), 'Scale:', scale);
     scene.scale.setScalar(scale);
     scene.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+    scene.updateMatrixWorld(true);
+    const postBox = new THREE.Box3().setFromObject(scene);
+    const postCenter = postBox.getCenter(new THREE.Vector3());
+    const postSize = postBox.getSize(new THREE.Vector3());
+    console.log('[3DViewer] Post-recenter center:', postCenter.toArray(), 'Post size:', postSize.toArray());
     onLoaded?.();
   }, [scene, onLoaded]);
 
@@ -104,6 +112,14 @@ const SceneControls = ({
   );
 };
 
+/* ── Camera distance probe ── */
+const CameraDistanceProbe = ({ onUpdate }: { onUpdate: (d: number) => void }) => {
+  useFrame(({ camera }) => {
+    onUpdate(camera.position.length());
+  });
+  return null;
+};
+
 /* ── Main Component ── */
 interface ProductViewer3DProps {
   modelUrl: string;
@@ -115,7 +131,13 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const [modelReady, setModelReady] = useState(false);
+  const [camDist, setCamDist] = useState(0);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const debug = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug');
+
+  useEffect(() => {
+    if (modelReady) console.log('[3DViewer] modelReady = true');
+  }, [modelReady]);
 
   const handleInteraction = useCallback(() => {
     setAutoRotate(false);
@@ -147,6 +169,13 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
         className="relative w-full bg-white"
         style={{ aspectRatio: '3/4' }}
       >
+        {debug && (
+          <div className="absolute top-2 left-2 z-30 text-xs bg-black/70 text-white p-2 rounded font-mono pointer-events-none max-w-[60%]">
+            <div>url: {modelUrl.slice(-40)}</div>
+            <div>ready: {String(modelReady)}</div>
+            <div>camDist: {camDist.toFixed(3)}</div>
+          </div>
+        )}
         {/* Fallback image overlay until 3D model is ready */}
         {!modelReady && fallbackImageUrl && (
           <div className="absolute inset-0 z-20 bg-white">
@@ -190,6 +219,10 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
             {panoramaUrl && <PanoramaSphere url={panoramaUrl} />}
 
             <Model url={modelUrl} onLoaded={() => setModelReady(true)} />
+
+            {debug && <axesHelper args={[1]} />}
+            {debug && <gridHelper args={[4, 8]} />}
+            {debug && <CameraDistanceProbe onUpdate={setCamDist} />}
 
             <SceneControls
               autoRotate={autoRotate}
