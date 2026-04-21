@@ -1,33 +1,37 @@
 
 
-## Plan: Deduplicate SKUs by Stripping Size Suffix on Import
+## Plan: Match Hoka's 3D Viewer UI & Logic
 
-### Problem
-SKUs like `PS2384-02CB_48_41` and `PS2384-02CB_48_41.5` are the same product in different sizes, but get imported as separate products because the full SKU (with size) is used as `product_code`.
+Update the current 3D viewer to mirror the Hoka demo's behavior: white background, side-camera angle, and a fallback hero image displayed until the 3D model is fully loaded.
 
-### Solution
-Add a helper function that strips the trailing size portion from the product code (the last `_XX` or `_XX.X` segment), producing a "base SKU". Use this base SKU for deduplication during import — so multiple size variants merge into a single product entry.
+### Differences vs. current implementation
 
-### Technical Details
+| Aspect | Current | Hoka (target) |
+|---|---|---|
+| Background | Black (`bg-black`) | White (`bg-white`) with explicit `gl.setClearColor('#ffffff')` |
+| Loader | Spinner overlay (`Loader` component) | Product hero image as fallback (no spinner) |
+| Camera position | `[0, 0, 4]` (front view) | `[-4, 0.5, 0]` (side angle, slightly elevated) |
+| Model load tracking | None | `onLoaded` callback flips `modelReady` state to hide fallback |
+| Suspense wrapper | Wraps `<Canvas>` | Removed — fallback image handles loading state |
 
-**File: `src/components/ExcelImportModal.tsx`**
+### Changes
 
-1. **Add `stripSizeSuffix` helper** — removes the last `_` segment if it looks like a shoe size (number, optionally with `.5`):
-   ```typescript
-   const stripSizeSuffix = (code: string): string => {
-     // PS2384-02CB_48_41.5 → PS2384-02CB_48
-     return code.replace(/_\d{1,2}(\.\d)?$/, '');
-   };
-   ```
+**File: `src/components/product/ProductViewer3D.tsx`**
+1. Add `fallbackImageUrl?: string` to `ProductViewer3DProps`.
+2. Add `modelReady` state + `onLoaded` callback on `Model` that sets it to true once the GLB scene has been measured/positioned.
+3. Render the fallback `<img>` in an absolute overlay (z-20) while `!modelReady`, using `object-contain` on white background.
+4. Switch container from `bg-black` to `bg-white`.
+5. Remove the `<Suspense fallback={<Loader />}>` wrapper and the `Loader` component (the fallback image replaces it).
+6. Update camera position to `[-4, 0.5, 0]` for the side-angle initial view.
+7. Add `onCreated={({ gl }) => gl.setClearColor('#ffffff', 1)}` to `<Canvas>`.
+8. Keep all existing logic untouched: error boundary, panorama spheres (jpg/png/exr), lighting setup, scroll-through edge overlays, idle auto-rotate, OrbitControls config.
 
-2. **Normalize product_code before dedup** — in `handleImport`, after extracting `productCode`, compute `baseCode = stripSizeSuffix(productCode)` and use `baseCode` as the effective `product_code` stored on the product and used for existence checks.
+**File: `src/pages/ProductPage.tsx`**
+1. Pass `fallbackImageUrl` to `<ProductViewer3D>` — use the product's main image (via existing `getMainProductImage` / first gallery image, whichever is already available near the viewer render site around line 468).
 
-3. **Dedup within the import batch** — when multiple rows share the same base code, keep only the first occurrence (or merge images). Skip subsequent rows for the same base code and count them as "skipped" in results.
-
-4. **Lookup existing products by base code** — the `.in('product_code', codes)` query already works since we'll store the base code as `product_code`.
-
-### What the user sees
-- Size variants are collapsed into one product per base SKU
-- The import results will show skipped count for deduplicated size variants
-- Existing products matched by base SKU get updated rather than creating duplicates
+### Result
+- White studio-style 3D viewer instead of black.
+- Users see the product's flat-lay photo immediately, which seamlessly swaps to the interactive 3D model once it loads — no spinner flash.
+- Initial camera framing matches Hoka's side profile angle.
+- All other behavior (auto-rotate, panorama, scroll-through edges, no UI controls) preserved.
 
