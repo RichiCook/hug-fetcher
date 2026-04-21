@@ -461,13 +461,14 @@ const ProductPage = () => {
       {(product as any).model_3d_url && (
         <section className="sm:container sm:max-w-6xl sm:mx-auto sm:px-4 sm:pt-6">
           <Suspense fallback={
-            <div className="w-full bg-black flex items-center justify-center" style={{ aspectRatio: '3/4' }}>
-              <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            <div className="w-full bg-white flex items-center justify-center" style={{ aspectRatio: '3/4' }}>
+              {images[0] && <img src={images[0]} alt={product.name} className="w-full h-full object-contain" />}
             </div>
           }>
             <ProductViewer3D
               modelUrl={(product as any).model_3d_url}
               panoramaUrl={(product as any).panorama_url}
+              fallbackImageUrl={images[0] || null}
             />
           </Suspense>
         </section>
