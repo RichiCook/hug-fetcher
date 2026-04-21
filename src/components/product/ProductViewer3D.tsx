@@ -142,9 +142,20 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
     <ViewerErrorBoundary>
       <div
         ref={containerRef}
-        className="relative w-full bg-black"
+        className="relative w-full bg-white"
         style={{ aspectRatio: '3/4' }}
       >
+        {/* Fallback image overlay until 3D model is ready */}
+        {!modelReady && fallbackImageUrl && (
+          <div className="absolute inset-0 z-20 bg-white">
+            <img
+              src={fallbackImageUrl}
+              alt="Product preview"
+              className="w-full h-full object-contain"
+            />
+          </div>
+        )}
+
         {/* Transparent overlay edges that allow scroll-through */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           {/* Top strip */}
@@ -157,12 +168,12 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
           <div className="absolute top-[20%] right-0 w-[15%] bottom-[20%] pointer-events-auto" style={{ touchAction: 'pan-y' }} />
         </div>
 
-        <Suspense fallback={<Loader />}>
-          <Canvas
-            camera={{ position: [0, 0, 4], fov: 50 }}
-            style={{ width: '100%', height: '100%', touchAction: 'none' }}
-            gl={{ antialias: true, alpha: false }}
-          >
+        <Canvas
+          camera={{ position: [-4, 0.5, 0], fov: 50 }}
+          style={{ width: '100%', height: '100%', touchAction: 'none' }}
+          gl={{ antialias: true, alpha: false }}
+          onCreated={({ gl }) => gl.setClearColor('#ffffff', 1)}
+        >
             <ambientLight intensity={4} />
             <directionalLight position={[5, 5, 5]} intensity={1.5} />
             <directionalLight position={[-5, -3, 3]} intensity={1.5} />
@@ -176,14 +187,13 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
 
             {panoramaUrl && <PanoramaSphere url={panoramaUrl} />}
 
-            <Model url={modelUrl} />
+            <Model url={modelUrl} onLoaded={() => setModelReady(true)} />
 
             <SceneControls
               autoRotate={autoRotate}
               onInteraction={handleInteraction}
             />
-          </Canvas>
-        </Suspense>
+        </Canvas>
 
       </div>
     </ViewerErrorBoundary>
