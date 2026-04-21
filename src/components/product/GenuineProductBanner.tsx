@@ -52,28 +52,39 @@ const GenuineProductBanner = ({ productName, collection, onViewPassport }: Genui
         Made in Italy{collection ? ` · ${collection}` : ''}
       </p>
 
-      {/* Divider */}
-      <div style={{ borderTop: '1px solid #f0ece7', marginTop: '14px', paddingTop: '14px' }}>
-        {/* Passport row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <PulsingDot />
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#a09890' }}>
-              Digital Passport Available
-            </span>
-          </div>
+      {/* DPP tech bar */}
+      <div
+        style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '14px 18px', background: '#272727', borderRadius: '6px', marginTop: '14px',
+        }}
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="relative inline-flex items-center justify-center w-[6px] h-[6px]">
+            <span className="absolute inline-flex h-full w-full rounded-full opacity-40 animate-[pulse-halo_2.4s_ease-in-out_infinite]" style={{ background: '#4ade80' }} />
+            <span className="relative inline-flex rounded-full h-[6px] w-[6px]" style={{ background: '#4ade80' }} />
+          </span>
+          <span style={{
+            fontFamily: "'Roboto Mono', ui-monospace, monospace", fontSize: '10px', fontWeight: 400,
+            textTransform: 'uppercase', letterSpacing: '0.08em', color: '#f8f8f8',
+          }}>
+            Digital Passport Available
+          </span>
+        </div>
+        <div className="flex items-center" style={{ gap: '14px' }}>
+          <img
+            src="/images/ympact-logo-white.png"
+            alt="Ympact"
+            style={{ height: 12, opacity: 0.5 }}
+          />
           <button
             onClick={onViewPassport}
             style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '12px',
-              fontWeight: 500,
-              color: '#1a1a1a',
-              background: 'none',
-              border: '1px solid #ddd8d2',
-              borderRadius: '5px',
-              padding: '7px 18px',
-              cursor: 'pointer',
+              fontFamily: "'Roboto Mono', ui-monospace, monospace",
+              fontSize: '9px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.1em',
+              color: '#f8f8f8', background: 'transparent',
+              border: '1px solid rgba(248,248,248,0.3)', borderRadius: '3px',
+              padding: '6px 16px', cursor: 'pointer',
             }}
           >
             View
