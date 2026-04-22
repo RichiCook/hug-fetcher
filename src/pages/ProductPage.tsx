@@ -323,23 +323,26 @@ const ProductPage = () => {
           {/* Image Gallery — swipeable on mobile, full-bleed */}
           <div className="relative">
             {has3DModel ? (
-              <Suspense fallback={
-                <div className="aspect-[3/4] w-full overflow-hidden bg-background/40 sm:rounded-lg">
-                  {heroFallbackImage && (
-                    <img
-                      src={heroFallbackImage}
-                      alt={product.name}
-                      className="w-full h-full object-contain object-center"
-                    />
-                  )}
-                </div>
-              }>
-                <ProductViewer3D
-                  modelUrl={(product as any).model_3d_url}
-                  panoramaUrl={(product as any).panorama_url}
-                  fallbackImageUrl={heroFallbackImage || null}
-                />
-              </Suspense>
+              <div className="relative w-full h-[90vh] sm:h-auto sm:aspect-[3/4]">
+                <Suspense fallback={
+                  <div className="w-full h-full overflow-hidden bg-black sm:rounded-lg flex items-center justify-center">
+                    {heroFallbackImage && (
+                      <img
+                        src={heroFallbackImage}
+                        alt={product.name}
+                        className="w-full h-full object-contain object-center opacity-30"
+                      />
+                    )}
+                  </div>
+                }>
+                  <ProductViewer3D
+                    modelUrl={(product as any).model_3d_url}
+                    panoramaUrl={(product as any).panorama_url}
+                    fallbackImageUrl={heroFallbackImage || null}
+                    fill
+                  />
+                </Suspense>
+              </div>
             ) : images.length > 0 ? (
               <>
                 {/* Mobile: horizontal scroll-snap gallery */}
@@ -457,21 +460,25 @@ const ProductPage = () => {
       {/* Placed activations: above details */}
       {renderPlacedActivations('above_details')}
 
-      <GenuineProductBanner
-        productName={product.name}
-        collection={(product as any).collection}
-        onViewPassport={() => setPassportOpen(true)}
-      />
+      <div className={has3DModel ? '-mt-[260px] sm:-mt-[72px] relative z-10' : '-mt-[72px]'}>
+        <GenuineProductBanner
+          productName={product.name}
+          collection={(product as any).collection}
+          onViewPassport={() => setPassportOpen(true)}
+        />
+      </div>
 
-      <ProductInfoBlock
-        price={product.price}
-        productCode={product.product_code}
-        description={product.description}
-        composition={product.composition}
-        sourceUrl={product.source_url}
-        productName={product.name}
-        productId={product.id}
-      />
+      <div className={has3DModel ? 'mt-[80px] sm:mt-0' : ''}>
+        <ProductInfoBlock
+          price={product.price}
+          productCode={product.product_code}
+          description={product.description}
+          composition={product.composition}
+          sourceUrl={product.source_url}
+          productName={product.name}
+          productId={product.id}
+        />
+      </div>
 
       <DigitalPassportPopup
         open={passportOpen}

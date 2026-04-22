@@ -142,9 +142,11 @@ interface ProductViewer3DProps {
   modelUrl: string;
   panoramaUrl?: string | null;
   fallbackImageUrl?: string | null;
+  /** If true, the viewer fills its parent container (h-full) instead of using the default 3/4 aspect ratio. */
+  fill?: boolean;
 }
 
-const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductViewer3DProps) => {
+const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl, fill }: ProductViewer3DProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const [modelReady, setModelReady] = useState(false);
@@ -184,8 +186,8 @@ const ProductViewer3D = ({ modelUrl, panoramaUrl, fallbackImageUrl }: ProductVie
     <ViewerErrorBoundary>
       <div
         ref={containerRef}
-        className="relative w-full bg-white"
-        style={{ aspectRatio: '3/4' }}
+        className={`relative w-full ${fill ? 'h-full bg-black' : 'bg-white'}`}
+        style={fill ? undefined : { aspectRatio: '3/4' }}
       >
         {debug && (
           <div className="absolute top-2 left-2 z-30 text-xs bg-black/70 text-white p-2 rounded font-mono pointer-events-none max-w-[60%]">

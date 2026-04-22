@@ -26,7 +26,7 @@ const GenuineProductBanner = ({ productName, collection, onViewPassport }: Genui
     <div
       className="animate-in"
       style={{
-        margin: '-72px 12px 0',
+        margin: '0 12px',
         padding: '16px 18px',
         background: 'rgba(255,255,255,0.55)',
         backdropFilter: 'blur(18px) saturate(180%)',
