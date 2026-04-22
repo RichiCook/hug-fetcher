@@ -23,15 +23,19 @@ interface GenuineProductBannerProps {
 
 const GenuineProductBanner = ({ productName, collection, onViewPassport }: GenuineProductBannerProps) => {
   return (
-    <div 
+    <div
       className="animate-in"
       style={{
-        margin: '8px 12px 0',
+        margin: '-72px 12px 0',
         padding: '16px 18px',
-        background: '#fff',
+        background: 'rgba(255,255,255,0.55)',
+        backdropFilter: 'blur(18px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(18px) saturate(180%)',
         borderRadius: '6px',
-        border: '1px solid #e4e0db',
-        boxShadow: '0 1px 10px rgba(0,0,0,0.025)',
+        border: '1px solid rgba(228,224,219,0.55)',
+        boxShadow: '0 8px 28px rgba(0,0,0,0.10)',
+        position: 'relative',
+        zIndex: 10,
       }}
     >
       {/* Authenticity badge */}
