@@ -468,7 +468,7 @@ const ProductPage = () => {
         />
       </div>
 
-      <div className={has3DModel ? 'mt-[80px] sm:mt-0' : ''}>
+      <div className={has3DModel ? 'mt-[120px] sm:mt-0' : ''}>
         <ProductInfoBlock
           price={product.price}
           productCode={product.product_code}

@@ -27,7 +27,7 @@ const GenuineProductBanner = ({ productName, collection, onViewPassport }: Genui
       className="animate-in"
       style={{
         margin: '0 12px',
-        padding: '16px 18px',
+        padding: '12px 14px',
         background: 'rgba(255,255,255,0.55)',
         backdropFilter: 'blur(18px) saturate(180%)',
         WebkitBackdropFilter: 'blur(18px) saturate(180%)',
@@ -47,12 +47,12 @@ const GenuineProductBanner = ({ productName, collection, onViewPassport }: Genui
       </div>
 
       {/* Product name */}
-      <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 500, color: '#1a1a1a', marginTop: '8px', lineHeight: 1.3 }}>
+      <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', fontWeight: 500, color: '#1a1a1a', marginTop: '6px', lineHeight: 1.25 }}>
         {productName}
       </h1>
 
       {/* Origin line */}
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#b5ada5', marginTop: '4px' }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '11.5px', color: '#b5ada5', marginTop: '2px' }}>
         Made in Italy{collection ? ` · ${collection}` : ''}
       </p>
 
@@ -60,7 +60,7 @@ const GenuineProductBanner = ({ productName, collection, onViewPassport }: Genui
       <div
         style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '14px 18px', background: '#272727', borderRadius: '6px', marginTop: '14px',
+          padding: '10px 14px', background: '#272727', borderRadius: '5px', marginTop: '10px',
         }}
       >
         <div className="flex items-center gap-2.5">
