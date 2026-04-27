@@ -13,6 +13,7 @@ import { useScanTracking } from '@/hooks/useScanTracking';
 import { usePlatformSettingsContext } from '@/contexts/PlatformSettingsContext';
 import { supabase } from '@/integrations/supabase/client';
 import GenuineProductBanner from '@/components/product/GenuineProductBanner';
+import DigitalPassportCard from '@/components/product/DigitalPassportCard';
 import ProductInfoBlock from '@/components/product/ProductInfoBlock';
 import DigitalPassportPopup from '@/components/product/DigitalPassportPopup';
 import CelebritySpotlight from '@/components/product/CelebritySpotlight';
@@ -464,11 +465,10 @@ const ProductPage = () => {
         <GenuineProductBanner
           productName={product.name}
           collection={(product as any).collection}
-          onViewPassport={() => setPassportOpen(true)}
         />
       </div>
 
-      <div className={has3DModel ? 'mt-[120px] sm:mt-0' : ''}>
+      <div className={has3DModel ? 'mt-[180px] sm:mt-0' : ''}>
         <ProductInfoBlock
           price={product.price}
           productCode={product.product_code}
@@ -479,6 +479,9 @@ const ProductPage = () => {
           productId={product.id}
         />
       </div>
+
+      {/* Digital Passport CTA — placed below the fold so the landing screen stays minimal */}
+      <DigitalPassportCard onView={() => setPassportOpen(true)} />
 
       <DigitalPassportPopup
         open={passportOpen}
