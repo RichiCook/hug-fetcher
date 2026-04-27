@@ -460,7 +460,7 @@ const ProductPage = () => {
       {/* Placed activations: above details */}
       {renderPlacedActivations('above_details')}
 
-      <div className={has3DModel ? '-mt-[24px] relative z-10' : '-mt-[24px]'}>
+      <div className={has3DModel ? '-mt-[170px] relative z-10 sm:mt-0' : '-mt-[24px]'}>
         <GenuineProductBanner
           productName={product.name}
           collection={(product as any).collection}
