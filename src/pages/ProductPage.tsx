@@ -323,7 +323,7 @@ const ProductPage = () => {
           {/* Image Gallery — swipeable on mobile, full-bleed */}
           <div className="relative">
             {has3DModel ? (
-              <div className="relative w-full h-[75vh] sm:h-auto sm:aspect-[3/4]">
+              <div className="relative w-full h-[90vh] sm:h-auto sm:aspect-[3/4]">
                 <Suspense fallback={
                   <div className="w-full h-full overflow-hidden bg-black sm:rounded-lg flex items-center justify-center">
                     {heroFallbackImage && (
@@ -460,7 +460,7 @@ const ProductPage = () => {
       {/* Placed activations: above details */}
       {renderPlacedActivations('above_details')}
 
-      <div className={has3DModel ? '-mt-[calc(125px+5px)] sm:-mt-[calc(125px+5px)] relative z-10' : '-mt-[24px]'}>
+      <div className={has3DModel ? '-mt-[24px] relative z-10' : '-mt-[24px]'}>
         <GenuineProductBanner
           productName={product.name}
           collection={(product as any).collection}
