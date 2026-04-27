@@ -38,23 +38,15 @@ const GenuineProductBanner = ({ productName, collection, onViewPassport }: Genui
         zIndex: 10,
       }}
     >
-      {/* Authenticity badge */}
-      <div className="flex items-center gap-1.5">
-        <ShieldIcon />
-        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.18em', color: '#a09080', textTransform: 'uppercase' as const }}>
-          Genuine Product
-        </span>
-      </div>
-
       {/* Product name */}
-      <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 500, color: '#1a1a1a', marginTop: '8px', lineHeight: 1.3 }}>
+      <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 500, color: '#1a1a1a', lineHeight: 1.3 }}>
         {productName}
       </h1>
-
-      {/* Origin line */}
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#b5ada5', marginTop: '4px' }}>
-        Made in Italy{collection ? ` · ${collection}` : ''}
-      </p>
+      {collection && (
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: '#b5ada5', marginTop: '4px' }}>
+          {collection}
+        </p>
+      )}
 
       {/* DPP tech bar */}
       <div
