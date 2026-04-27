@@ -323,7 +323,7 @@ const ProductPage = () => {
           {/* Image Gallery — swipeable on mobile, full-bleed */}
           <div className="relative">
             {has3DModel ? (
-              <div className="relative w-full h-[90vh] sm:h-auto sm:aspect-[3/4]">
+              <div className="relative w-full h-[75vh] sm:h-auto sm:aspect-[3/4]">
                 <Suspense fallback={
                   <div className="w-full h-full overflow-hidden bg-black sm:rounded-lg flex items-center justify-center">
                     {heroFallbackImage && (
