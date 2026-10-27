@@ -19,6 +19,7 @@ import ScanAnalyticsPage from "./pages/ScanAnalyticsPage";
 import CelebrityContentPage from "./pages/CelebrityContentPage";
 import ImmersiveViewPage from "./pages/ImmersiveViewPage";
 import AuthPage from "./pages/AuthPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PlatformSettingsProvider } from "./contexts/PlatformSettingsContext";
 
@@ -37,6 +38,7 @@ const App = () => (
           {/* All other routes wrapped in PlatformSettingsProvider */}
           <Route path="/product/:slug" element={<PlatformSettingsProvider><ProductPage /></PlatformSettingsProvider>} />
           <Route path="/auth" element={<PlatformSettingsProvider><AuthPage /></PlatformSettingsProvider>} />
+          <Route path="/reset-password" element={<PlatformSettingsProvider><ResetPasswordPage /></PlatformSettingsProvider>} />
           
           {/* Protected dashboard routes */}
           <Route path="/" element={<PlatformSettingsProvider><ProtectedRoute><Index /></ProtectedRoute></PlatformSettingsProvider>} />
