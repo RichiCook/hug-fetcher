@@ -38,6 +38,7 @@ const App = () => (
           {/* All other routes wrapped in PlatformSettingsProvider */}
           <Route path="/product/:slug" element={<PlatformSettingsProvider><ProductPage /></PlatformSettingsProvider>} />
           <Route path="/auth" element={<PlatformSettingsProvider><AuthPage /></PlatformSettingsProvider>} />
+          <Route path="/reset-password" element={<PlatformSettingsProvider><ResetPasswordPage /></PlatformSettingsProvider>} />
           
           {/* Protected dashboard routes */}
           <Route path="/" element={<PlatformSettingsProvider><ProtectedRoute><Index /></ProtectedRoute></PlatformSettingsProvider>} />
